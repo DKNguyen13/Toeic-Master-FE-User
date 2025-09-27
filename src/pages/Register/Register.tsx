@@ -22,7 +22,6 @@ const Register: React.FC = () => {
     text: string;
   } | null>(null);
 
-  // Hàm kiểm tra tuổi >= 16
   const isValidAge = (dateString: string) => {
     const today = new Date();
     const birthDate = new Date(dateString);
@@ -77,14 +76,7 @@ const Register: React.FC = () => {
     if (hasError) return;
 
     try {
-      const res = await api.post("/auth/register", {
-        fullname,
-        email,
-        password,
-        phone,
-        dob,
-        otp,
-      });
+      const res = await api.post("/auth/register", {fullName : fullname, email, password, phone, dob, otp});
 
       if (res.data.success) {
         setOtpMessage({ type: "success", text: "Đăng ký thành công!" });

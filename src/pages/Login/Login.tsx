@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import api, { setAccessToken } from "../../config/axios.js";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -151,6 +153,39 @@ const Login: React.FC = () => {
                 {isLoading ? "Đang xử lý..." : "Đăng nhập"}
               </button>
             </form>
+
+            {/* OR Separator */}
+            <div className="flex items-center my-6">
+              <div className="flex-grow h-px bg-gray-300"></div>
+              <span className="px-3 text-gray-500 text-sm">Hoặc</span>
+              <div className="flex-grow h-px bg-gray-300"></div>
+            </div>
+
+            {/* Google Login */}
+            <div className="mt-4">
+              <GoogleLogin
+                onSuccess={async (credentialResponse) => {
+                  try {
+                    const res = await api.post("/auth/google", {
+                      token: credentialResponse.credential,
+                    });
+                    if (res.data.success) {
+                      const { user, accessToken } = res.data.data;
+                      setAccessToken(accessToken);
+                      localStorage.setItem("fullname", user.fullName);
+                      localStorage.setItem("email", user.email);
+                      localStorage.setItem("avatarUrl", user.avatarUrl);
+                      navigate("/");
+                    }
+                  } catch (err) {
+                    console.error("Google login failed", err);
+                  }
+                }}
+                onError={() => {
+                  console.log("Google Login Failed");
+                }}
+              />
+            </div>
 
             {/* Register link */}
             <div className="mt-6 text-center">

@@ -7,7 +7,7 @@ import api, { setAccessToken } from "../../config/axios.js";
 const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const fullname = localStorage.getItem("fullname");
+  const fullname = localStorage.getItem("fullName");
   const [openMenu, setOpenMenu] = useState(false);
 
   const handleLogout = async () => {

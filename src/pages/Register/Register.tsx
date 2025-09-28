@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import api from "../../config/axios.js";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
-  const [dob, setDob] = useState("");
+  const [dob, setDob] = useState<Date | null>(null);
   const [phone, setPhone] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +24,13 @@ const Register: React.FC = () => {
     text: string;
   } | null>(null);
 
-  const isValidAge = (dateString: string) => {
+  // Check tuổi >= 16
+  const isValidAge = (date: Date | null) => {
+    if (!date) return false;
     const today = new Date();
-    const birthDate = new Date(dateString);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    let age = today.getFullYear() - date.getFullYear();
+    const m = today.getMonth() - date.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
       age--;
     }
     return age >= 16;
@@ -35,7 +38,6 @@ const Register: React.FC = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-
     let hasError = false;
 
     // Validate tên
@@ -76,7 +78,14 @@ const Register: React.FC = () => {
     if (hasError) return;
 
     try {
-      const res = await api.post("/auth/register", {fullName : fullname, email, password, phone, dob, otp});
+      const res = await api.post("/auth/register", {
+        fullName: fullname,
+        email,
+        password,
+        phone,
+        dob,
+        otp,
+      });
 
       if (res.data.success) {
         setOtpMessage({ type: "success", text: "Đăng ký thành công!" });
@@ -138,9 +147,7 @@ const Register: React.FC = () => {
                 }`}
                 required
               />
-              {nameError && (
-                <p className="text-red-500 text-sm mt-1">{nameError}</p>
-              )}
+              {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
             </div>
 
             {/* Email */}
@@ -159,20 +166,18 @@ const Register: React.FC = () => {
 
             {/* Phone */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Số điện thoại
-              </label>
+              <label className="block text-gray-700 font-medium mb-1">Số điện thoại</label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => {
                   const value = e.target.value.replace(/\D/g, "");
                   setPhone(value);
-                  if (value.length < 10 || value.length > 11) {
-                    setPhoneError("Số điện thoại phải từ 10 đến 11 chữ số");
-                  } else {
-                    setPhoneError("");
-                  }
+                  setPhoneError(
+                    value.length < 10 || value.length > 11
+                      ? "Số điện thoại phải từ 10 đến 11 chữ số"
+                      : ""
+                  );
                 }}
                 placeholder="Nhập số điện thoại"
                 maxLength={11}
@@ -183,37 +188,32 @@ const Register: React.FC = () => {
                 }`}
                 required
               />
-              {phoneError && (
-                <p className="text-red-500 text-sm mt-1">{phoneError}</p>
-              )}
+              {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
             </div>
 
-            {/* DOB */}
+            {/* DOB with DatePicker */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Ngày sinh
-              </label>
-              <input
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
+              <label className="block text-gray-700 font-medium mb-1">Ngày sinh</label>
+              <DatePicker
+                selected={dob}
+                onChange={(date) => setDob(date)}
+                maxDate={new Date()}
+                showYearDropdown
+                showMonthDropdown
+                placeholderText="Chọn ngày sinh"
                 className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 shadow-sm ${
                   dobError
                     ? "border-red-500 focus:ring-red-400"
                     : "border-gray-300 focus:ring-blue-500"
                 }`}
-                required
+                dateFormat="dd/MM/yyyy"
               />
-              {dobError && (
-                <p className="text-red-500 text-sm mt-1">{dobError}</p>
-              )}
+              {dobError && <p className="text-red-500 text-sm mt-1">{dobError}</p>}
             </div>
 
-            {/* Password */}
+            {/* Password & Confirm Password */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Mật khẩu
-              </label>
+              <label className="block text-gray-700 font-medium mb-1">Mật khẩu</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -239,11 +239,8 @@ const Register: React.FC = () => {
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Xác nhận mật khẩu
-              </label>
+              <label className="block text-gray-700 font-medium mb-1">Xác nhận mật khẩu</label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -261,21 +258,13 @@ const Register: React.FC = () => {
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
-                  }
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
                 >
-                  {showConfirmPassword ? (
-                    <AiOutlineEyeInvisible />
-                  ) : (
-                    <AiOutlineEye />
-                  )}
+                  {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                 </button>
               </div>
-              {passwordError && (
-                <p className="text-red-500 text-sm mt-1">{passwordError}</p>
-              )}
+              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
 
             {/* OTP Section */}
@@ -310,9 +299,7 @@ const Register: React.FC = () => {
                     } catch (error: any) {
                       setOtpMessage({
                         type: "error",
-                        text:
-                          error.response?.data?.message ||
-                          "Lỗi server khi gửi OTP",
+                        text: error.response?.data?.message || "Lỗi server khi gửi OTP",
                       });
                     }
                   }}
@@ -324,9 +311,7 @@ const Register: React.FC = () => {
               {otpMessage && (
                 <p
                   className={`text-sm mt-1 ${
-                    otpMessage.type === "error"
-                      ? "text-red-500"
-                      : "text-green-600"
+                    otpMessage.type === "error" ? "text-red-500" : "text-green-600"
                   }`}
                 >
                   {otpMessage.text}
@@ -345,10 +330,7 @@ const Register: React.FC = () => {
 
           <p className="mt-6 text-center text-sm text-gray-600">
             Bạn đã có tài khoản?{" "}
-            <Link
-              className="text-blue-500 font-medium hover:underline"
-              to="/login"
-            >
+            <Link className="text-blue-500 font-medium hover:underline" to="/login">
               Đăng nhập
             </Link>
           </p>

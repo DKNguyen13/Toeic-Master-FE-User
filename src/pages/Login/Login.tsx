@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import api, { setAccessToken } from "../../config/axios.js";
@@ -33,11 +32,13 @@ const Login: React.FC = () => {
       if (res.data.success) {
         const { user, accessToken } = res.data.data;
         setAccessToken(accessToken);
-        localStorage.setItem("fullName", user.fullName);
+        localStorage.setItem("fullname", user.fullname);
         localStorage.setItem("email", user.email);
         localStorage.setItem("phone", user.phone);
         localStorage.setItem("avatarUrl", user.avatarUrl);
         localStorage.setItem("role", user.role);
+        localStorage.setItem("userId", user.id);
+        window.dispatchEvent(new Event("userUpdated"));
 
         if (user.role === "admin") {
           navigate("/admin/dashboard");
@@ -60,11 +61,10 @@ const Login: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="flex max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Left Side */}
-        <div className="flex-1 p-10 bg-gradient-to-br from-blue-600 to-blue-800 text-white max-sm:hidden">
+        <div className="flex-1 p-10 bg-gradient-to-br from-blue-500 to-blue-800 text-white max-sm:hidden">
           <h2 className="text-3xl font-bold mb-4">TOEIC MASTER</h2>
           <p className="text-lg mb-6">Chinh phục TOEIC với lộ trình học tập chuyên sâu và bài thi chất lượng!</p>
-          <img
-            src="src/assets/images/ai-image.png"
+          <img src="src/assets/images/ai-image.png"
             alt="TOEIC Illustration"
             className="w-full max-w-sm mx-auto rounded-xl shadow-lg"
           />
@@ -85,8 +85,7 @@ const Login: React.FC = () => {
                 <label htmlFor="email" className="text-gray-700 text-sm font-medium block mb-2">
                   Email
                 </label>
-                <input
-                  type="email"
+                <input type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -104,10 +103,8 @@ const Login: React.FC = () => {
                   Mật khẩu
                 </label>
                 <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    value={password}
+                  <input type={showPassword ? "text" : "password"}
+                    id="password" value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Nhập mật khẩu"
                     className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 ${
@@ -115,11 +112,9 @@ const Login: React.FC = () => {
                     }`}
                     minLength={5}
                   />
-                  <button
-                    type="button"
+                  <button type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
-                  >
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition">
                     {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
                   </button>
                 </div>
@@ -131,9 +126,7 @@ const Login: React.FC = () => {
                 <label className="flex items-center text-sm text-gray-600">
                   <input type="checkbox" className="mr-2 accent-blue-500" /> Nhớ mật khẩu
                 </label>
-                <Link to="/forgot-password" className="text-sm text-blue-600 font-medium hover:underline">
-                  Quên mật khẩu?
-                </Link>
+                <Link to="/forgot-password" className="text-sm text-blue-600 font-medium hover:underline"></Link>
               </div>
 
               {/* Submit */}
@@ -142,8 +135,7 @@ const Login: React.FC = () => {
                 disabled={isLoading}
                 className={`w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center justify-center ${
                   isLoading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
-              >
+                }`}>
                 {isLoading ? (
                   <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -173,17 +165,21 @@ const Login: React.FC = () => {
                     if (res.data.success) {
                       const { user, accessToken } = res.data.data;
                       setAccessToken(accessToken);
-                      localStorage.setItem("fullName", user.fullName);
+                      localStorage.setItem("fullname", user.fullname);
                       localStorage.setItem("email", user.email);
                       localStorage.setItem("avatarUrl", user.avatarUrl);
+                      window.dispatchEvent(new Event("userUpdated"));
                       navigate("/");
                     }
-                  } catch (err) {
-                    console.error("Google login failed", err);
+                    else{
+                      setErrors({ general: res.data.message || "Đăng nhập Google thất bại" });
+                    }
+                  } catch (err : any) {
+                    setErrors({ general: err.response?.data?.message || "Lỗi kết nối server" });
                   }
                 }}
                 onError={() => {
-                  console.log("Google Login Failed");
+                  console.log("Đăng nhập Google thất bại");
                 }}
               />
             </div>
@@ -192,9 +188,7 @@ const Login: React.FC = () => {
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Bạn chưa có tài khoản?{" "}
-                <Link to="/register" className="text-blue-600 font-medium hover:underline">
-                  Đăng ký ngay
-                </Link>
+                <Link to="/register" className="text-blue-600 font-medium hover:underline">Đăng ký ngay</Link>
               </p>
             </div>
           </div>

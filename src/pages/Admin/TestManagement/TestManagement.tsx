@@ -1,92 +1,170 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import LeftSidebarAdmin from "../../../components/LeftSidebarAdmin";
 import { FaEllipsisH, FaTimes, FaUpload } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { getAllTest, getAllTestForAdmin, modifyTest } from "../../../service/testService";
+import Pagination from "../../../components/common/Pagination/Pagination";
+import { MoreHorizontal, Plus, HelpCircle, Edit2, Trash2, CheckCircle } from "lucide-react";
+interface Test {
+  title: string;
+  slug: string;
+  testCode: string;
+  category: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
+  statistics: {
+    totalAttempts: number;
+    averageScore: number;
+  };
+  limit?: number; // Giới hạn số test mỗi trang
+  showPagination?: boolean; // Ẩn/hiện phân trang
+}
+// Dropdown Component
+const ActionDropdown: React.FC<{
+  test: Test;
+  onNavigate: (path: string) => void;
+  onDeleteSuccess: () => void;
+}> = ({ test, onNavigate, onDeleteSuccess }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-const TestManagementPage: React.FC = () => {
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleAction = async (action: string) => {
+    setIsOpen(false);
+
+    switch (action) {
+      case "add-part":
+        onNavigate(`/admin/create-part?slug=${test.slug}`);
+        break;
+      case "add-questions":
+        onNavigate(`/admin/create-questions?slug=${test.slug}`);
+        break;
+      case "edit":
+        onNavigate(`/admin/edit-test/${test.slug}`);
+        break;
+      case "toggle-status":
+        if (
+          confirm(
+            `Bạn có chắc muốn ${
+              test.isActive ? "vô hiệu hóa" : "kích hoạt"
+            } đề thi "${test.title}"?`
+          )
+        ) {
+          console.log("Delete test:", test.slug);
+          await modifyTest(test.slug);
+          onDeleteSuccess();
+        }
+        break;
+    }
+  };
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="text-gray-500 hover:text-blue-600 transition p-2 rounded-lg hover:bg-gray-100"
+      >
+        <MoreHorizontal size={18} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 animate-fadeIn">
+          <button
+            onClick={() => handleAction("add-part")}
+            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition text-left text-gray-700 hover:text-blue-600"
+          >
+            <Plus className="text-blue-600" size={16} />
+            <span className="font-medium">Thêm Part mới</span>
+          </button>
+
+          <button
+            onClick={() => handleAction("add-questions")}
+            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-green-50 transition text-left text-gray-700 hover:text-green-600"
+          >
+            <HelpCircle className="text-green-600" size={16} />
+            <span className="font-medium">Thêm câu hỏi</span>
+          </button>
+
+          <div className="border-t border-gray-200 my-2"></div>
+
+          {/* <button
+            onClick={() => handleAction("edit")}
+            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-yellow-50 transition text-left text-gray-700 hover:text-yellow-600"
+          >
+            <Edit2 className="text-yellow-600" size={16} />
+            <span className="font-medium">Chỉnh sửa</span>
+          </button> */}
+
+          <button
+            onClick={() => handleAction("toggle-status")}
+            className={`w-full flex items-center gap-3 px-4 py-3 transition text-left font-medium
+            ${
+              test.isActive
+                ? "hover:bg-red-50 text-gray-700 hover:text-red-600"
+                : "hover:bg-green-50 text-gray-700 hover:text-green-600"
+            }`}
+          >
+            {test.isActive ? (
+              <>
+                <Trash2 className="text-red-600" size={16} />
+                <span>Vô hiệu hóa</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle className="text-green-600" size={16} />
+                <span>Kích hoạt</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+const TestManagementPage: React.FC<Test> = ({
+  limit = 10,
+  showPagination = true,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalTests, setTotalTests] = useState<number>(0);
+  const [selectedTestCode, setSelectedTestCode] = useState<string | null>(null);
 
-  const testsdata = [
-    {
-      id: "BT1",
-      name: "TOEIC Full Test 1",
-      type: "FULL TEST",
-      questions: 100,
-      time: "2h",
-      date: "20/03/2025",
-    },
-    {
-      id: "BT2",
-      name: "TOEIC Full Test 2",
-      type: "LISTENING",
-      questions: 100,
-      time: "2h",
-      date: "21/03/2025",
-    },
-    {
-      id: "BT3",
-      name: "TOEIC Full Test 3",
-      type: "READING",
-      questions: 100,
-      time: "2h",
-      date: "22/03/2025",
-    },
-    {
-      id: "BT4",
-      name: "TOEIC Full Test 4",
-      type: "FULL TEST",
-      questions: 100,
-      time: "2h",
-      date: "23/03/2025",
-    },
-    {
-      id: "BT5",
-      name: "TOEIC Listening Practice 1",
-      type: "LISTENING",
-      questions: 50,
-      time: "1h",
-      date: "24/03/2025",
-    },
-    {
-      id: "BT6",
-      name: "TOEIC Reading Practice 1",
-      type: "READING",
-      questions: 50,
-      time: "1h",
-      date: "25/03/2025",
-    },
-    {
-      id: "BT7",
-      name: "TOEIC Full Test 5",
-      type: "FULL TEST",
-      questions: 100,
-      time: "2h",
-      date: "26/03/2025",
-    },
-    {
-      id: "BT8",
-      name: "TOEIC Listening Practice 2",
-      type: "LISTENING",
-      questions: 50,
-      time: "1h",
-      date: "27/03/2025",
-    },
-    {
-      id: "BT9",
-      name: "TOEIC Reading Practice 2",
-      type: "READING",
-      questions: 50,
-      time: "1h",
-      date: "28/03/2025",
-    },
-    {
-      id: "BT10",
-      name: "TOEIC Full Test 6",
-      type: "FULL TEST",
-      questions: 100,
-      time: "2h",
-      date: "29/03/2025",
-    },
-  ];
+  const fetchTests = async () => {
+    const response = await getAllTestForAdmin(currentPage, 10);
+    setTests(response.tests || []);
+    setTotalTests(response.pagination?.totalTests || 0);
+  };
+
+  useEffect(() => {
+    fetchTests();
+  }, [currentPage]);
+
+  const navigate = useNavigate();
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -95,10 +173,13 @@ const TestManagementPage: React.FC = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Quản lý Đề thi</h1>
           <button
-            className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => handleNavigate("/admin/create-test")}
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-xl 
+                     hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 
+                     font-semibold flex items-center gap-2"
           >
-            Thêm đề thi mới
+            <Plus size={16} />
+            Tạo đề thi mới
           </button>
         </div>
 
@@ -108,49 +189,80 @@ const TestManagementPage: React.FC = () => {
             <thead>
               <tr className="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
                 <th className="py-3 px-4 text-left">ID</th>
-                <th className="py-3 px-4 text-left">Tên bài thi</th>
-                <th className="py-3 px-4 text-left">Loại bài thi</th>
-                <th className="py-3 px-4 text-center">Số câu hỏi</th>
-                <th className="py-3 px-4 text-center">Thời gian</th>
+                <th className="py-3 px-4 text-left">Tên đề thi</th>
+                <th className="py-3 px-4 text-center">Lượt làm</th>
+                {/* <th className="py-3 px-4 text-center">Điểm trung bình</th> */}
                 <th className="py-3 px-4 text-center">Ngày tạo</th>
+                <th className="py-3 px-4 text-center">Ngày cập nhật</th>
+                <th className="py-3 px-4 text-center">Trạng thái</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
             <tbody className="text-gray-600 text-sm">
-              {testsdata.map((exam, index) => (
+              {tests.map((test, index) => (
                 <tr
-                  key={exam.id}
+                  key={test.testCode}
                   className={`border-b hover:bg-gray-100 transition ${
                     index % 2 === 0 ? "bg-gray-50" : ""
                   }`}
                 >
-                  <td className="py-4 px-4">{exam.id}</td>
-                  <td className="py-4 px-4">{exam.name}</td>
                   <td className="py-4 px-4">
-                    <span
-                      className={`px-2 py-1 text-xs rounded-full font-semibold ${
-                        exam.type === "FULL TEST"
-                          ? "bg-blue-200 text-blue-800"
-                          : exam.type === "LISTENING"
-                          ? "bg-orange-200 text-orange-800"
-                          : "bg-yellow-200 text-yellow-800"
-                      }`}
-                    >
-                      {exam.type}
+                    <span className="font-mono text-blue-600 font-semibold">
+                      {test.testCode}
                     </span>
                   </td>
-                  <td className="py-4 px-4 text-center">{exam.questions}</td>
-                  <td className="py-4 px-4 text-center">{exam.time}</td>
-                  <td className="py-4 px-4 text-center">{exam.date}</td>
+                  <td className="py-4 px-4">
+                    <span className="font-medium text-gray-800">
+                      {test.title}
+                    </span>
+                  </td>
                   <td className="py-4 px-4 text-center">
-                    <button className="text-gray-500 hover:text-gray-700 transition">
-                      <FaEllipsisH size={18} />
-                    </button>
+                    <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+                      {test.statistics.totalAttempts.toLocaleString()}
+                    </span>
+                  </td>
+                  {/* <td className="py-4 px-4 text-center">
+                    <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+                      {test.statistics.averageScore}
+                    </span>
+                  </td> */}
+                  <td className="py-4 px-4 text-center">
+                    {new Date(test.createdAt).toLocaleDateString("vi-VN")}
+                  </td>
+                  <td className="py-4 px-4 text-center">
+                    {new Date(test.updatedAt).toLocaleDateString("vi-VN")}
+                  </td>
+                  <td className="py-4 px-4 text-center">
+                    <span
+                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold
+                              ${
+                                test.isActive
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-700"
+                              }`}
+                    >
+                      {test.isActive === true ? "Active" : "Inactive"}
+                    </span>
+                  </td>
+                  <td className="py-4 px-4 text-center relative">
+                    <ActionDropdown
+                      test={test}
+                      onNavigate={handleNavigate}
+                      onDeleteSuccess={fetchTests}
+                    />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          {showPagination && totalTests > limit && (
+            <Pagination
+              totalItems={totalTests}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              itemsPerPage={limit}
+            />
+          )}
         </div>
       </div>
 

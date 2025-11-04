@@ -1,45 +1,113 @@
-import React from "react";
+import api, { isLoggedIn } from "../../config/axios";
+import { useParams } from "react-router-dom";
+import { FaEye, FaHeart } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import LoginModal from "../../layouts/common/LoginModal";
 
-const NewsArticle: React.FC = () => {
-  const htmlContent = `
-    <h1>Learn English: Improve Your Skills</h1>
-    <div>
-      <p>
-        Learning English can open doors to numerous opportunities, both personally and professionally. In this
-        article, we’ll explore tips and techniques to improve your English proficiency.
-      </p>
-      <h2>Vocabulary Building</h2>
-      <p>
-        Expanding your vocabulary is essential for speaking and writing fluently. You can start by learning 5 new words
-        every day and using them in sentences to reinforce your memory.
-      </p>
-      <h2>Listening Practice</h2>
-      <p>
-        Listening to English podcasts, audiobooks, or watching English TV shows and movies will improve your listening
-        skills and expose you to different accents and speech patterns.
-      </p>
-      <h2>Speaking Exercises</h2>
-      <p>
-        Regularly practicing speaking is crucial. You can do this by finding a language partner or using language apps to
-        practice speaking and get feedback on your pronunciation.
-      </p>
-      <h2>Writing Tips</h2>
-      <p>
-        Writing regularly in English will improve your grammar and sentence structure. Start by writing short essays or
-        daily journals.
-      </p>
-    </div>
-    <footer>
-      <p>Article by English Learning Hub | 23/03/2025</p>
-    </footer>
-  `;
+const LessonDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const [lesson, setLesson] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [showLogin, setShowLoginModal] = useState(!isLoggedIn());
+
+  // State favorite
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteCount, setFavoriteCount] = useState(0);
+
+  // Fetch lesson detail
+  useEffect(() => {
+    const fetchLesson = async () => {
+      try {
+        const endpoint = isLoggedIn() ? `/lessons/${id}` : `/lessons/public/${id}`;
+        const res = await api.get(endpoint);
+        const data = res.data.data;
+        setLesson(data);
+
+        // Set favorite từ API
+        setIsFavorite(data.isFavorite || false);
+        setFavoriteCount(data.favoriteCount || 0);
+      } catch (err : any) {
+        if (err.response?.status === 403) {
+        setLesson({
+          title: "Nâng cấp tài khoản để xem bài học này",
+          content: `<p class='text-center text-red-500 font-semibold'>
+            Bài học này chỉ dành cho tài khoản VIP.<br/>
+            Vui lòng <a href="/payment" class="text-blue-600 underline hover:text-blue-800 transition">
+            nhấn vào đây để nâng cấp </a>🎓
+          </p>`
+        });
+      } else {
+        setLesson(null);
+      }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLesson();
+  }, [id]);
+
+  // Toggle favorite
+  const handleToggleFavorite = async () => {
+    if (!lesson) return;
+    if (!isLoggedIn()) {
+      setShowLoginModal(true);
+      return;
+    }
+    try {
+      const res = await api.patch("/wishlist/toggle", { lessonId: lesson._id });
+      setIsFavorite(res.data.data.isFavorite);
+      setFavoriteCount(prev => prev + (res.data.data.isFavorite ? 1 : -1));
+    } catch (err) {
+      console.error("Lỗi khi cập nhật wishlist:", err);
+    }
+  };
+
+  if (loading) return <p className="p-4">Đang tải dữ liệu...</p>;
+  if (!lesson) return <p className="p-4">Không tìm thấy bài học</p>;
 
   return (
     <div className="max-w-4xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-lg">
-      {/* Áp dụng class CSS cho nội dung */}
-      <div className="article-content" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      <h1 className="text-3xl font-bold mb-10 text-center">{lesson.title}</h1>
+
+      <div className="flex items-center gap-6 text-gray-600 mb-6">
+        {/* Views */}
+        <div className="flex items-center gap-2">
+          <FaEye className="text-gray-400" />
+          <span>{lesson.views || 0} lượt xem</span>
+        </div>
+
+        {/* Favorite */}
+        <div className="flex items-center gap-2 cursor-pointer select-none"
+          onClick = { handleToggleFavorite }>
+          <FaHeart className = { isFavorite ? "text-red-500" : "text-gray-400"} />
+          <span>{favoriteCount} yêu thích</span>
+        </div>
+
+        {/* Type */}
+        <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm">
+          {lesson.type}
+        </span>
+      </div>
+
+      {/* Render nội dung bài học */}
+      <div
+        className="article-content prose"
+        dangerouslySetInnerHTML={{ __html: lesson.content }}
+      />
+      {showLogin && (
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => {
+          setShowLoginModal(false)
+          setTimeout(() => setShowLoginModal(true), 100);
+        }}
+        onSuccess={() => {
+          setShowLoginModal(false);        }}
+      />
+    )}
     </div>
   );
 };
 
-export default NewsArticle;
+export default LessonDetailPage;

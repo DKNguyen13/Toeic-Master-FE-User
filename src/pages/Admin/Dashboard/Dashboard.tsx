@@ -1,132 +1,172 @@
-import React from "react";
-import { FaUsers, FaFileAlt, FaChartLine } from "react-icons/fa";
+import api from "../../../config/axios";
+import { Line } from "react-chartjs-2";
+import React, { useEffect, useState } from "react";
 import { MdOutlineCloudDone } from "react-icons/md";
-import { Line } from "react-chartjs-2"; // Biểu đồ (có thể sử dụng chart.js)
+import { FaUsers, FaFileAlt, FaChartLine } from "react-icons/fa";
 import LeftSidebarAdmin from "../../../components/LeftSidebarAdmin";
+import { Chart as ChartJS, CategoryScale, LinearScale, ArcElement, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 
-// Dữ liệu mẫu cho biểu đồ
-const data = {
-	labels: [
-		"5k",
-		"10k",
-		"15k",
-		"20k",
-		"25k",
-		"30k",
-		"35k",
-		"40k",
-		"45k",
-		"50k",
-		"55k",
-		"60k",
-	],
-	datasets: [
-		{
-			label: "Doanh thu",
-			data: [50, 55, 60, 63, 64, 50, 52, 56, 58, 54, 59, 60],
-			borderColor: "#4A90E2",
-			fill: false,
-			tension: 0.1,
-		},
-	],
-};
-
-const options = {
-	responsive: true,
-	scales: {
-		x: {
-			title: {
-				display: true,
-				text: "Người dùng", // Đặt tên cho trục X
-			},
-			ticks: {
-				autoSkip: true,
-				maxTicksLimit: 6, // Giới hạn số lượng nhãn trên trục X
-			},
-		},
-		y: {
-			title: {
-				display: true,
-				text: "Doanh thu (%)", // Đặt tên cho trục Y
-			},
-			beginAtZero: true, // Đảm bảo trục Y bắt đầu từ 0
-		},
-	},
-};
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const DashboardPage: React.FC = () => {
-	return (
-		<div className="min-h-screen flex bg-gray-50">
-			{/* Left Sidebar */}
-			<LeftSidebarAdmin customHeight="h-auto w-64" />
+  const [revenueData, setRevenueData] = useState<any[]>([]);
+  const [totalRevenue, setTotalRevenue] = useState<number>(0);
+  const [growth, setGrowth] = useState<number>(0);
+  const [selectedYear, setSelectedYear] = useState<number>(
+    new Date().getFullYear()
+  );
 
-			{/* Main Content */}
-			<div className="flex-1 p-8">
-				<h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+  const fetchRevenue = async (year: number) => {
+    try {
+      const res = await api.get(`/admin/revenue-stats?type=month&year=${year}`);
+      const data = res.data.data || [];
 
-				{/* Tổng quan */}
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-					{/* Card 1 - Số người dùng */}
-					<div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
-						<div>
-							<h2 className="text-xl font-semibold text-gray-700">
-								Tổng số người dùng
-							</h2>
-							<p className="text-2xl font-bold text-gray-800">40,689</p>
-							<p className="text-green-600">+8.5% so với Hôm qua</p>
-						</div>
-						<FaUsers className="text-blue-600 text-4xl" />
-					</div>
+      setRevenueData(data);
 
-					{/* Card 2 - Số bài thi */}
-					<div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
-						<div>
-							<h2 className="text-xl font-semibold text-gray-700">
-								Tổng số bài thi đã làm
-							</h2>
-							<p className="text-2xl font-bold text-gray-800">10,293</p>
-							<p className="text-green-600">+1.3% so với Tuần trước</p>
-						</div>
-						<FaFileAlt className="text-orange-600 text-4xl" />
-					</div>
+      const total = data.reduce(
+        (sum: number, item: any) => sum + item.totalRevenue,
+        0
+      );
+      setTotalRevenue(total);
 
-					{/* Card 3 - Doanh thu */}
-					<div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
-						<div>
-							<h2 className="text-xl font-semibold text-gray-700">
-								Tổng doanh thu
-							</h2>
-							<p className="text-2xl font-bold text-gray-800">
-								89,000,000
-							</p>
-							<p className="text-green-600">+4.3% So với Hôm qua</p>
-						</div>
-						<FaChartLine className="text-green-600 text-4xl" />
-					</div>
+      // Tính % tăng trưởng so với tháng trước
+      if (data.length > 1) {
+        const current = data[data.length - 1]?.totalRevenue || 0;
+        const prev = data[data.length - 2]?.totalRevenue || 0;
+        const g = prev > 0 ? ((current - prev) / prev) * 100 : 0;
+        setGrowth(g);
+      } else {
+        setGrowth(0);
+      }
+    } catch (err) {
+      console.error("Lỗi khi load revenue:", err);
+    }
+  };
 
-					{/* Card 4 - Tỷ lệ hoàn thành bài */}
-					<div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
-						<div>
-							<h2 className="text-xl font-semibold text-gray-700">
-								Tỷ lệ hoàn thành bài
-							</h2>
-							<p className="text-2xl font-bold text-gray-800">80%</p>
-							<p className="text-green-600">+1.8% So với Hôm qua</p>
-						</div>
-						<MdOutlineCloudDone className="text-red-600 text-4xl" />
-					</div>
-				</div>
+  useEffect(() => {
+    fetchRevenue(selectedYear);
+  }, [selectedYear]);
 
-				{/* Biểu đồ doanh thu */}
-				<div className="bg-white p-6 rounded-lg shadow mb-8">
-					<h2 className="text-xl font-semibold text-gray-800 mb-4">
-						Chi tiết doanh thu
-					</h2>
-					<Line data={data} options={options} />
-				</div>
-			</div>
-		</div>
-	);
+  // Labels là các tháng
+  const labels = Array.from({ length: 12 }, (_, i) => `Tháng ${i + 1}`);
+
+    const dataByMonth = labels.map((label, index) => {
+    const monthNumber = index + 1;
+    const monthData = revenueData.find((item) => item.month === monthNumber);
+    return monthData ? monthData.totalRevenue : 0;
+  });
+
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: `Doanh thu năm ${selectedYear} (VND)`,
+        data: dataByMonth,
+        borderColor: "#4A90E2",
+        fill: false,
+        tension: 0.1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: { display: true },
+    },
+    scales: {
+      x: {
+        title: { display: true, text: "Tháng" },
+      },
+      y: {
+        title: { display: true, text: "Doanh thu (VND)" },
+        beginAtZero: true,
+      },
+    },
+  };
+
+  const years = [2023, 2024, 2025, 2026];
+
+  return (
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Left Sidebar */}
+      <LeftSidebarAdmin customHeight="h-auto w-64" />
+
+      {/* Main Content */}
+      <div className="flex-1 p-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* Card 1 */}
+          <div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-700">Tổng số người dùng</h2>
+              <p className="text-2xl font-bold text-gray-800">8</p>
+              <p className="text-green-600">+0% so với hôm qua</p>
+            </div>
+            <FaUsers className="text-blue-600 text-4xl" />
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-700">
+                Tổng số bài thi đã làm
+              </h2>
+              <p className="text-2xl font-bold text-gray-800">10</p>
+              <p className="text-green-600">+1.3% so với tuần trước</p>
+            </div>
+            <FaFileAlt className="text-orange-600 text-4xl" />
+          </div>
+
+          {/* Card 3 - Doanh thu */}
+          <div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-700">Tổng doanh thu năm {selectedYear}</h2>
+            <p className="text-2xl font-bold text-gray-800">{totalRevenue.toLocaleString("vi-VN")} đ</p>
+            <p className="text-green-600">Doanh thu chi tiết theo tháng bên dưới</p>
+          </div>
+          <FaChartLine className="text-green-600 text-4xl" />
+          </div>
+
+          {/* Card 4 */}
+          <div className="bg-white p-6 rounded-lg shadow flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-700">Tỷ lệ hoàn thành bài</h2>
+              <p className="text-2xl font-bold text-gray-800">80%</p>
+              <p className="text-green-600">+1.8% so với hôm qua</p>
+            </div>
+            <MdOutlineCloudDone className="text-red-600 text-4xl" />
+          </div>
+        </div>
+
+        {/* Biểu đồ doanh thu */}
+        <div className="bg-white p-6 rounded-lg shadow mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">Chi tiết doanh thu theo tháng</h2>
+            {/* Dropdown chọn năm */}
+            <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="border rounded px-3 py-2">
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+          <Line data={chartData} options={options} />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default DashboardPage;

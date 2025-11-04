@@ -6,15 +6,16 @@ class MessageParser {
     }
 
     parse(message) {
-        const lowercasedMessage = message.toLowerCase();
+        // const lowercasedMessage = message.toLowerCase();
 
-        if (lowercasedMessage.includes("hello") || lowercasedMessage.includes("hi")) {
-            this.actionProvider.greet();
-        } else if (lowercasedMessage.includes("help")) {
-            this.actionProvider.provideHelp();
-        } else {
-            this.actionProvider.unknownMessage();
-        }
+        // if (lowercasedMessage.includes("hello") || lowercasedMessage.includes("hi")) {
+        //     this.actionProvider.greet();
+        // } else if (lowercasedMessage.includes("help")) {
+        //     this.actionProvider.provideHelp();
+        // } else {
+        //     this.actionProvider.unknownMessage();
+        // }
+        this.actionProvider.handleSendMessage(message);
     }
 }
 

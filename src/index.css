@@ -18,24 +18,23 @@
 /* App.css */
 
 .article-content h1 {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #2563eb; /* Blue color */
-  }
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2563eb; /* Blue color */
+}
   
-  .article-content h2 {
-    font-size: 1.25rem;
-    font-weight: semi-bold;
-    margin-bottom: 0.5rem;
-  }
-  
-  .article-content p {
-    color: #4b5563; /* Gray color */
-    margin-bottom: 1rem;
-  }
-  
-  .article-content footer {
-    text-align: center;
-    color: #6b7280; /* Gray color */
-  }
-  
+.article-content h2 {
+  font-size: 1.25rem;
+  font-weight: semi-bold;
+  margin-bottom: 0.5rem;
+}
+
+.article-content p {
+  color: #4b5563; /* Gray color */
+  margin-bottom: 1rem;
+}
+
+.article-content footer {
+  text-align: center;
+  color: #6b7280; /* Gray color */
+}

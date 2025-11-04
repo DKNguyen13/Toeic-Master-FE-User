@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ExamCard from "../Home/component/ExamCard";
-import { getExam, addToWishList } from "../../service/examService.js";
 
 interface Exam {
   _id: string;
@@ -33,11 +32,11 @@ export const Practice = () => {
 
   const fetchExams = async () => {
     try {
-      setLoading(true);
-      const data: ApiResponse = await getExam(sortBy, page, limit);
-      setExamData(data.items || []);
-      setTotalItems(data.total || 0);
-      setError(null);
+      // setLoading(true);
+      // const data: ApiResponse = await getExam(sortBy, page, limit);
+      // setExamData(data.items || []);
+      // setTotalItems(data.total || 0);
+      // setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Error fetching exams:', err);
@@ -64,7 +63,7 @@ export const Practice = () => {
       if (isCurrentlyInWishlist) {
         // await removeFromWishlist(examId);
       } else {
-        await addToWishList(examId);
+        //await addToWishList(examId);
       }
       
       console.log(`${isCurrentlyInWishlist ? 'Removed from' : 'Added to'} wishlist: ${examId}`);

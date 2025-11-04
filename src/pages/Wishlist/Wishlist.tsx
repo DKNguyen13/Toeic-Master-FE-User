@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import ExamCard from "../Home/component/ExamCard";
-import { getWishList } from "../../service/examService.js";
 import LeftSidebarUser from "../../components/LeftSideBarUser";
 
 interface Exam {
@@ -34,11 +33,11 @@ export const Wishlist = () => {
   const fetchWishlist = async () => {
     try {
       setLoading(true);
-      const data: any = await getWishList();
-      console.log(data);
-      setExamData(data.data || []);
-      setTotalItems(data.data || 0);
-      setError(null);
+      //const data: any = await getWishList();
+      // console.log(data);
+      // setExamData(data.data || []);
+      // setTotalItems(data.data || 0);
+      // setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       console.error('Error fetching wishlist:', err);

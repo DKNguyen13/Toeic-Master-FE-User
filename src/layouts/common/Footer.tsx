@@ -1,11 +1,4 @@
-import {
-  CiFacebook,
-  CiInstagram,
-  CiLocationOn,
-  CiMail,
-  CiPhone,
-  CiYoutube,
-} from "react-icons/ci";
+import { CiFacebook, CiInstagram, CiLocationOn, CiMail, CiPhone, CiYoutube } from "react-icons/ci";
 
 const Footer = () => {
   return (
@@ -42,6 +35,7 @@ const Footer = () => {
                 <CiInstagram size={24} />
               </a>
             </div>
+            
           </div>
 
           {/* Contact Section */}
@@ -91,7 +85,7 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-300">
-          <p>&copy; {new Date().getFullYear()} TOEIC Prep. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} TOEIC MASTER. All Rights Reserved.</p>
           <div className="mt-4 md:mt-0 flex space-x-6">
             <a href="#" className="hover:text-white transition-colors duration-300">
               Về chúng tôi

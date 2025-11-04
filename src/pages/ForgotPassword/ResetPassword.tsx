@@ -7,7 +7,7 @@ const ResetPassword: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const { token } = useParams<{ token: string }>(); // Lấy token từ URL (để xác thực yêu cầu reset)
+  const { token } = useParams<{ token: string }>(); // Lấy token từ URL
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

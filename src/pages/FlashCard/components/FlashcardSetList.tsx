@@ -1,7 +1,7 @@
 import api from "../../../config/axios";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
 import LoginModal from "../../../layouts/common/LoginModal";
 
 export interface FlashcardSet {
@@ -38,7 +38,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           : await api.get("/flashcard-set/free");
       setSets(res.data.data as FlashcardSet[]);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể tải bộ flashcard!");
+      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error");         
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     }
 
     if (!form.name) {
-      toast.warn("Nhập tên bộ flashcard!");
+      showToast("Nhập tên bộ flashcard!", "warn");
       return;
     }
     try {
@@ -59,9 +59,9 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       setSets((prev) => [...prev, res.data.data]);
       setShowModal(false);
       setForm({ name: "", description: "" });
-      toast.success("Thêm bộ flashcard thành công!");
+      showToast("Thêm bộ flashcard thành công!", "success");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Lỗi khi tạo bộ flashcard!");
+      showToast(err.response?.data?.message || "Lỗi khi tạo bộ flashcard!", "error");
     }
   };
 
@@ -71,9 +71,9 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     try {
       await api.delete(`/flashcard-set/${id}`);
       setSets((prev) => prev.filter((s) => s._id !== id));
-      toast.success("Đã xóa bộ flashcard thành công!");
+      showToast("Nhập tên bộ flashcard!", "warn");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể xóa bộ flashcard!");
+      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error");
     }
   };
 
@@ -117,16 +117,14 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {/* Add Button */}
             {type === "myList" && (
-              <div 
-                onClick={() => {
+              <div onClick={() => {
                   if (!isLoggedIn) {
                     setShowLoginModal(true);
                   } else {
                     setShowModal(true);
                   }
                 }}
-                className="group border-3 border-dashed border-blue-400 rounded-2xl flex flex-col justify-center items-center h-56 bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 cursor-pointer transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105"
-              >
+                className="group border-3 border-dashed border-blue-400 rounded-2xl flex flex-col justify-center items-center h-56 bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 cursor-pointer transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
                   <span className="text-4xl font-bold text-blue-500">+</span>
                 </div>
@@ -140,11 +138,9 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
             {/* Flashcard Sets */}
             {sets.length > 0 ? (
               sets.map((set) => (
-                <div 
-                  key={set._id}
+                <div  key={set._id}
                   onClick={() => handleSetClick(set._id)}
-                  className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 h-56 flex flex-col justify-between cursor-pointer transform hover:scale-105 border border-gray-100 hover:border-blue-300 overflow-hidden"
-                >
+                  className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 h-56 flex flex-col justify-between cursor-pointer transform hover:scale-105 border border-gray-100 hover:border-blue-300 overflow-hidden">
                   {/* Gradient Background Effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   
@@ -277,17 +273,6 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           </div>
         </div>
       )}
-
-      <ToastContainer 
-        position="top-right" 
-        autoClose={3000} 
-        hideProgressBar={false}
-        newestOnTop 
-        closeOnClick 
-        pauseOnHover
-        theme="light"
-      />
-      
       {/* Modal đăng nhập */}
       <LoginModal 
         isOpen={showLoginModal}

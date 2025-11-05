@@ -1,10 +1,19 @@
 import api, { isLoggedIn } from "../../config/axios.js";
-import { GiBrain } from "react-icons/gi";
-import { FaComments } from "react-icons/fa";
-import { IoPlayForward } from "react-icons/io5";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LoginModal from "../../layouts/common/LoginModal";
+import { 
+  Crown, 
+  Check, 
+  Sparkles, 
+  BookOpen, 
+  Target, 
+  MessageCircle,
+  Zap,
+  Star,
+  AlertCircle,
+  X
+} from "lucide-react";
 
 interface Package {
   _id: string;
@@ -45,7 +54,7 @@ const PaymentPage: React.FC = () => {
     try {
       const res = await api.post("/payment/create", { packageId: pkgId });
       if (res.data.paymentUrl) {
-        window.location.href = res.data.paymentUrl; // redirect sang VNPay
+        window.location.href = res.data.paymentUrl;
       }
     } catch (err: any) {
       console.error("Payment error", err);
@@ -70,137 +79,235 @@ const PaymentPage: React.FC = () => {
     return Math.round(((original - discounted) / original) * 100);
   };
 
+  // Tìm gói phổ biến nhất (2 tháng)
+  const isPopular = (months: number) => months === 2;
+
   return (
     <>
-    <div className="min-h-screen flex flex-col items-center pt-5">
-      <div className="max-w-5xl w-full mt-10 bg-white shadow-lg rounded-lg p-6">
-        {/* Header */}
-        <div className="text-center pb-10">
-          <span className="text-[#1c1c1c] text-[40px] font-bold font-josefin-sans">
-            Trải nghiệm học tập không giới hạn cùng gói{" "}
-          </span>
-          <span className="text-[#3364e1] text-[40px] font-bold font-josefin-sans">
-            Premium
-          </span>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-full mb-4 shadow-lg">
+              <Crown size={18} fill="white" />
+              <span className="font-semibold text-sm">Nâng cấp Premium</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Trải nghiệm học tập{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                không giới hạn
+              </span>
+            </h1>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Chọn gói phù hợp với mục tiêu học tập của bạn
+            </p>
+          </div>
+
+          {/* Pricing Cards */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+              <p className="text-gray-600 mt-4">Đang tải gói dịch vụ...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              {packages.map((pkg) => {
+                const discountPercent = getDiscountPercent(
+                  pkg.originalPrice,
+                  pkg.discountedPrice
+                );
+                const popular = isPopular(pkg.durationMonths);
+
+                return (
+                  <div
+                    key={pkg._id}
+                    className={`relative bg-white rounded-2xl transition-all duration-300 ${
+                      popular
+                        ? "shadow-2xl scale-105 border-2 border-blue-500"
+                        : "shadow-lg hover:shadow-xl hover:scale-105 border border-gray-200"
+                    }`}
+                  >
+                    {/* Popular Badge */}
+                    {popular && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1 shadow-lg">
+                          <Star size={14} fill="white" />
+                          Phổ biến nhất
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-8">
+                      {/* Duration */}
+                      <div className="text-center mb-6">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-4 shadow-lg">
+                          <span className="text-2xl font-bold text-white">
+                            {pkg.durationMonths}
+                          </span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                          {pkg.durationMonths} tháng
+                        </h3>
+                        {pkg.description && (
+                          <p className="text-sm text-gray-600">{pkg.description}</p>
+                        )}
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="text-center mb-6 pb-6 border-b border-gray-200">
+                        {discountPercent && (
+                          <div className="inline-block bg-green-100 text-green-700 text-sm font-bold px-3 py-1 rounded-full mb-3">
+                            Tiết kiệm {discountPercent}%
+                          </div>
+                        )}
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <span className="text-gray-400 line-through text-lg">
+                            {pkg.originalPrice.toLocaleString()}đ
+                          </span>
+                        </div>
+                        <div className="flex items-baseline justify-center gap-1">
+                          <span className="text-4xl font-bold text-gray-900">
+                            {pkg.discountedPrice.toLocaleString()}
+                          </span>
+                          <span className="text-gray-600">đ/tháng</span>
+                        </div>
+                      </div>
+
+                      {/* Features */}
+                      <div className="space-y-3 mb-8">
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                            <Check className="text-blue-600" size={14} strokeWidth={3} />
+                          </div>
+                          <span className="text-gray-700 text-sm">
+                            Truy cập toàn bộ bài học
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                            <Check className="text-blue-600" size={14} strokeWidth={3} />
+                          </div>
+                          <span className="text-gray-700 text-sm">
+                            Công cụ luyện tập cá nhân hóa
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                            <Check className="text-blue-600" size={14} strokeWidth={3} />
+                          </div>
+                          <span className="text-gray-700 text-sm">
+                            Hỗ trợ 24/7
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* CTA Button */}
+                      <button
+                        onClick={() => handleBuy(pkg._id)}
+                        className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
+                          popular
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
+                            : "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg"
+                        }`}
+                      >
+                        Đăng ký ngay
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Features Section */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8 md:p-12">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">
+                Tại sao chọn Premium?
+              </h2>
+              <p className="text-gray-600">
+                Những lợi ích vượt trội khi nâng cấp tài khoản
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Feature 1 */}
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mb-4 shadow-lg">
+                  <BookOpen className="text-white" size={28} />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Truy cập không giới hạn
+                </h3>
+                <p className="text-gray-600">
+                  Học mọi lúc, mọi nơi với kho bài học đầy đủ và được cập nhật liên tục
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl mb-4 shadow-lg">
+                  <Target className="text-white" size={28} />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Luyện tập cá nhân hóa
+                </h3>
+                <p className="text-gray-600">
+                  Công cụ luyện tập thông minh giúp bạn tiến bộ nhanh chóng
+                </p>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl mb-4 shadow-lg">
+                  <MessageCircle className="text-white" size={28} />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Hỗ trợ 24/7
+                </h3>
+                <p className="text-gray-600">
+                  Nhận phản hồi nhanh chóng và cải thiện kỹ năng hiệu quả
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Payment Options */}
-        {loading ? (
-          <p className="text-center">Đang tải gói dịch vụ...</p>
-        ) : (
-          <div className="grid grid-cols-3 gap-6 mb-6 pb-6">
-            {packages.map((pkg) => {
-              const discountPercent = getDiscountPercent(
-                pkg.originalPrice,
-                pkg.discountedPrice
-              );
-              return (
-                <div key={pkg._id}
-                  className={`
-                    p-6 flex flex-col justify-between rounded-lg transition-all duration-300 transform
-                    ${ pkg.durationMonths === 2
-                        ? "bg-blue-50 border border-blue-500 shadow-md hover:shadow-xl hover:-translate-y-2 hover:bg-blue-100"
-                        : "bg-gray-100 border border-gray-400 hover:shadow-lg hover:-translate-y-1 hover:bg-gray-200"
-                    }
-                  `}>
-                  {/* Package Info */}
-                  <div className="mb-4 text-center">
-                    <h3 className="text-xl font-semibold text-red-600">
-                      {pkg.durationMonths} tháng
-                    </h3>
-                    <p className="text-lg text-gray-700 line-through">
-                      {pkg.originalPrice.toLocaleString()}đ/tháng
-                    </p>
-                    <p className="text-xl font-semibold text-blue-600">
-                      {pkg.discountedPrice.toLocaleString()}đ/tháng
-                    </p>
-                    {discountPercent && (
-                      <span className="bg-green-100 text-green-700 text-sm font-semibold px-2 py-1 rounded-md">
-                        -{discountPercent}%
-                      </span>
-                    )}
-                    {pkg.description && (
-                      <p className="text-sm text-gray-600 mt-2 italic">
-                        {pkg.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Button */}
-                  <button onClick={() => handleBuy(pkg._id)}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-md w-full text-center mt-auto
-                               hover:bg-blue-700 hover:scale-105 transition-transform duration-300">
-                    Đăng ký ngay
-                  </button>
+        {/* Error Popup */}
+        {popupMessage && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="text-red-600" size={20} />
                 </div>
-              );
-            })}
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1">Thông báo</h3>
+                  <p className="text-gray-600 text-sm">{popupMessage}</p>
+                </div>
+                <button
+                  onClick={() => setPopupMessage(null)}
+                  className="flex-shrink-0 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <button
+                onClick={() => setPopupMessage(null)}
+                className="w-full py-2.5 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         )}
-
-        {/* Static Feature Section */}
-        <div className="p-6 rounded-lg shadow-md max-w-md mx-auto">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-            Học tập hiệu quả hơn
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-start space-x-4">
-              <IoPlayForward className="text-green-500 text-2xl" />
-              <div>
-                <p className="font-medium text-gray-800">
-                  Truy cập toàn bộ bài học
-                </p>
-                <p className="text-sm text-gray-600">
-                  Học mọi lúc, mọi nơi với kho bài học đầy đủ.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <GiBrain className="text-pink-500 text-2xl" />
-              <div>
-                <p className="font-medium text-gray-800">
-                  Công cụ luyện tập toàn diện
-                </p>
-                <p className="text-sm text-gray-600">
-                  Luyện tập hiệu quả với các bài tập được cá nhân hóa.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <FaComments className="text-blue-500 text-2xl" />
-              <div>
-                <p className="font-medium text-gray-800">
-                  Nhận phản hồi nhanh chóng
-                </p>
-                <p className="text-sm text-gray-600">
-                  Học hiệu quả và cải thiện kỹ năng nhanh chóng.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* Popup Message */}
-      {popupMessage && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm mx-auto shadow-lg text-center">
-            <p className="text-gray-800 mb-4">{popupMessage}</p>
-            <button onClick={() => setPopupMessage(null)}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 hover:scale-105 transition-transform duration-300">
-              Đóng
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-    <LoginModal
-      isOpen={showLoginModal}
-      onClose={() => setShowLoginModal(false)}
-      onSuccess={() => window.location.reload()}
-    />
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => window.location.reload()}
+      />
     </>
   );
 };

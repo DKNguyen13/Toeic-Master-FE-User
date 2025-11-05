@@ -6,14 +6,14 @@ const LoadingSkeleton: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-150 relative overflow-hidden">
       {/* Floating particles */}
-      <div className="absolute inset-0">
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
             className="absolute w-2 h-2 bg-gradient-to-r from-blue-300 via-blue-400 to-blue-500 rounded-full opacity-40 shadow-md"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}vw`,
+              top: `${Math.random() * 100}vh`,
             }}
             animate={{
               y: [0, -30, 0],
@@ -77,7 +77,7 @@ const LoadingSkeleton: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-center font-bold text-2xl tracking-wide mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent"
+          className="text-center font-bold text-lg tracking-wide mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent"
         >
           <motion.span
             animate={{ scale: [1, 1.08, 1] }}

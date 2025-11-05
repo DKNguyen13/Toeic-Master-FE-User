@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import api, { setAccessToken } from "../../config/axios";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Eye, EyeOff } from "lucide-react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -118,11 +118,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
-                {showPassword ? (
-                  <AiOutlineEyeInvisible size={20} />
-                ) : (
-                  <AiOutlineEye size={20} />
-                )}
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
               </button>
             </div>
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}

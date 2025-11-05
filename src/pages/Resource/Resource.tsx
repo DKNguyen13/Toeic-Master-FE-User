@@ -69,11 +69,11 @@ const ResourcePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start justify-center px-4 lg:px-8">
         <div className="container mx-auto py-8">
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Sidebar */}
-            <aside className="lg:w-80 -ml-10 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-gray-200/50 transition-all duration-300 hover:shadow-2xl">
+            <aside className="lg:w-80 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-gray-200/50 transition-all duration-300 hover:shadow-2xl">
               {/* Search Box */}
               <div className="mb-6 relative">
                 <input type="text"

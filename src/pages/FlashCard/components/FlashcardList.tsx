@@ -4,6 +4,7 @@ import FlashcardItem from "./FlashcardItem";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLocation } from "react-router-dom";
+import { showToast } from "../../../utils/toast";
 
 export interface Flashcard {
   _id?: string;
@@ -46,7 +47,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
       const res = await api.get(url, { params: { set: setId } });
       setFlashcards(res.data.data || []);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể tải flashcard!");
+      showToast(err.response?.data?.message || "Không thể tải flashcard!", "error");
     } finally {
       setLoading(false);
     }
@@ -64,9 +65,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
       setFlashcards((prev) => [...prev, res.data.data]);
       setShowModal(false);
       setForm({ word: "", meaning: "", example: "", note: "" });
-      toast.success("Thêm flashcard thành công!");
+      showToast("Thêm flashcard thành công!", "success");
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Lỗi khi tạo flashcard!");
+      showToast(err.response?.data?.message || "Lỗi khi tạo flashcard!", "error");
     }
   };
 
@@ -74,10 +75,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
     try {
       await api.delete(`/flashcard/${id}`);
       setFlashcards((prev) => prev.filter((f) => f._id !== id));
-      toast.success("Đã xóa flashcard thành công!");
+      showToast("Đã xóa flashcard thành công!", "success");
       if (randomIndex >= flashcards.length - 1) setRandomIndex(0);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Không thể xóa flashcard!");
+      showToast(err.response?.data?.message || "Không thể xóa flashcard!", "error");
     }
   };
 
@@ -433,19 +434,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
             </div>
           </div>
         )}
-
-        <ToastContainer 
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
       </div>
     </div>
   );

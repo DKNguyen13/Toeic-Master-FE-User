@@ -1,45 +1,36 @@
 import { format } from "date-fns";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import api from "../../config/axios.js";
+import { Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
+import React, { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Mail, Lock, Eye, EyeOff, User, Calendar, Phone, Send, CheckCircle2, XCircle } from "lucide-react";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState<Date | null>(null);
   const [phone, setPhone] = useState("");
-  const [phoneError, setPhoneError] = useState("");
+  const [fullname, setFullname] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [fullname, setFullname] = useState("");
-  const [nameError, setNameError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [serverError, setServerError] = useState("");
-  const [dobError, setDobError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(0);
-  const [otpMessage, setOtpMessage] = useState<{
-    type: "error" | "success";
-    text: string;
-  } | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [otpMessage, setOtpMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [serverError, setServerError] = useState("");
 
-  // Check tuổi >= 16
   const isValidAge = (date: Date | null) => {
     if (!date) return false;
     const today = new Date();
     let age = today.getFullYear() - date.getFullYear();
     const m = today.getMonth() - date.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
-      age--;
-    }
+    if (m < 0 || (m === 0 && today.getDate() < date.getDate())) age--;
     return age >= 16;
   };
 
-  // Countdown logic
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -48,65 +39,49 @@ const Register: React.FC = () => {
   }, [countdown]);
 
   const handleSendOTP = async () => {
+    setOtpMessage(null);
     if (!email) {
       setOtpMessage({ type: "error", text: "Vui lòng nhập email trước khi gửi OTP" });
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setOtpMessage({ type: "error", text: "Email không hợp lệ" });
+      return;
+    }
+
     try {
       const res = await api.post("/auth/send-register-otp", { email });
       setOtpMessage({ type: "success", text: res.data.message || "OTP đã gửi" });
-      setCountdown(res.data.cooldown || 60); // set countdown dựa theo backend
+      setCountdown(res.data.cooldown || 60);
     } catch (err: any) {
       setOtpMessage({ type: "error", text: err.response?.data?.message || "Lỗi hệ thống!" });
-      const cooldown = err.response?.data?.errors?.cooldown || 0;
-      if (cooldown > 0) setCountdown(cooldown);
+      setCountdown(err.response?.data?.errors?.cooldown || 0);
     }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    let hasError = false;
+    setServerError("");
+    setOtpMessage(null);
+    const newErrors: Record<string, string> = {};
 
-    // Validate tên
-    if (!/^[\p{L}\s]+$/u.test(fullname.trim())) {
-      setNameError("Tên chỉ được chứa chữ cái và khoảng trắng");
-      hasError = true;
-    } else {
-      setNameError("");
-    }
+    if (!email) newErrors.email = "Vui lòng nhập email";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = "Email không hợp lệ";
 
-    // Validate mật khẩu
-    if (password.length < 6) {
-      setPasswordError("Mật khẩu phải ít nhất 6 ký tự");
-      hasError = true;
-    } else if (password !== confirmPassword) {
-      setPasswordError("Mật khẩu không khớp");
-      hasError = true;
-    } else {
-      setPasswordError("");
-    }
+    if (!/^[\p{L}\s]+$/u.test(fullname.trim())) newErrors.fullname = "Tên chỉ được chứa chữ cái và khoảng trắng";
+    if (password.length < 6) newErrors.password = "Mật khẩu phải ít nhất 6 ký tự";
+    if (password !== confirmPassword) newErrors.confirmPassword = "Mật khẩu không khớp";
+    if (!isValidAge(dob)) newErrors.dob = "Bạn phải từ 16 tuổi trở lên";
+    if (phone.length < 10 || phone.length > 11) newErrors.phone = "Số điện thoại không hợp lệ";
+    if (!otp || otp.length < 6) newErrors.otp = "Vui lòng nhập mã OTP hợp lệ";
+    if (!agreeTerms) newErrors.agreeTerms = "Bạn phải đồng ý với điều khoản để tiếp tục";
 
-    // Validate ngày sinh
-    if (!isValidAge(dob)) {
-      setDobError("Bạn phải từ 16 tuổi trở lên để đăng ký");
-      hasError = true;
-    } else {
-      setDobError("");
-    }
-
-    // Validate số điện thoại
-    if (phone.length < 10 || phone.length > 11) {
-      setPhoneError("Số điện thoại phải từ 10 đến 11 chữ số");
-      hasError = true;
-    } else {
-      setPhoneError("");
-    }
-
-    if (hasError) return;
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     try {
       const res = await api.post("/auth/register", {
-        fullname: fullname,
+        fullname,
         email,
         password,
         phone,
@@ -116,11 +91,9 @@ const Register: React.FC = () => {
 
       if (res.data.success) {
         setOtpMessage({ type: "success", text: "Đăng ký thành công!" });
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 1000);
+        setTimeout(() => (window.location.href = "/login"), 1000);
       } else {
-        setPasswordError(res.data.message || "Có lỗi xảy ra");
+        setServerError(res.data.message || "Có lỗi xảy ra");
       }
     } catch (error: any) {
       setServerError(error.response?.data?.message || "Lỗi hệ thống! Vui lòng thử lại sau.");
@@ -128,223 +101,259 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="flex flex-col md:flex-row max-w-5xl bg-white shadow-2xl rounded-xl overflow-hidden w-full">
-
-        {/* Left Side */}
-        <div className="hidden md:flex flex-1 bg-gradient-to-br from-blue-400 to-blue-700 items-center justify-center p-8">
-          <div className="text-white text-center">
-            <h2 className="text-3xl font-bold mb-6">Chào mừng bạn!</h2>
-            <p className="mb-4">
-              Hãy đăng ký ngay và khám phá các tính năng tuyệt vời!
-            </p>
-            <img
-              src="src/assets/images/personalization-image.png"
-              alt="illustration"
-              className="mx-auto w-3/4 rounded-lg shadow-lg"
-            />
-          </div>
-        </div>
-
-        {/* Right Side - Form */}
-        <div className="flex-1 p-8 md:p-12">
-          <h2 className="text-3xl text-center font-bold mb-6 text-gray-800">
-            Đăng ký
-          </h2>
-          {serverError && (<p className="text-red-500 text-sm text-center mt-1">{serverError}</p>)}
-          <form onSubmit={handleRegister} className="space-y-5">
-            {/* Name */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-lg">
+        {/* Form Card */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
+          {serverError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
+              <XCircle size={16} />
+              {serverError}
+            </div>
+          )}
+          <form onSubmit={handleRegister} className="space-y-4">
             <div>
-              <label className="block text-gray-700 font-medium mb-1">Tên</label>
-              <input
-                type="text"
-                value={fullname}
-                onChange={(e) => {
-                  setFullname(e.target.value);
-                  if (!/^[\p{L}\s]*$/u.test(e.target.value)) {
-                    setNameError("Tên chỉ được chứa chữ cái và khoảng trắng");
-                  } else {
-                    setNameError("");
-                  }
-                }}
-                placeholder="Nhập tên của bạn"
-                maxLength={60}
-                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 shadow-sm ${
-                  nameError
-                    ? "border-red-500 focus:ring-red-400"
-                    : "border-gray-300 focus:ring-blue-500"
-                }`}
-                required
-              />
-              {nameError && <p className="text-red-500 text-sm mt-1">{nameError}</p>}
+            {/* Header */}
+            <div className="text-center mb-6">  
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">Tạo tài khoản</h1>
+              <p className="text-2x1 text-gray-500">Điền thông tin để bắt đầu</p>
+            </div>
+              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                Họ và tên
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  value={fullname}
+                  onChange={(e) => setFullname(e.target.value)}
+                  placeholder="Nhập họ và tên"
+                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                    errors.fullname
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 focus:border-blue-500"
+                  }`}
+                />
+              </div>
+              {errors.fullname && <p className="text-red-500 text-xs mt-1">{errors.fullname}</p>}
             </div>
 
             {/* Email */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">Email</label>
-              <input
-                type="email"
-                maxLength={80}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Nhập email của bạn"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
-                required
-              />
-            </div>
-
-           {/* Phone & DOB in one row */}
-            <div className="flex flex-col md:flex-row gap-4">
-              {/* Phone */}
-              <div className="flex-1">
-                <label className="block text-gray-700 font-medium mb-1">Số điện thoại</label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setPhone(value);
-                    setPhoneError(
-                      value.length < 10 || value.length > 11
-                        ? "Số điện thoại phải từ 10 đến 11 chữ số"
-                        : ""
-                    );
-                  }}
-                  placeholder="Nhập số điện thoại"
-                  maxLength={11}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 shadow-sm ${
-                    phoneError
-                      ? "border-red-500 focus:ring-red-400"
-                      : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                  required
-                />
-                {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
-              </div>
-
-              {/* DOB */}
-              <div className="flex-1">
-                <label className="block text-gray-700 font-medium mb-1">Ngày sinh</label>
-                <DatePicker
-                  selected={dob}
-                  onChange={(date) => setDob(date)}
-                  maxDate={new Date()}
-                  showYearDropdown
-                  showMonthDropdown
-                  placeholderText="Chọn ngày sinh"
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 shadow-sm ${
-                    dobError
-                      ? "border-red-500 focus:ring-red-400"
-                      : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                  dateFormat="dd/MM/yyyy"
-                />
-                {dobError && <p className="text-red-500 text-sm mt-1">{dobError}</p>}
-              </div>
-            </div>
-
-            {/* Password & Confirm Password */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">Mật khẩu</label>
+              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                Email
+              </label>
               <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="email@example.com"
+                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                    errors.email
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 focus:border-blue-500"
+                  }`}
+                />
+              </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
+
+            {/* SĐT + Ngày sinh */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                  Số điện thoại
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                    placeholder="Số điện thoại"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                      errors.phone
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-gray-200 focus:border-blue-500"
+                    }`}
+                    maxLength={11}
+                  />
+                </div>
+                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                  Ngày sinh
+                </label>
+                <div className="relative">
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10 pointer-events-none" size={18} />
+                  <DatePicker
+                    selected={dob}
+                    onChange={(date) => setDob(date)}
+                    dateFormat="dd/MM/yyyy"
+                    maxDate={new Date()}
+                    showMonthDropdown
+                    showYearDropdown
+                    placeholderText="Chọn ngày sinh"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                      errors.dob
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-gray-200 focus:border-blue-500"
+                    }`}
+                  />
+                </div>
+                {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
+              </div>
+            </div>
+
+            {/* Mật khẩu */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                Mật khẩu
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  maxLength={30}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Nhập mật khẩu"
-                  minLength={6}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 shadow-sm ${
-                    passwordError
-                      ? "border-red-500 focus:ring-red-400"
-                      : "border-gray-300 focus:ring-blue-500"
+                  placeholder="••••••••"
+                  className={`w-full pl-10 pr-10 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                    errors.password
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 focus:border-blue-500"
                   }`}
-                  required
                 />
                 <button
                   type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
                 >
-                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
+            {/* Xác nhận mật khẩu */}
             <div>
-              <label className="block text-gray-700 font-medium mb-1">Xác nhận mật khẩu</label>
+              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                Xác nhận mật khẩu
+              </label>
               <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
-                  maxLength={30}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Nhập lại mật khẩu"
-                  minLength={6}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 shadow-sm ${
-                    passwordError
-                      ? "border-red-500 focus:ring-red-400"
-                      : "border-gray-300 focus:ring-blue-500"
+                  placeholder="••••••••"
+                  className={`w-full pl-10 pr-10 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                    errors.confirmPassword
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-gray-200 focus:border-blue-500"
                   }`}
-                  required
                 />
                 <button
                   type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600"
                 >
-                  {showConfirmPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
-            </div>
-
-            {/* OTP Section */}
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">OTP</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  placeholder="Nhập mã OTP"
-                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
-                  maxLength={6}
-                  required
-                />
-                <button type="button"
-                  onClick={handleSendOTP}
-                  disabled={countdown > 0}
-                  className={`px-4 rounded-lg text-white font-medium transition ${
-                    countdown > 0
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center justify-center"
-                  }`}>
-                  {countdown > 0 ? `Gửi lại (${countdown}s)` : "Gửi OTP"}
-                </button>
-
-              </div>
-              {otpMessage && (
-                <p className={`text-sm mt-1 ${ otpMessage.type === "error" ? "text-red-500" : "text-green-600"
-                  }`}>
-                  {otpMessage.text}
-                </p>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
               )}
             </div>
 
-            {/* Submit */}
+            {/* OTP */}
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+                Mã xác thực OTP
+              </label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Send className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                    placeholder="Nhập mã OTP"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
+                      errors.otp
+                        ? "border-red-300 focus:border-red-500"
+                        : "border-gray-200 focus:border-blue-500"
+                    }`}
+                    maxLength={6}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSendOTP}
+                  disabled={countdown > 0}
+                  className={`min-w-[90px] px-5 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${
+                    countdown > 0
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:scale-105"
+                  }`}
+                >
+                  {countdown > 0 ? `${countdown}s` : "Gửi"}
+                </button>
+              </div>
+              {errors.otp && <p className="text-red-500 text-xs mt-1">{errors.otp}</p>}
+              {otpMessage && (
+                <div
+                  className={`text-xs mt-2 flex items-center gap-1.5 ${
+                    otpMessage.type === "error" ? "text-red-600" : "text-green-600"
+                  }`}
+                >
+                  {otpMessage.type === "error" ? <XCircle size={14} /> : <CheckCircle2 size={14} />}
+                  {otpMessage.text}
+                </div>
+              )}
+            </div>
+            {/* Điều khoản & Chính sách */}
+            <div className="flex flex-col gap-1 mt-3">
+              <label className="flex items-start gap-2 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
+                  className="mt-1 accent-blue-600"
+                />
+                <span>
+                  Tôi đồng ý với{" "}
+                  <Link to="/terms" className="text-blue-600 font-medium hover:underline">
+                    Điều khoản sử dụng
+                  </Link>{" "}
+                  và{" "}
+                  <Link to="/privacy" className="text-blue-600 font-medium hover:underline">
+                    Chính sách bảo mật
+                  </Link>.
+                </span>
+              </label>
+              {errors.agreeTerms && (
+                <p className="text-red-500 text-xs mt-0.5">{errors.agreeTerms}</p>
+              )}
+            </div>
+            {/* Submit Button */}
             <button type="submit"
-              className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-200 flex items-center justify-center">
-              Đăng ký
+              className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 mt-6"
+            >
+              Đăng ký ngay
             </button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Bạn đã có tài khoản?{" "}
-            <Link className="text-blue-500 font-medium hover:underline" to="/login">
+            
+          {/* Footer */}
+          <p className="text-center text-sm text-gray-600 mt-6">
+            Đã có tài khoản?{" "}
+            <Link to="/login" className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">
               Đăng nhập
             </Link>
           </p>
+          </form>
         </div>
       </div>
     </div>

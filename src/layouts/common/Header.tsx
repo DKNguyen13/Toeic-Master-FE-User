@@ -184,16 +184,7 @@ const Header: React.FC = () => {
     { to: "/payment", label: "Premium", icon: <FaCrown className="text-xl text-yellow-500" />, premium: true },
   ];
 
-  const role = localStorage.getItem("role");
-
-  const filteredNavLinks = role === "admin"
-  ? [
-      { to: "/admin/dashboard", label: "Dashboard", icon: <FaCrown className="text-xl text-green-500" /> },
-      { to: "/admin/usermanagement", label: "Người dùng", icon: <FaUsers /> },
-      { to: "/flashcard", label: "Flashcards", icon: <FaClipboardList className="text-xl" /> },
-      { to: "/payment", label: "Premium", icon: <FaCrown className="text-xl text-yellow-500" />, premium: true },
-    ]
-  : navLinks;
+  const filteredNavLinks = navLinks;
 
   return (
     <header className="bg-white shadow-md px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-50">

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
+import { CheckCircle } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
-import React, { useState } from "react";
 
 // Import Swiper styles
 import 'swiper/css';
@@ -35,16 +35,28 @@ const BannerSlider = () => {
           <div className="flex bg-blue-500 gap-8 min-h-[35vh] pt-5">
             <div className="flex-[65%] pt-6 hidden md:block">
               <div className="text-white space-y-6 ml-[12%] mt-[2%] p-6">
-                <h2 className="text-4xl font-bold">
-                  Nền tảng thi thử TOEIC® trực tuyến miễn phí<br />
-                  Kho đề "XỊN" & được cập nhật mới liên tục!
-                </h2>
+                {/* Title */}
+                  <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                    Nền tảng thi thử TOEIC®<br />
+                    trực tuyến hàng đầu
+                  </h1>
 
-                <ul className="text-xl list-disc pl-10">
-                  <li>Tuyển tập những bộ đề gần với đề thi nhất từ nhiều nguồn</li>
-                  <li>Đánh giá đúng thực lực của người học & sát đề thi thật</li>
-                  <li>Chatbot hỗ trợ 24/7</li>
-                </ul>
+                  {/* Features */}
+                  <div className="space-y-3 mb-8">
+                    <div className="flex items-start gap-3 text-white/95">
+                      <CheckCircle className="text-green-300 mt-1 flex-shrink-0" size={20} />
+                      <p className="text-base md:text-lg">Tuyển tập đề thi sát với kỳ thi thật nhất</p>
+                    </div>
+                    <div className="flex items-start gap-3 text-white/95">
+                      <CheckCircle className="text-green-300 mt-1 flex-shrink-0" size={20} />
+                      <p className="text-base md:text-lg">Đánh giá chính xác năng lực của bạn</p>
+                    </div>
+                    <div className="flex items-start gap-3 text-white/95">
+                      <CheckCircle className="text-green-300 mt-1 flex-shrink-0" size={20} />
+                      <p className="text-base md:text-lg">Chatbot AI hỗ trợ học tập 24/7</p>
+                    </div>
+                  </div>
+
 
                 <Link to={"/register"}>
                   <button className="mt-5 bg-red-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-600 transition border border-orange-500">

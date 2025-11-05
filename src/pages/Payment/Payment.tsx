@@ -138,18 +138,21 @@ const PaymentPage: React.FC = () => {
                     )}
 
                     <div className="p-8">
+                      {/* Name */}
+                      <h2 className="text-center text-3xl font-bold text-gray-900 mb-4">{pkg.name}</h2>
                       {/* Duration */}
                       <div className="text-center mb-6">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-4 shadow-lg">
-                          <span className="text-2xl font-bold text-white">
-                            {pkg.durationMonths}
-                          </span>
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                        <div className="flex items-center justify-center gap-2">
+                        <div className="h-px w-8 bg-gradient-to-r from-transparent to-blue-400"></div>
+                        <span className="text-lg font-semibold text-blue-600 mb-4">
                           {pkg.durationMonths} tháng
-                        </h3>
+                        </span>
+                        <div className="h-px w-8 bg-gradient-to-l from-transparent to-blue-400"></div>
+                      </div>
                         {pkg.description && (
-                          <p className="text-sm text-gray-600">{pkg.description}</p>
+                          <p className="text-sm text-gray-600">
+                            {pkg.description.split(".")[0].trim()}.
+                          </p>
                         )}
                       </div>
 
@@ -160,117 +163,49 @@ const PaymentPage: React.FC = () => {
                             Tiết kiệm {discountPercent}%
                           </div>
                         )}
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <span className="text-gray-400 line-through text-lg">
-                            {pkg.originalPrice.toLocaleString()}đ
-                          </span>
-                        </div>
+
                         <div className="flex items-baseline justify-center gap-1">
                           <span className="text-4xl font-bold text-gray-900">
                             {pkg.discountedPrice.toLocaleString()}
                           </span>
                           <span className="text-gray-600">đ/tháng</span>
                         </div>
-                      </div>
-
-                      {/* Features */}
-                      <div className="space-y-3 mb-8">
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                            <Check className="text-blue-600" size={14} strokeWidth={3} />
-                          </div>
-                          <span className="text-gray-700 text-sm">
-                            Truy cập toàn bộ bài học
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <span className="text-gray-400 line-through text-lg">
+                            {pkg.originalPrice.toLocaleString()}đ
                           </span>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                            <Check className="text-blue-600" size={14} strokeWidth={3} />
-                          </div>
-                          <span className="text-gray-700 text-sm">
-                            Công cụ luyện tập cá nhân hóa
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                            <Check className="text-blue-600" size={14} strokeWidth={3} />
-                          </div>
-                          <span className="text-gray-700 text-sm">
-                            Hỗ trợ 24/7
-                          </span>
-                        </div>
-                      </div>
-
                       {/* CTA Button */}
-                      <button
-                        onClick={() => handleBuy(pkg._id)}
+                      <button onClick={() => handleBuy(pkg._id)}
                         className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
                           popular
                             ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
                             : "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg"
-                        }`}
-                      >
-                        Đăng ký ngay
-                      </button>
+                        }`}>Đăng ký ngay</button>
+                      </div>
+
+                      {/* Features */}
+                      <div className="space-y-3 mb-8">
+                        {pkg.description &&
+                          pkg.description
+                            .split(".") // tách theo dấu chấm
+                            .map((line) => line.trim()) // bỏ khoảng trắng đầu/cuối
+                            .filter((line) => line.length > 0) // loại bỏ dòng rỗng
+                            .map((line, idx) => (
+                              <div key={idx} className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                                  <Check className="text-blue-600" size={14} strokeWidth={3} />
+                                </div>
+                                <span className="text-gray-700 text-sm">{line}</span>
+                              </div>
+                            ))}
+                      </div>
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
-
-          {/* Features Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8 md:p-12">
-            <div className="text-center mb-10">
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">
-                Tại sao chọn Premium?
-              </h2>
-              <p className="text-gray-600">
-                Những lợi ích vượt trội khi nâng cấp tài khoản
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl mb-4 shadow-lg">
-                  <BookOpen className="text-white" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Truy cập không giới hạn
-                </h3>
-                <p className="text-gray-600">
-                  Học mọi lúc, mọi nơi với kho bài học đầy đủ và được cập nhật liên tục
-                </p>
-              </div>
-
-              {/* Feature 2 */}
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl mb-4 shadow-lg">
-                  <Target className="text-white" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Luyện tập cá nhân hóa
-                </h3>
-                <p className="text-gray-600">
-                  Công cụ luyện tập thông minh giúp bạn tiến bộ nhanh chóng
-                </p>
-              </div>
-
-              {/* Feature 3 */}
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl mb-4 shadow-lg">
-                  <MessageCircle className="text-white" size={28} />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Hỗ trợ 24/7
-                </h3>
-                <p className="text-gray-600">
-                  Nhận phản hồi nhanh chóng và cải thiện kỹ năng hiệu quả
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Error Popup */}

@@ -1,4 +1,5 @@
 import React from "react";
+import { ReactNode } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastOptions, ToastContainer, Slide } from "react-toastify";
 
@@ -8,7 +9,7 @@ export const showToast = (
   options?: ToastOptions
 ) => {
   const config: ToastOptions = {
-    position: "top-right",
+    position: "bottom-right",
     autoClose: 2000,
     hideProgressBar: false,
     pauseOnHover: true,
@@ -33,8 +34,13 @@ export const showToast = (
   }
 };
 
-export const ToastProvider: React.FC = () => (
-  <ToastContainer
-    newestOnTop={true}
-  />
+interface ToastProviderProps {
+  children: ReactNode;
+}
+
+export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => (
+  <>
+    {children}
+    <ToastContainer position="bottom-right" newestOnTop={true} />
+  </>
 );

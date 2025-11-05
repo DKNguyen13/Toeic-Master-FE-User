@@ -77,7 +77,7 @@ const LoadingSkeleton: React.FC = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-center font-bold text-2xl tracking-wide mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent"
+          className="text-center font-bold text-lg tracking-wide mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent"
         >
           <motion.span
             animate={{ scale: [1, 1.08, 1] }}

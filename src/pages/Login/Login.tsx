@@ -46,18 +46,14 @@ const Login: React.FC = () => {
         localStorage.setItem("role", user.role);
         localStorage.setItem("userId", user.id);
         window.dispatchEvent(new Event("userUpdated"));
-
-        if (user.role === "admin") navigate("/admin/dashboard");
-        else navigate("/");
+        navigate("/");
       } else {
         setErrors({ general: res.data.message || "Đăng nhập thất bại" });
         setPassword("");
       }
     } catch (error: any) {
       setPassword("");
-      setErrors({
-        general: error.response?.data?.message || "Lỗi kết nối server",
-      });
+      setErrors({ general: error.response?.data?.message || "Lỗi kết nối server"});
     } finally {
       setIsLoading(false);
     }
@@ -244,10 +240,7 @@ const Login: React.FC = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Chưa có tài khoản?{" "}
-              <Link
-                to="/register"
-                className="text-blue-600 font-semibold hover:text-blue-700"
-              >
+              <Link to="/register" className="text-blue-600 font-semibold hover:text-blue-700">
                 Đăng ký ngay
               </Link>
             </p>

@@ -36,7 +36,7 @@ const BannerSlider = () => {
             <div className="flex-[65%] pt-6 hidden md:block">
               <div className="text-white space-y-6 ml-[12%] mt-[2%] p-6">
                 {/* Title */}
-                  <h1 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                  <h1 className="text-2xl md:text-4xl font-bold text-white mb-6 leading-tight">
                     Nền tảng thi thử TOEIC®<br />
                     trực tuyến hàng đầu
                   </h1>

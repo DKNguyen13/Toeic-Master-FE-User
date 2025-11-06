@@ -9,7 +9,7 @@ export const showToast = (
   options?: ToastOptions
 ) => {
   const config: ToastOptions = {
-    position: "bottom-right",
+    position: "top-right",
     autoClose: 2000,
     hideProgressBar: false,
     pauseOnHover: true,
@@ -41,6 +41,6 @@ interface ToastProviderProps {
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => (
   <>
     {children}
-    <ToastContainer position="bottom-right" newestOnTop={true} />
+    <ToastContainer newestOnTop={true} />
   </>
 );

@@ -1,7 +1,7 @@
 import api from "../../../config/axios";
 import { useNavigate } from "react-router-dom";
 import { showToast } from "../../../utils/toast";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LoginModal from "../../../layouts/common/LoginModal";
 
 export interface FlashcardSet {
@@ -38,7 +38,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           : await api.get("/flashcard-set/free");
       setSets(res.data.data as FlashcardSet[]);
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error");         
+      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error", { autoClose: 1500 });         
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       setSets((prev) => prev.filter((s) => s._id !== id));
       showToast("Nhập tên bộ flashcard!", "warn");
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error");
+      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", {autoClose: 1500});
     }
   };
 
@@ -85,7 +85,11 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     }
   };
 
+  const didFetch = useRef(false);
+  
   useEffect(() => {
+    if (didFetch.current) return;
+    didFetch.current = true;
     fetchSets();
   }, [isLoggedIn, type]);
 

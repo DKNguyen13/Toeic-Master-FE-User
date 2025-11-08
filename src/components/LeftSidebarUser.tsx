@@ -36,7 +36,8 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
     const menuItems = [
     { to: "/profile", icon: UserCircle, label: "Thông tin cá nhân" },
     { to: "/history", icon: ClipboardList, label: "Lịch sử làm bài" },
-    { to: "/purchase-history", icon: History, label: "Lịch sử mua hàng" }
+    { to: "/purchase-history", icon: History, label: "Lịch sử mua hàng" },
+    { to: "/payment", icon: Crown, label: "VIP/Premium" },
   ];
 
   return (
@@ -61,7 +62,7 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
             </h2>
             <div className="flex items-center mt-1 text-xs text-blue-600 font-medium">
               <UserCircle className="w-3 h-3 mr-1" />
-              Admin
+              User
             </div>
           </div>
         </div>

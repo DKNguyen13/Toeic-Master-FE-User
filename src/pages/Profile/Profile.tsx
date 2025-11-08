@@ -55,14 +55,30 @@ const Profile: React.FC = () => {
     fetchUserInfo();
   }, []);
 
-  const getVipConfig = (type: string | null) => {
+const getVipConfig = (type: string | null) => {
     switch (type) {
       case "basic":
-        return { bg: "bg-gradient-to-r from-gray-300 to-gray-400", icon: "★", label: "BASIC" };
+        return { 
+          bg: "bg-gradient-to-br from-slate-400 via-slate-500 to-slate-600", 
+          icon: "", 
+          label: "BASIC",
+          glow: "shadow-lg shadow-slate-500/50"
+        };
       case "advanced":
-        return { bg: "bg-gradient-to-r from-blue-400 to-blue-500", icon: "★★", label: "ADVANCED" };
+        return { 
+          bg: "bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600", 
+          icon: "", 
+          label: "ADVANCED",
+          glow: "shadow-lg shadow-blue-500/50"
+        };
       case "premium":
-        return { bg: "bg-gradient-to-r from-yellow-400 to-yellow-500", icon: "★★★", label: "PREMIUM", textColor: "text-gray-900" };
+        return { 
+          bg: "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500", 
+          icon: "", 
+          label: "PREMIUM", 
+          textColor: "text-gray-900",
+          glow: "shadow-lg shadow-yellow-500/50"
+        };
       default:
         return null;
     }

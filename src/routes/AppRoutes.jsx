@@ -9,8 +9,8 @@ import { Test } from "../pages/MockTest/Test";
 import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
 import ResetPassword from "../pages/ForgotPassword/ResetPassword";
 import Leaderboard from "../pages/Leaderboard/Leaderboard";
-import Settings from "../pages/Settings/Settings";
-import EditSettings from "../pages/Settings/EditSettings/EditSettings";
+import Profile from "../pages/Profile/Profile";
+import UpdateProfile from "../pages/Profile/UpdateProfile/UpdateProfile";
 import Payment from "../pages/Payment/Payment";
 import PurchaseHistory from "../pages/Payment/PurchaseHistory";
 import PaymentForm from "../pages/Payment/PaymentForm/PaymentForm";
@@ -139,21 +139,21 @@ const routes = [
   },
 
   {
-    path: "/settings",
+    path: "/profile",
     element: (
       <ProtectedRoute allowedRoles={["admin", "user"]}>
         <MainLayout>
-          <Settings />
+          <Profile />
         </MainLayout>
       </ProtectedRoute>
     ),
   },
   {
-    path: "/settings/edit-info",
+    path: "/profile/update-info",
     element: (
       <ProtectedRoute allowedRoles={["admin", "user"]}>
         <MainLayout>
-          <EditSettings />
+          <UpdateProfile />
         </MainLayout>
       </ProtectedRoute>
     ),

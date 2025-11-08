@@ -58,7 +58,7 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-sm font-semibold text-gray-900 truncate">
-              {fullname}
+              Hi, {fullname}
             </h2>
             <div className="flex items-center mt-1 text-xs text-blue-600 font-medium">
               <UserCircle className="w-3 h-3 mr-1" />

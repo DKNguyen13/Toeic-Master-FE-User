@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LeftSidebarUser from "../../components/LeftSidebarUser";
 import { User, Mail, Phone, Calendar, Crown, Edit, CheckCircle, XCircle } from "lucide-react";
+import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 
 interface VipInfo {
   isActive: boolean;
@@ -84,15 +85,15 @@ const getVipConfig = (type: string | null) => {
     }
   };
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Đang tải...</p>
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingSkeleton/>
+    // return (
+    //   <div className="min-h-screen flex justify-center items-center bg-gray-50">
+    //     <div className="text-center">
+    //       <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+    //       <p className="text-gray-600 font-medium">Đang tải...</p>
+    //     </div>
+    //   </div>
+    // );
 
   if (error)
     return (
@@ -198,7 +199,7 @@ const getVipConfig = (type: string | null) => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/** Common function for field box */}
+                {/* Common function for field box */}
                 {[
                   { label: "Họ và tên", value: user.fullname, icon: <User className="w-4 h-4 mr-2 text-blue-600" /> },
                   { label: "Email", value: user.email, icon: <Mail className="w-4 h-4 mr-2 text-blue-600" /> },

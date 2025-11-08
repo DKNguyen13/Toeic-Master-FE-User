@@ -1,11 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import useRefreshTokenOnLoad from "../hooks/useRefreshTokenOnLoad";
-
-// Các trang (các phần này sẽ thêm sau)
-import HomePage from "../pages/Home/Home";
-import Login from "../pages/Login/Login";
-import NotFound from "../pages/NotFound/NotFound";
+//import useRefreshTokenOnLoad from "../hooks/useRefreshTokenOnLoad";
 
 // Layout
 import MainLayout from "../layouts/MainLayout";
@@ -22,27 +17,22 @@ import PaymentForm from "../pages/Payment/PaymentForm/PaymentForm";
 import Resource from "../pages/Resource/Resource";
 import History from "../pages/History/History";
 import ResourceDetail from "../pages/Resource/ResourceDetail";
-import DashboardPage from "../pages/Admin/Dashboard/Dashboard";
-import UserManagementPage from "../pages/Admin/UserManagement/UserManagement";
-import TestManagementPage from "../pages/Admin/TestManagement/TestManagement";
-import LessonManagementPage from "../pages/Admin/LessonManagement/LessonManagement";
 import DetailTestPage from "../pages/Detail/DetailTestPage";
 import { Wishlist } from "../pages/Wishlist/Wishlist";
-import VipManagement from "../pages/Admin/VipManagement/VipManagement";
 import PaymentFail from "../pages/Payment/PaymentFail";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 import ResultPage from "../pages/MockTest/result/ResultPage";
 import FlashcardPage from "../pages/FlashCard/FlashcardPage";
 import FlashcardListPage from "../pages/FlashCard/FlashcardListPage";
 import TestList from "../pages/MockTest/TestList";
-import CreateTestPage from "../pages/Admin/TestManagement/CreateTestPage/CreateTestPage";
-import CreatePartPage from "../pages/Admin/TestManagement/CreatePartPage/CreatePartPage";
-import CreateQuestionPage from "../pages/Admin/TestManagement/CreateQuestionPage/CreateQuestionPage";
+import HomePage from "../pages/Home/Home";
+import Login from "../pages/Login/Login";
+import NotFound from "../pages/NotFound/NotFound";
 
-const RefreshTokenLoader = () => {
-  useRefreshTokenOnLoad();
-  return null;
-};
+// const RefreshTokenLoader = () => {
+//   useRefreshTokenOnLoad();
+//   return null;
+// };
 
 // Cấu hình routes
 const routes = [
@@ -50,7 +40,6 @@ const routes = [
     path: "/", // Trang Home, cho mọi user
     element: (
       <>
-        <RefreshTokenLoader />
         <MainLayout>
           <HomePage />
         </MainLayout>
@@ -255,86 +244,6 @@ const routes = [
       <MainLayout>
         <FlashcardListPage />
       </MainLayout>
-    ),
-  },
-  {
-    path: "/admin/dashboard",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <DashboardPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/usermanagement",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <UserManagementPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/lessonmanagement",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <LessonManagementPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/testmanagement",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <TestManagementPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/vipmanagement",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <VipManagement />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/create-test",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <CreateTestPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/create-part",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <CreatePartPage />
-        </MainLayout>
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/create-questions",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <MainLayout>
-          <CreateQuestionPage />
-        </MainLayout>
-      </ProtectedRoute>
     ),
   },
   {

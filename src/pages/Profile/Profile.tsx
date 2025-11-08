@@ -139,7 +139,16 @@ const getVipConfig = (type: string | null) => {
             </div>
 
             {/* VIP Card */}
-            <div className="bg-white rounded-2xl shadow-md p-6">
+            <div
+              className={`bg-white rounded-2xl shadow-md p-6 ${
+                !user.vip.isActive ? "cursor-pointer hover:shadow-lg transition" : ""
+              }`}
+              onClick={() => {
+                if (!user.vip.isActive) {
+                  window.location.href = "/payment";
+                }
+              }}
+            >
               <div className="flex items-center mb-4">
                 <Crown className="w-5 h-5 text-yellow-500 mr-2" />
                 <h3 className="font-semibold text-gray-800">Trạng thái tài khoản</h3>

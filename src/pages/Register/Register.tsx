@@ -125,6 +125,7 @@ const Register: React.FC = () => {
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 <input
                   type="text"
+                  maxLength={30}
                   value={fullname}
                   onChange={(e) => setFullname(e.target.value)}
                   placeholder="Nhập họ và tên"
@@ -148,6 +149,7 @@ const Register: React.FC = () => {
                 <input
                   type="email"
                   value={email}
+                  maxLength={40}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
                   className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
@@ -220,6 +222,7 @@ const Register: React.FC = () => {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  maxLength={50}
                   placeholder="••••••••"
                   className={`w-full pl-10 pr-10 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
                     errors.password
@@ -227,11 +230,9 @@ const Register: React.FC = () => {
                       : "border-gray-200 focus:border-blue-500"
                   }`}
                 />
-                <button
-                  type="button"
+                <button type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                  onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
@@ -250,17 +251,16 @@ const Register: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
+                  maxLength={50}
                   className={`w-full pl-10 pr-10 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
                     errors.confirmPassword
                       ? "border-red-300 focus:border-red-500"
                       : "border-gray-200 focus:border-blue-500"
                   }`}
                 />
-                <button
-                  type="button"
+                <button type="button"
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>

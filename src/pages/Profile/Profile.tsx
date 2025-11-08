@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LeftSidebarUser from "../../components/LeftSidebarUser";
 import { User, Mail, Phone, Calendar, Crown, Edit, CheckCircle, XCircle } from "lucide-react";
+import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 
 interface VipInfo {
   isActive: boolean;
@@ -84,15 +85,15 @@ const getVipConfig = (type: string | null) => {
     }
   };
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-50">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Đang tải...</p>
-        </div>
-      </div>
-    );
+  if (loading) return <LoadingSkeleton/>
+    // return (
+    //   <div className="min-h-screen flex justify-center items-center bg-gray-50">
+    //     <div className="text-center">
+    //       <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+    //       <p className="text-gray-600 font-medium">Đang tải...</p>
+    //     </div>
+    //   </div>
+    // );
 
   if (error)
     return (
@@ -134,8 +135,8 @@ const getVipConfig = (type: string | null) => {
                   onError={(e) => { (e.target as HTMLImageElement).src = "/img/avatar/default_avatar.jpg"; }}
                 />
               </div>
-              <h2 className="text-xl font-bold text-gray-800">{user.fullname || "Chưa có tên"}</h2>
-              <p className="text-gray-500 text-sm">{user.email || "Chưa có email"}</p>
+                <h2 className="text-xl font-bold text-gray-800 truncate w-full text-center" title={user.fullname || "Chưa có tên"}>{user.fullname || "Chưa có tên"}</h2>
+                <p className="text-gray-500 text-sm truncate w-full text-center" title={user.email || "Chưa có email"}>{user.email || "Chưa có email"}</p>
             </div>
 
             {/* VIP Card */}
@@ -189,16 +190,14 @@ const getVipConfig = (type: string | null) => {
             <div className="bg-white rounded-2xl shadow-md p-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Thông tin chi tiết</h2>
-                <Link
-                  to="/profile/update-info"
-                  className="inline-flex items-center bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-transform duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                >
+                <Link to="/profile/update-info"
+                  className="inline-flex items-center bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-transform duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                   <Edit className="w-4 h-4 mr-2" /> Chỉnh sửa
                 </Link>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/** Common function for field box */}
+                {/* Common function for field box */}
                 {[
                   { label: "Họ và tên", value: user.fullname, icon: <User className="w-4 h-4 mr-2 text-blue-600" /> },
                   { label: "Email", value: user.email, icon: <Mail className="w-4 h-4 mr-2 text-blue-600" /> },

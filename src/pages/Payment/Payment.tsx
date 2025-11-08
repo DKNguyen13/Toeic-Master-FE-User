@@ -1,19 +1,8 @@
 import api, { isLoggedIn } from "../../config/axios.js";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LoginModal from "../../layouts/common/LoginModal";
-import { 
-  Crown, 
-  Check, 
-  Sparkles, 
-  BookOpen, 
-  Target, 
-  MessageCircle,
-  Zap,
-  Star,
-  AlertCircle,
-  X
-} from "lucide-react";
+import {  Crown,  Check,  Star, AlertCircle, X } from "lucide-react";
 
 interface Package {
   _id: string;
@@ -188,7 +177,7 @@ const PaymentPage: React.FC = () => {
                       <div className="space-y-3 mb-8">
                         {pkg.description &&
                           pkg.description
-                            .split(".") // tách theo dấu chấm
+                            .split(".")
                             .map((line) => line.trim()) // bỏ khoảng trắng đầu/cuối
                             .filter((line) => line.length > 0) // loại bỏ dòng rỗng
                             .map((line, idx) => (

@@ -297,7 +297,7 @@ const Register: React.FC = () => {
                   className={`min-w-[90px] px-5 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all ${
                     countdown > 0
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:shadow-lg hover:scale-105"
+                      : "bg-gradient-to-r from-blue-500 to-blue-800 text-white hover:shadow-lg hover:scale-105"
                   }`}
                 >
                   {countdown > 0 ? `${countdown}s` : "Gửi"}
@@ -340,9 +340,7 @@ const Register: React.FC = () => {
               )}
             </div>
             {/* Submit Button */}
-            <button type="submit"
-              className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 mt-6"
-            >
+            <button type="submit" className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-200 mt-6">
               Đăng ký ngay
             </button>
             

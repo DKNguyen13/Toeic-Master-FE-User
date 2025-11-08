@@ -160,7 +160,7 @@ const Login: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center group ${
+              className={`w-full py-3.5 bg-gradient-to-r from-blue-500 to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center group ${
                 isLoading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >

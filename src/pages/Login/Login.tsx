@@ -202,6 +202,7 @@ const Login: React.FC = () => {
 
           {/* Google Login */}
           <div className="flex justify-center mb-4">
+            <div className="w-full max-w-md">
             <GoogleLogin
               onSuccess={async (credentialResponse) => {
                 try {
@@ -234,6 +235,7 @@ const Login: React.FC = () => {
                 setErrors({ general: "Đăng nhập Google thất bại" })
               }
             />
+            </div>
           </div>
 
           {/* Register */}

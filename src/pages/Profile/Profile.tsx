@@ -135,8 +135,8 @@ const getVipConfig = (type: string | null) => {
                   onError={(e) => { (e.target as HTMLImageElement).src = "/img/avatar/default_avatar.jpg"; }}
                 />
               </div>
-              <h2 className="text-xl font-bold text-gray-800">{user.fullname || "Chưa có tên"}</h2>
-              <p className="text-gray-500 text-sm">{user.email || "Chưa có email"}</p>
+                <h2 className="text-xl font-bold text-gray-800 truncate w-full text-center" title={user.fullname || "Chưa có tên"}>{user.fullname || "Chưa có tên"}</h2>
+                <p className="text-gray-500 text-sm truncate w-full text-center" title={user.email || "Chưa có email"}>{user.email || "Chưa có email"}</p>
             </div>
 
             {/* VIP Card */}
@@ -190,10 +190,8 @@ const getVipConfig = (type: string | null) => {
             <div className="bg-white rounded-2xl shadow-md p-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Thông tin chi tiết</h2>
-                <Link
-                  to="/profile/update-info"
-                  className="inline-flex items-center bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-transform duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                >
+                <Link to="/profile/update-info"
+                  className="inline-flex items-center bg-blue-600 text-white px-5 py-2.5 rounded-lg hover:bg-blue-700 transition-transform duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                   <Edit className="w-4 h-4 mr-2" /> Chỉnh sửa
                 </Link>
               </div>

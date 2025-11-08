@@ -3,6 +3,8 @@ import api from "../../../config/axios";
 import { showToast } from "../../../utils/toast";
 import { Eye, EyeOff, User, Lock, Shield, Camera, Calendar, Mail, Check } from "lucide-react";
 import LeftSidebarUser from "../../../components/LeftSidebarUser";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const UpdateProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"basic" | "privacy" | "password">("basic");
@@ -44,7 +46,6 @@ const UpdateProfile: React.FC = () => {
     }
   };
 
-  // Submit Thông tin cơ bản
   const handleSubmitBasic = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -137,7 +138,7 @@ const UpdateProfile: React.FC = () => {
   };
 
   const tabs = [
-    { id: "basic", label: "Thông tin cơ bản", icon: User },
+    { id: "basic", label: "Chỉnh sửa thông tin", icon: User },
     { id: "privacy", label: "Quyền riêng tư", icon: Shield },
     { id: "password", label: "Bảo mật", icon: Lock }
   ];
@@ -178,44 +179,43 @@ const UpdateProfile: React.FC = () => {
 
         {/* Content */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Basic */}
-          {activeTab === "basic" && (
-            <div className="p-8 space-y-6">
-              <div className="flex flex-col items-center py-6 border-b border-gray-100">
-                <div className="relative group">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
-                    {avatarPreview ? (
-                      <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
-                        <User size={48} className="text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 transition-colors"
-                  >
-                    <Camera size={18} />
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    className="hidden"
-                    disabled={loading}
-                  />
+        {/* Basic Tab */}
+        {activeTab === "basic" && (
+          <div className="p-8 space-y-6">
+            {/* Avatar */}
+            <div className="flex flex-col items-center py-6 border-b border-gray-100">
+              <div className="relative group">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+                  {avatarPreview ? (
+                    <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                      <User size={48} className="text-white" />
+                    </div>
+                  )}
                 </div>
-                <p className="text-sm text-gray-500 mt-3">Nhấn vào biểu tượng để thay đổi ảnh đại diện</p>
+                <button type="button" onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-700 transition-colors">
+                  <Camera size={18} />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                  disabled={loading}
+                />
               </div>
+              <p className="text-sm text-gray-500 mt-3">Nhấn vào biểu tượng để thay đổi ảnh đại diện</p>
+            </div>
 
-              {/* Email */}
-              <div>
+            {/* Form Fields in 1 row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Email (read-only) */}
+              <div className="p-4 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                  <Mail size={16} />
-                  Email
+                  <Mail size={16} /> Email
                 </label>
                 <input
                   type="email"
@@ -226,57 +226,62 @@ const UpdateProfile: React.FC = () => {
               </div>
 
               {/* Fullname */}
-              <div>
+              <div className="p-4 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                  <User size={16} />
-                  Họ và tên
+                  <User size={16} /> Họ và tên
                 </label>
                 <input
                   type="text"
+                  maxLength={30}
                   value={fullname}
                   onChange={(e) => setFullname(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="Nhập họ và tên"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   disabled={loading}
                 />
               </div>
 
               {/* DOB */}
-              <div>
+              <div className="p-4 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                  <Calendar size={16} />
-                  Ngày sinh
+                  <Calendar size={16} /> Ngày sinh
                 </label>
-                <input
-                  type="date"
-                  value={dob || ""}
-                  onChange={(e) => setDob(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                <DatePicker
+                  selected={dob ? new Date(dob) : null}
+                  onChange={(date: Date | null) => setDob(date ? date.toISOString().split("T")[0] : null)}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-700"
+                  dateFormat="yyyy-MM-dd"
+                  placeholderText="Chọn ngày sinh"
+                  maxDate={new Date()}
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
                 />
               </div>
-
-              {/* Submit */}
-              <div className="flex justify-end pt-4">
-                <button
-                  onClick={handleSubmitBasic}
-                  disabled={loading}
-                  className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Đang lưu...
-                    </>
-                  ) : (
-                    <>
-                      <Check size={18} />
-                      Lưu thay đổi
-                    </>
-                  )}
-                </button>
-              </div>
             </div>
-          )}
+
+            {/* Submit Button */}
+            <div className="flex justify-end pt-4">
+              <button
+                onClick={handleSubmitBasic}
+                disabled={loading}
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Đang lưu...
+                  </>
+                ) : (
+                  <>
+                    <Check size={18} />
+                    Lưu thay đổi
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
 
           {/* Privacy */}
           {activeTab === "privacy" && (
@@ -349,6 +354,7 @@ const UpdateProfile: React.FC = () => {
                         className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
                           errorMap[type] ? "border-red-400 bg-red-50" : "border-gray-200"
                         }`}
+                        maxLength={50}
                         placeholder={labelMap[type]}
                       />
                       <button
@@ -376,10 +382,7 @@ const UpdateProfile: React.FC = () => {
               )}
 
               <div className="flex justify-end pt-4">
-                <button
-                  onClick={handlePasswordSubmit}
-                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2"
-                >
+                <button onClick={handlePasswordSubmit} className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2">
                   <Lock size={18} />
                   Đổi mật khẩu
                 </button>

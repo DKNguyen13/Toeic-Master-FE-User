@@ -27,7 +27,13 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: "", description: "" });
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const closeModal = () => {
+    setShowModal(false);
+    setError("");
+  };
 
   const fetchSets = async () => {
     if (type === "myList" && !isLoggedIn) return;
@@ -52,17 +58,19 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     }
 
     if (!form.name) {
-      showToast("Nhập tên bộ flashcard!", "warn");
+      setError("Vui lòng nhập tên bộ flashcard!");
       return;
     }
+
     try {
       const res = await api.post("/flashcard-set", form);
       setSets((prev) => [...prev, res.data.data]);
       setShowModal(false);
       setForm({ name: "", description: "" });
       showToast("Thêm bộ flashcard thành công!", "success");
+      setError("");
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Lỗi khi tạo bộ flashcard!", "error");
+      setError(err.response?.data?.message || "Lỗi khi tạo bộ flashcard!");
     }
   };
 
@@ -72,7 +80,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     try {
       await api.delete(`/flashcard-set/${id}`);
       setSets((prev) => prev.filter((s) => s._id !== id));
-      showToast("Nhập tên bộ flashcard!", "warn");
+      showToast("Xóa bộ flashcard thành công!", "success", {autoClose: 1500});
     } catch (err: any) {
       showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", {autoClose: 1500});
     }
@@ -126,25 +134,25 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {/* Add Button */}
-            {type === "myList" && (
-              <div onClick={() => {
-                  if (!isLoggedIn) {
-                    setShowLoginModal(true);
-                  } else {
-                    setShowModal(true);
-                  }
-                }}
-                className="group border-3 border-dashed border-blue-400 rounded-2xl flex flex-col justify-center items-center h-56 bg-white hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50 cursor-pointer transition-all duration-300 shadow-md hover:shadow-xl transform hover:scale-105">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
-                  <span className="text-4xl font-bold text-blue-500">+</span>
-                </div>
-                <p className="text-lg font-semibold text-blue-600">
-                  Thêm Bộ Mới
-                </p>
-                <p className="text-sm text-blue-400 mt-1">Tạo bộ từ vựng của riêng bạn</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Add Button */}
+          {type === "myList" && (
+            <div
+              onClick={() => {
+                if (!isLoggedIn) setShowLoginModal(true);
+                else setShowModal(true);
+              }}
+              className="group flex flex-col justify-center items-center h-56 bg-white border-2 border-dashed border-blue-300 rounded-2xl shadow-md hover:shadow-lg cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 p-4">
+              <div className="w-20 h-20 flex items-center justify-center rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors shadow-inner">
+                <span className="text-5xl text-blue-500 font-bold">+</span>
               </div>
+              <p className="text-lg font-semibold text-blue-600 mt-4 text-center">
+                Thêm Bộ Mới
+              </p>
+              <p className="text-sm text-blue-400 mt-1 text-center">
+                Tạo bộ từ vựng của riêng bạn
+              </p>
+            </div>
             )}
 
             {/* Flashcard Sets */}
@@ -225,17 +233,13 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
 
       {/* Modal */}
       {type === "myList" && showModal && isLoggedIn && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
-          onClick={() => setShowModal(false)}
-        >
-          <div 
-            className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl transform transition-all duration-300 scale-100"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          onClick={closeModal}>
+          <div className="bg-white rounded-3xl p-8 w-full max-w-lg shadow-2xl transform transition-all duration-300 scale-100"
+            onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
-                <span className="text-3xl">✨</span>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-full mb-4 shadow-md">
+                <Star className="w-8 h-8" />
               </div>
               <h2 className="text-3xl font-bold text-gray-800">
                 Tạo Bộ Flashcard Mới
@@ -255,6 +259,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
               </div>
               
               <div>
@@ -273,18 +278,13 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                 />
               </div>
             </div>
-            
             <div className="flex gap-4 mt-8">
-              <button 
-                onClick={handleAdd}
-                className="flex-1 px-6 py-4 text-base font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg"
-              >
+              <button onClick={handleAdd}
+                className="flex-1 px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200">
                 Tạo bộ flashcard
               </button>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="flex-1 px-6 py-4 text-base font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-all duration-200"
-              >
+              <button onClick={closeModal}
+                className="flex-1 px-6 py-3 text-base font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                 Hủy
               </button>
             </div>

@@ -216,7 +216,7 @@ export const useSessionsUser = (initialPage = 1, limit = 10) => {
     };
 
     fetchSessions();
-  }, [page, limit]);
+  }, [page]);
 
   return {
     loading,

@@ -46,13 +46,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
         localStorage.setItem("avatarUrl", user.avatarUrl);
         localStorage.setItem("role", user.role);
         onClose();
-        if (user.role === "admin") {
-        navigate("/admin/dashboard");
-        } else {
-        navigate("/");
-        }
+        window.location.reload();
         window.dispatchEvent(new Event("userUpdated"));
-
       } else {
         setErrors({ general: res.data.message || "Đăng nhập thất bại" });
         setPassword("");
@@ -106,7 +101,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
             <label className="text-gray-700 text-sm font-medium block mb-2">Mật khẩu</label>
             <div className="relative">
               <input type={showPassword ? "text" : "password"}
-                placeholder="Nhập mật khẩu"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${

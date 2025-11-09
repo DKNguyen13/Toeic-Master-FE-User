@@ -95,7 +95,7 @@ const Login: React.FC = () => {
                   value={email}
                   maxLength={40}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="example@email.com"
+                  placeholder="Nhập email của bạn"
                   className={`w-full pl-11 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
                     errors.email ? "border-red-500" : "border-gray-200"
                   }`}

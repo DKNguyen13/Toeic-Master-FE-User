@@ -150,7 +150,7 @@ const UpdateProfile: React.FC = () => {
     <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
        {/* Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
-      <div className="flex-1 max-w-5xl p-6">
+      <div className="flex-1 max-w-5xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Thông tin cá nhân</h1>

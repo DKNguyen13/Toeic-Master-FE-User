@@ -87,7 +87,10 @@ const UpdateProfile: React.FC = () => {
         setAvatar(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
         setAvatarPreview(user.avatarUrl || "");
-        showToast("Cập nhật thông tin thành công!", "success");
+        showToast("Cập nhật thông tin thành công!", "success", { autoClose: 800 });
+        setTimeout(() => {
+          window.location.reload();
+        }, 1300);
       } else {
         showToast("Cập nhật thông tin thất bại!", "error");
       }

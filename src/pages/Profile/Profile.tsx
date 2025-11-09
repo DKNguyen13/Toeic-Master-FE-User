@@ -135,7 +135,7 @@ const getVipConfig = (type: string | null) => {
                   onError={(e) => { (e.target as HTMLImageElement).src = "/img/avatar/default_avatar.jpg"; }}
                 />
               </div>
-                <h2 className="text-xl font-bold text-gray-800 truncate w-full text-center" title={user.fullname || "Chưa có tên"}>{user.fullname || "Chưa có tên"}</h2>
+                <h2 className="text-xl font-bold text-gray-800 break-words w-full text-center" title={user.fullname || "Chưa có tên"}>{user.fullname || "Chưa có tên"}</h2>
                 <p className="text-gray-500 text-sm truncate w-full text-center" title={user.email || "Chưa có email"}>{user.email || "Chưa có email"}</p>
             </div>
 
@@ -209,7 +209,7 @@ const getVipConfig = (type: string | null) => {
                       {field.icon}
                       {field.label}
                     </label>
-                    <div className="w-full p-3 min-h-[48px] bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="w-full p-3 min-h-[48px] bg-gray-50 rounded-lg border border-gray-200 break-words">
                       {field.value || "Chưa có dữ liệu"}
                     </div>
                   </div>

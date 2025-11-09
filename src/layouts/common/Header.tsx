@@ -355,10 +355,12 @@ const Header: React.FC = () => {
         <div className="relative" ref={dropdownRef}>
           {fullname ? (
             <div className="relative">
-              <button onClick={() => setOpenMenu(!openMenu)}
-                className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition">
-                <img src={avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full object-cover" />
-                <span className="font-medium text-gray-700 hidden sm:block truncate max-w-[120px]">{fullname}</span>
+              <button onClick={() => setOpenMenu(!openMenu)} className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition w-full max-w-xs">
+                <img src={avatarUrl}
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                />
+                <span className="font-medium text-gray-700 truncate" title={fullname}>{fullname}</span>
               </button>
 
               {/* User Dropdown */}

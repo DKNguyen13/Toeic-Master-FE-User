@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useRef, useState } from "react";
 import LoginModal from "../../../layouts/common/LoginModal";
+import { Book, Inbox, Search, Star } from "lucide-react";
 
 export interface FlashcardSet {
   _id?: string;
@@ -98,11 +99,18 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
-            {type === "myList" ? "📚 Bộ Từ Vựng Của Bạn" : "🌟 Khám Phá Flashcards"}
-          </h1>
+          <div className="flex items-center justify-center mb-4 space-x-2">
+            {type === "myList" ? (
+              <Book className="w-6 h-6 text-blue-500" />
+            ) : (
+              <Star className="w-6 h-6 text-yellow-400" />
+            )}
+            <h1 className="text-2xl font-bold text-gray-800">
+              {type === "myList" ? "Bộ Từ Vựng Của Bạn" : "Khám Phá Flashcards"}
+            </h1>
+          </div>
           <p className="text-gray-600 text-lg">
-            {type === "myList" 
+            {type === "myList"
               ? "Quản lý và học từ vựng của bạn một cách hiệu quả"
               : "Khám phá các bộ flashcards miễn phí từ cộng đồng"}
           </p>
@@ -189,16 +197,22 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                 </div>
               ))
             ) : (
-              <div className="col-span-full flex flex-col justify-center items-center py-20 bg-white rounded-2xl shadow-md">
-                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                  <span className="text-5xl">{type === "myList" ? "📭" : "🔍"}</span>
+              <div className="col-span-full flex flex-col items-center justify-center py-16 bg-white rounded-xl border border-gray-200">
+                <div className="p-4 bg-blue-50 rounded-full mb-4">
+                  {type === "myList" ? (
+                    <Inbox className="w-10 h-10 text-blue-500" />
+                  ) : (
+                    <Search className="w-10 h-10 text-blue-500" />
+                  )}
                 </div>
-                <p className="text-2xl font-bold text-gray-700 mb-2">
+
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   {type === "myList"
                     ? "Chưa có bộ từ vựng nào"
                     : "Hiện chưa có flashcards miễn phí"}
-                </p>
-                <p className="text-gray-500 text-center max-w-md">
+                </h3>
+
+                <p className="text-gray-500 text-sm text-center max-w-xs">
                   {type === "myList"
                     ? "Nhấn vào nút '+' để tạo bộ từ vựng đầu tiên và bắt đầu hành trình học tập của bạn!"
                     : "Hãy quay lại sau để khám phá các bộ flashcards mới từ cộng đồng."}

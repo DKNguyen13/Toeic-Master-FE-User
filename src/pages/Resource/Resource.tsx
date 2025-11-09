@@ -61,12 +61,17 @@ const ResourcePage: React.FC = () => {
           background:
             "linear-gradient(to right, #f1eadfff 0%, #D6EAF8 60%, #D6EAF8 100%)",
         }}>
-        <div className="flex items-center mb-6">
-          <i className="far fa-clone text-4xl mr-4 text-white"></i>
-          <span className="text-3xl font-bold text-black">
-            📖 Danh sách bài học
-          </span>
-        </div>
+        <div className="flex flex-col items-start mb-6">
+        <i className="far fa-clone text-4xl mr-4 text-white"></i>
+        <span className="text-3xl font-bold text-black">
+          📖 Danh sách bài học
+        </span>
+      </div>
+
+      {/* Mô tả */}
+      <p className="text-gray-600 mt-2 text-lg max-w-full">
+        Danh sách bài học và tài liệu giúp bạn ôn luyện và cải thiện kỹ năng TOEIC của mình.
+      </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start justify-center px-4 lg:px-8">

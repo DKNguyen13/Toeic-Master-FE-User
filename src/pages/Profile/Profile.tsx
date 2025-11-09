@@ -118,7 +118,7 @@ const getVipConfig = (type: string | null) => {
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100 opacity-20 rounded-full -mr-24 -mt-24"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-100 opacity-20 rounded-full -ml-24 -mb-24"></div>
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">Thông tin tài khoản</h1>
+          <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Thông tin tài khoản</h1>
           <p className="text-gray-500">Quản lý thông tin cá nhân của bạn</p>
         </div>
 

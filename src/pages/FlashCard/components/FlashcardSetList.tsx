@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useRef, useState } from "react";
 import LoginModal from "../../../layouts/common/LoginModal";
-import { Book, Inbox, Search, Star } from "lucide-react";
+import { Book, Inbox, Search, Star, Trash } from "lucide-react";
 
 export interface FlashcardSet {
   _id?: string;
@@ -167,7 +167,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">📖</span>
+            <Book className="text-white text-2xl" />
                       </div>
                       {type === "myList" && isLoggedIn && (
                         <button 
@@ -175,9 +175,8 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                             e.stopPropagation();
                             handleDelete(set._id!);
                           }}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-50"
-                        >
-                          <span className="text-red-500 text-lg">🗑️</span>
+                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-50">
+                          <Trash className="text-red-500 text-lg" />
                         </button>
                       )}
                     </div>

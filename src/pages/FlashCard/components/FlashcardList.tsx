@@ -181,7 +181,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 id="mode"
                 value={mode} 
                 onChange={(e) => setMode(e.target.value)}
-                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white hover:border-gray-300">
+                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                 <option value="Xem toàn bộ thẻ">📖 Xem toàn bộ thẻ</option>
                 <option value="Ngẫu nhiên">🔀 Ngẫu nhiên</option>
                 <option value="Trắc nghiệm">🎯 Trắc nghiệm</option>
@@ -194,10 +194,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <select 
                   value={quizDirection} 
                   onChange={(e) => setQuizDirection(e.target.value as any)}
-                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white hover:border-gray-300"
-                >
-                  <option value="en2vi">🇺🇸 Anh → 🇻🇳 Việt</option>
-                  <option value="vi2en">🇻🇳 Việt → 🇺🇸 Anh</option>
+                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
+                  <option value="en2vi">Anh → Việt</option>
+                  <option value="vi2en">Việt → Anh</option>
                 </select>
               </div>
             )}
@@ -211,9 +210,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               <div className="w-full max-w-2xl">
                 <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
                   <div className="text-center mb-6">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mb-4">
-                      <span className="text-2xl text-white">🎯</span>
-                    </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">
                       {quizDirection === "en2vi" ? correctCard?.word : correctCard?.meaning}
                     </h2>
@@ -248,10 +244,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                   
                   {selectedOption && (
                     <div className="text-center">
-                      <button 
-                        onClick={handleNextQuiz} 
-                        className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg"
-                      >
+                      <button onClick={handleNextQuiz} 
+                        className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg">
                         Câu tiếp theo →
                       </button>
                     </div>

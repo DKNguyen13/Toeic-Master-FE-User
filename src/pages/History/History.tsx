@@ -109,21 +109,17 @@ const HistoryPage: React.FC = () => {
   if (!sessions) return <p className="text-center">No result found</p>;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex">
+      {/* Left Sidebar */}
+        <LeftSidebarUser customHeight="h-auto w-64" />
       {/* Phần trên: LeftSidebar + Biểu đồ */}
       <div className="flex-1 flex pl-8 pr">
-        {/* Left Sidebar */}
-        <LeftSidebarUser customHeight="h-auto w-64" />
-
         {/* Khu vực Biểu đồ (Tổng quan) */}
         <div className="flex-1 p-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
-            Lịch sử làm bài
-          </h1>
-
-          <div className="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row gap-6">
+          <h1 className="text-3xl text-center font-bold text-gray-800 mb-6">Lịch sử làm bài</h1>
+          <div className="bg-white border-2 rounded-lg shadow p-6 flex flex-col md:flex-row gap-6">
             {/* Biểu đồ điểm trung bình */}
-            <div className="flex-1 flex flex-col items-center justify-center border-r border-gray-200 pr-6">
+            <div className="flex-1 flex flex-col items-center justify-center border-r border-gray-300 pr-6">
               <h2 className="text-xl font-semibold mb-4">Thống kê điểm số</h2>
               {statsLoading ? (
                 <div className="w-full h-64 flex items-center justify-center">

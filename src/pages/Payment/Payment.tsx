@@ -98,7 +98,12 @@ const PaymentPage: React.FC = () => {
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
               <p className="text-gray-600 mt-4">Đang tải gói dịch vụ...</p>
             </div>
-          ) : (
+          ) : packages.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              <AlertCircle className="mx-auto mb-4 w-10 h-10 text-red-400" />
+              <p>Hiện chưa có gói dịch vụ nào. Vui lòng quay lại sau!</p>
+            </div>
+          ): (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
               {packages.map((pkg) => {
                 const discountPercent = getDiscountPercent(

@@ -21,11 +21,14 @@ const BannerSlider = () => {
           dynamicBullets: true,
         }}
         autoplay={{
-          delay: 5000,
+          delay: 4500,
           disableOnInteraction: false,
+          waitForTransition: false,
         }}
         loop={true}
-        speed={800}
+        speed={600}
+        grabCursor={true}
+        watchSlidesProgress={true}
         className="banner-swiper"
       >
         {/* Slide 1: Main Banner */}
@@ -89,7 +92,7 @@ const BannerSlider = () => {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-tr from-yellow-400/30 to-orange-500/30 rounded-full blur-3xl"></div>
                   <img
-                    src="src/assets/images/banner-img.svg"
+                    src="src/assets/images/banner-img.png"
                     alt="TOEIC Learning"
                     className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
                   />
@@ -159,7 +162,7 @@ const BannerSlider = () => {
                 </div>
               </div>
 
-              <div className="flex-1 hidden lg:flex justify-center items-center">
+              <div className="flex-1 hidden lg:flex justify-center items-end">
                 <div className="relative">
                   <div className="absolute inset-0 bg-white/30 rounded-full blur-3xl animate-pulse"></div>
                   <img
@@ -238,7 +241,7 @@ const BannerSlider = () => {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-tr from-green-400/30 to-teal-500/30 rounded-full blur-3xl"></div>
                   <img
-                    src="src/assets/images/features-banner.svg"
+                    src="src/assets/images/features-banner.png"
                     alt="Study Features"
                     className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
                   />

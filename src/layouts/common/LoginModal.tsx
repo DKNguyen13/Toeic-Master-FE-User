@@ -87,6 +87,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
             <input
               type="email"
               placeholder="Nhập email của bạn"
+              maxLength={40}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none ${
@@ -101,6 +102,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
             <label className="text-gray-700 text-sm font-medium block mb-2">Mật khẩu</label>
             <div className="relative">
               <input type={showPassword ? "text" : "password"}
+                maxLength={50}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -121,6 +123,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
               </button>
             </div>
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+          </div>
+
+          {/* Options */}
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center text-gray-600 cursor-pointer">
+              <input type="checkbox" className="mr-2 w-4 h-4 accent-indigo-600 rounded" />
+                Nhớ mật khẩu
+              </label>
+            <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">Quên mật khẩu?</Link>
           </div>
 
           {/* Submit */}

@@ -142,8 +142,8 @@ const Login: React.FC = () => {
         <div className="w-full">
           <form onSubmit={handleLogin} className="bg-white rounded-3xl shadow-2xl p-10 backdrop-blur-sm bg-opacity-98 border border-gray-100 max-w-md mx-auto">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Đăng nhập</h1>
-              <p className="text-xl text-gray-600 mt-2">Tiếp tục hành trình chinh phục TOEIC</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-3">Đăng nhập</h1>
+              <p className="text-lg text-gray-600 mt-2">Tiếp tục hành trình chinh phục TOEIC</p>
             </div>
 
             {errors.general && (

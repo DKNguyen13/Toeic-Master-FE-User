@@ -27,6 +27,7 @@ import FlashcardListPage from "../pages/FlashCard/FlashcardListPage";
 import TestList from "../pages/MockTest/TestList";
 import HomePage from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
+import Feat from "../pages/Login/FeaturesPage";
 import NotFound from "../pages/NotFound/NotFound";
 import Terms from "../pages/Info/Terms";
 import Privacy from "../pages/Info/Privacy";
@@ -54,6 +55,14 @@ const routes = [
     element: (
       <MainLayout>
         <Login />
+      </MainLayout>
+    ),
+  },
+    {
+    path: "/features", // Trang dành cho Guest (Guest-only)
+    element: (
+      <MainLayout>
+        <Feat />
       </MainLayout>
     ),
   },

@@ -162,7 +162,7 @@ const BannerSlider = () => {
                 </div>
               </div>
 
-              <div className="flex-1 hidden lg:flex justify-center items-end">
+              <div className="flex-1 hidden lg:flex justify-center items-end mt-[155px]">
                 <div className="relative">
                   <div className="absolute inset-0 bg-white/30 rounded-full blur-3xl animate-pulse"></div>
                   <img

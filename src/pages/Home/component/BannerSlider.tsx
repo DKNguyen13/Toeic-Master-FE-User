@@ -1,26 +1,24 @@
 import { Link } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Sparkles, TrendingUp, Award, BookOpen, Users, Target } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
 import './BannerSlider.css';
 
 const BannerSlider = () => {
   return (
-    <div className="relative w-full bg-blue-500"> {/* Thêm background xanh ở container */}
+    <div className="relative w-full overflow-hidden">
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={0}
         slidesPerView={1}
         navigation
-        pagination={{ 
+        pagination={{
           clickable: true,
-          dynamicBullets: true 
+          dynamicBullets: true,
         }}
         autoplay={{
           delay: 5000,
@@ -30,141 +28,227 @@ const BannerSlider = () => {
         speed={800}
         className="banner-swiper"
       >
-        {/* Slide 1: Giới thiệu */}
+        {/* Slide 1: Main Banner */}
         <SwiperSlide>
-          <div className="flex bg-blue-500 gap-8 min-h-[35vh] pt-5">
-            <div className="flex-[65%] pt-6 hidden md:block">
-              <div className="text-white space-y-6 ml-[12%] mt-[2%] p-6">
-                {/* Title */}
-                  <h1 className="text-2xl md:text-4xl font-bold text-white mb-6 leading-tight">
-                    Nền tảng thi thử TOEIC®<br />
-                    trực tuyến hàng đầu
-                  </h1>
+          <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-300 rounded-full blur-3xl"></div>
+            </div>
+            
+            <div className="relative flex flex-col lg:flex-row items-center gap-8 h-[600px] px-6 lg:px-16 py-8">
+              <div className="flex-1 text-white space-y-4 z-10">
+                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-sm font-medium border border-white/20">
+                  <Sparkles className="w-4 h-4 text-yellow-300" />
+                  <span>Nền tảng TOEIC #1 Việt Nam</span>
+                </div>
 
-                  {/* Features */}
-                  <div className="space-y-3 mb-8">
-                    <div className="flex items-start gap-3 text-white/95">
-                      <CheckCircle className="text-green-300 mt-1 flex-shrink-0" size={20} />
-                      <p className="text-base md:text-lg">Tuyển tập đề thi sát với kỳ thi thật nhất</p>
-                    </div>
-                    <div className="flex items-start gap-3 text-white/95">
-                      <CheckCircle className="text-green-300 mt-1 flex-shrink-0" size={20} />
-                      <p className="text-base md:text-lg">Đánh giá chính xác năng lực của bạn</p>
-                    </div>
-                    <div className="flex items-start gap-3 text-white/95">
-                      <CheckCircle className="text-green-300 mt-1 flex-shrink-0" size={20} />
-                      <p className="text-base md:text-lg">Chatbot AI hỗ trợ học tập 24/7</p>
-                    </div>
-                  </div>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                  Chinh phục<br />
+                  <span className="bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300 bg-clip-text text-transparent">
+                    TOEIC 990
+                  </span>
+                  <br />cùng chúng tôi
+                </h1>
 
+                <p className="text-base md:text-lg text-blue-100 max-w-xl">
+                  Hệ thống học TOEIC thông minh với AI, đề thi chuẩn quốc tế và phương pháp học tập hiệu quả nhất.
+                </p>
 
-                <Link to={"/register"}>
-                  <button className="mt-5 bg-red-500 text-white font-semibold px-6 py-3 rounded-lg hover:bg-orange-600 transition border border-orange-500">
-                    Bắt đầu ngay
-                  </button>
-                </Link>
+                <div className="space-y-2 pt-2">
+                  {[ 
+                    { icon: TrendingUp, text: '10,000+ học viên đạt mục tiêu' },
+                    { icon: Award, text: 'Đề thi sát 99% với đề thật' },
+                    { icon: Sparkles, text: 'AI chatbot hỗ trợ 24/7' }
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-3 group">
+                      <div className="w-8 h-8 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center group-hover:bg-white/20 transition-all border border-white/20">
+                        <item.icon className="w-4 h-4 text-yellow-300" />
+                      </div>
+                      <p className="text-sm md:text-base font-medium">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <Link to="/register">
+                    <button className="group px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-orange-500/50 hover:scale-105 transition-all duration-300">
+                      Bắt đầu miễn phí
+                      <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                    </button>
+                  </Link>
+                  <Link to="/tests">
+                    <button className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/20 transition-all">
+                      Xem đề thi
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
 
-            <div className="flex-[35%] relative hidden md:block">
-              <img
-                src="src/assets/images/banner-img.svg"
-                alt="Banner"
-                className="h-[80%] absolute bottom-0 right-10"
-              />
-            </div>
-
-            {/* Mobile view */}
-            <div className="md:hidden flex flex-col items-center justify-center text-white p-8 w-full mt-[20%]">
-              <h2 className="text-2xl font-bold text-center mb-4">
-                Nền tảng thi thử TOEIC® trực tuyến miễn phí
-              </h2>
-              <Link to={"/register"}>
-                <button className="mt-5 bg-red-500 text-white font-semibold px-6 py-3 rounded-lg">
-                  Bắt đầu ngay
-                </button>
-              </Link>
+              <div className="flex-1 hidden lg:flex justify-center items-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-yellow-400/30 to-orange-500/30 rounded-full blur-3xl"></div>
+                  <img
+                    src="src/assets/images/banner-img.svg"
+                    alt="TOEIC Learning"
+                    className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </SwiperSlide>
 
-        {/* Slide 2: Giảm giá - CÙNG BACKGROUND XANH */}
+        {/* Slide 2: Flash Sale */}
         <SwiperSlide>
-          <div className="flex bg-blue-500 gap-8 min-h-[35vh] pt-5 relative overflow-hidden">
-            {/* Decorative elements - màu vàng/cam để nổi bật trên nền xanh */}
-            <div className="flex-[65%] hidden md:block relative z-10 mb-4">
-              <div className="text-white space-y-6 ml-[12%] mt-[2%] p-6">
-              {/* Discount Badge */}
-              <div className="inline-flex items-center gap-4 mb-6">
-                {/* Vòng tròn 50% OFF */}
-                <div className="relative w-36 h-36 flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-red-500 via-red-600 to-orange-500 shadow-[0_0_30px_rgba(255,0,0,0.6)] animate-[pulse-glow_2s_infinite]">
-                  <span className="text-5xl font-extrabold text-white drop-shadow-lg">50%</span>
-                  <span className="text-lg font-semibold text-yellow-200 drop-shadow-md">OFF</span>
+          <div className="relative bg-gradient-to-br from-red-600 via-orange-600 to-yellow-500 overflow-hidden">
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-yellow-200 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            </div>
 
-                  {/* Viền ngoài sáng nhẹ */}
-                  <div className="absolute inset-0 rounded-full border-4 border-white/40 blur-sm"></div>
-                </div>
-
-                {/* Nút HOT DEAL */}
-                <div className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white px-5 py-3 rounded-xl font-extrabold text-xl shadow-lg hover:scale-105 hover:shadow-2xl transition-all duration-300">
-                  🔥 HOT DEAL
-                </div>
-              </div>
-
-
-                <h2 className="text-4xl font-bold">
-                  Khuyến Mãi Đặc Biệt - Giảm Giá Sốc!
-                </h2>
-
-                <div className="flex items-center gap-4 mt-6">
-                  <Link to={"/payment"}>
-                    <button className="bg-gradient-to-r from-red-400 to-red-500 text-white font-bold px-8 py-4 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition shadow-xl hover:shadow-2xl transform hover:scale-105 text-lg">
-                      🛒 Mua Ngay - Tiết Kiệm 50%
-                    </button>
-                  </Link>
-                  <div className="text-white">
-                    <div className="text-sm line-through opacity-75">999.000đ</div>
-                    <div className="text-3xl font-bold">499.000đ</div>
+            <div className="relative flex flex-col lg:flex-row items-center gap-8 h-[600px] px-6 lg:px-16 py-8">
+              <div className="flex-1 text-white space-y-4 z-10">
+                <div className="inline-flex items-center gap-3 mb-2">
+                  <div className="relative">
+                    <div className="w-20 h-20 rounded-full bg-white flex flex-col items-center justify-center shadow-2xl animate-bounce">
+                      <span className="text-3xl font-black text-red-600">50%</span>
+                      <span className="text-xs font-bold text-red-500">OFF</span>
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center text-lg animate-pulse">
+                      🔥
+                    </div>
+                  </div>
+                  <div className="bg-yellow-400 text-red-700 px-5 py-2 rounded-lg font-black text-base shadow-lg transform -rotate-2">
+                    FLASH SALE
                   </div>
                 </div>
 
-                <div className="text-sm mt-4 bg-red-500 bg-opacity-80 inline-block px-4 py-2 rounded-lg shadow-lg">
-                  ⏰ Ưu đãi có giới hạn - Chỉ còn <span className="font-bold text-yellow-200">48 giờ</span>
+                <h2 className="text-3xl md:text-4xl font-black leading-tight">
+                  Ưu đãi đặc biệt<br />
+                  <span className="text-yellow-300">cuối năm!</span>
+                </h2>
+
+                <p className="text-lg text-white/90 max-w-xl font-medium">
+                  Nâng cấp Premium ngay hôm nay và nhận ngay 6 tháng học với mức giá ưu đãi chưa từng có!
+                </p>
+
+                <div className="flex items-end gap-4 pt-2">
+                  <div className="text-white/80">
+                    <div className="text-sm font-medium line-through">Giá gốc</div>
+                    <div className="text-xl font-bold line-through">999.000đ</div>
+                  </div>
+                  <div className="text-white pb-1">→</div>
+                  <div className="bg-white/20 backdrop-blur-md rounded-2xl px-5 py-2 border-2 border-white/40">
+                    <div className="text-xs font-medium text-yellow-300">Giá ưu đãi</div>
+                    <div className="text-3xl font-black">499.000đ</div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <Link to="/payment">
+                    <button className="group px-6 py-3 bg-white text-red-600 font-black rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-base">
+                      🛒 Mua ngay - Tiết kiệm 500K
+                      <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                    </button>
+                  </Link>
+                </div>
+
+                <div className="inline-flex items-center gap-2 bg-red-900/50 backdrop-blur-sm px-4 py-2 rounded-lg text-sm font-bold border border-white/30">
+                  ⏰ Chỉ còn <span className="text-yellow-300 text-base mx-1">48 giờ</span> - Nhanh tay!
+                </div>
+              </div>
+
+              <div className="flex-1 hidden lg:flex justify-center items-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-white/30 rounded-full blur-3xl animate-pulse"></div>
+                  <img
+                    src="src/assets/images/discount-banner.png"
+                    alt="Special Offer"
+                    className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-110 transition-transform duration-500"
+                  />
                 </div>
               </div>
             </div>
+          </div>
+        </SwiperSlide>
 
-            <div>
-              <img
-                src="src/assets/images/discount-banner.png"
-                alt="Discount Banner"
-                className="h-[80%] absolute bottom-0 right-10 opacity-20 md:opacity-100 hidden md:block"
-              />
+        {/* Slide 3: Study Features */}
+        <SwiperSlide>
+          <div className="relative bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-1/3 left-1/3 w-80 h-80 bg-white rounded-full blur-3xl"></div>
+              <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-green-300 rounded-full blur-3xl"></div>
             </div>
-            
 
-            {/* Mobile view */}
-            <div className="md:hidden flex flex-col items-center justify-center text-white p-8 w-full">
-              <div className="bg-gradient-to-br from-red-400 to-red-500 rounded-full w-32 h-32 flex flex-col items-center justify-center shadow-2xl mb-6">
-                <span className="text-5xl font-black text-white">50%</span>
-                <span className="text-lg font-bold text-white">OFF</span>
+            <div className="relative flex flex-col lg:flex-row items-center gap-8 h-[600px] px-6 lg:px-16 py-8">
+              <div className="flex-1 text-white space-y-4 z-10">
+                <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-sm font-medium border border-white/20">
+                  <BookOpen className="w-4 h-4 text-green-300" />
+                  <span>Học thông minh hơn</span>
+                </div>
+
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                  Phương pháp học<br />
+                  <span className="bg-gradient-to-r from-green-300 via-emerald-300 to-teal-300 bg-clip-text text-transparent">
+                    Độc quyền
+                  </span>
+                  <br />cho bạn
+                </h2>
+
+                <p className="text-base md:text-lg text-emerald-100 max-w-xl">
+                  Kết hợp công nghệ AI và phương pháp học khoa học để giúp bạn tiến bộ nhanh chóng và hiệu quả.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                  {[ 
+                    { icon: Target, title: 'Lộ trình cá nhân', desc: 'Phù hợp với trình độ' },
+                    { icon: BookOpen, title: '500+ đề thi thật', desc: 'Cập nhật liên tục' },
+                    { icon: Users, title: 'Cộng đồng 50K+', desc: 'Học cùng nhau' },
+                    { icon: Sparkles, title: 'AI đánh giá', desc: 'Phản hồi tức thì' }
+                  ].map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 hover:bg-white/15 transition-all group">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                        <item.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm">{item.title}</p>
+                        <p className="text-xs text-emerald-100">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-4">
+                  <Link to="/features">
+                    <button className="group px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-green-500/50 hover:scale-105 transition-all duration-300">
+                      Khám phá tính năng
+                      <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                    </button>
+                  </Link>
+                  <Link to="/register">
+                    <button className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl border-2 border-white/30 hover:bg-white/20 transition-all">
+                      Dùng thử miễn phí
+                    </button>
+                  </Link>
+                </div>
               </div>
-              <h2 className="text-3xl font-bold text-center mb-4">
-                Giảm Giá Đặc Biệt!
-              </h2>
-              <p className="text-lg text-center mb-6">
-                Premium 6 tháng chỉ còn <span className="font-bold text-yellow-300">499.000đ</span>
-              </p>
-              <Link to={"/pricing"}>
-                <button className="bg-gradient-to-r from-red-400 to-red-500 text-white font-bold px-8 py-4 rounded-lg shadow-xl">
-                  Mua Ngay
-                </button>
-              </Link>
+
+              <div className="flex-1 hidden lg:flex justify-center items-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-green-400/30 to-teal-500/30 rounded-full blur-3xl"></div>
+                  <img
+                    src="src/assets/images/features-banner.svg"
+                    alt="Study Features"
+                    className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </SwiperSlide>
       </Swiper>
-      </div>
+    </div>
   );
 };
 

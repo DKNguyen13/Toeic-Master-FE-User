@@ -252,7 +252,19 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
-                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                <p className="text-red-500 text-sm mt-2">
+                  {error.includes("Nâng cấp VIP") ? (
+                    <>
+                      Bạn đã đạt giới hạn bộ flashcard.{" "}
+                      <a href="/payment" className="text-blue-500">
+                        Nâng cấp VIP
+                      </a>{" "}
+                      để tạo thêm!
+                    </>
+                  ) : (
+                    error
+                  )}
+                </p>
               </div>
               
               <div>

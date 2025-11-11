@@ -1,16 +1,17 @@
-import api, { isLoggedIn } from "../../config/axios";
 import React, { useState, useEffect } from "react";
+import api, { isLoggedIn } from "../../config/axios";
 import ResourceCard from "../../components/ResourceCard";
+import { Book, BookOpen, Clipboard, Layers, Search, Video } from "lucide-react";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 
 const itemsPerPage = 9;
 
 const types = [
-  { key: "all", label: "Tất cả" },
-  { key: "vocabulary", label: "Từ vựng" },
-  { key: "reading", label: "Đọc hiểu" },
-  { key: "grammar", label: "Ngữ pháp" },
-  { key: "video", label: "Video bài giảng" },
+  { key: "all", label: "Tất cả", icon: <Layers className="w-5 h-5 text-gray-400" /> },
+  { key: "vocabulary", label: "Từ vựng", icon: <Book className="w-5 h-5 text-gray-400" /> },
+  { key: "reading", label: "Đọc hiểu", icon: <BookOpen className="w-5 h-5 text-gray-400" /> },
+  { key: "grammar", label: "Ngữ pháp", icon: <Clipboard className="w-5 h-5 text-gray-400" /> },
+  { key: "video", label: "Video bài giảng", icon: <Video className="w-5 h-5 text-gray-400" /> },
 ];
 
 const ResourcePage: React.FC = () => {
@@ -78,54 +79,79 @@ const ResourcePage: React.FC = () => {
         <div className="container mx-auto py-8">
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Sidebar */}
-            <aside className="lg:w-80 bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-gray-200/50 transition-all duration-300 hover:shadow-2xl">
-              {/* Search Box */}
-              <div className="mb-6 relative">
-                <input type="text"
-                  placeholder="Tìm kiếm tài nguyên..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    setSearchTerm(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  className="w-full pl-10 pr-4 py-3 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 transition-all bg-white/80"
-                />
-                <svg xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 absolute left-3 top-3.5 text-gray-400"
-                  fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}>
-                  <path strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-4.35-4.35M11 19a8 8 0 100-16 8 8 0 000 16z"
-                  />
-                </svg>
-              </div>
+            <aside className="lg:w-80 flex-shrink-0">
+              <div className="sticky top-6 space-y-6">
+                {/* Search Box */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                    Tìm kiếm
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input 
+                      type="text"
+                      placeholder="Nhập từ khóa..."
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1);
+                      }}
+                      className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white transition-all text-sm"
+                    />
+                  </div>
+                </div>
 
-              {/* Navigation */}
-              <nav>
-                <ul className="space-y-2 text-gray-700">
-                  {types.map((t) => (
-                    <li key={t.key}>
+                {/* Filter Navigation */}
+                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                  <label className="block text-sm font-bold text-gray-700 mb-4">
+                    Loại bài học
+                  </label>
+                  <nav className="space-y-2">
+                    {types.map((t) => (
                       <button
+                        key={t.key}
                         onClick={() => {
                           setSelectedType(t.key);
                           setCurrentPage(1);
                         }}
-                        className={`w-full flex items-center gap-3 text-left px-4 py-3 rounded-xl transition-all duration-200 ${
+                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
                           selectedType === t.key
-                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-md transform scale-105"
-                            : "hover:bg-gray-100 text-gray-600 hover:shadow-sm"
-                        }`}>
-                        <div className={`w-2 h-2 rounded-full ${
-                          selectedType === t.key ? "bg-white" : "bg-gray-300"
-                        }`}></div>
-                        <span className="text-sm font-medium">{t.label}</span>
+                            ? "bg-blue-600 text-white shadow-lg shadow-blue-400/50"
+                            : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                        }`}
+                      >
+                        <div className={`${selectedType === t.key ? "text-white" : "text-gray-400"}`}>
+                          {t.icon}
+                        </div>
+                        <span className="flex-1 text-left">{t.label}</span>
+                        {selectedType === t.key && (
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                        )}
                       </button>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+                    ))}
+                  </nav>
+                </div>
+
+                {/* Stats Card */}
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-lg p-6 text-white">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-lg">Thống kê</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-blue-100 text-sm">Tổng bài học</span>
+                      <span className="font-bold text-xl">{resources.length}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-blue-100 text-sm">Đang hiển thị</span>
+                      <span className="font-bold text-xl">{filteredResources.length}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </aside>
 
             {/* Resource Grid */}

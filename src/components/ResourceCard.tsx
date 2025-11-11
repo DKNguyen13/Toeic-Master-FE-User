@@ -106,7 +106,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ id, imageSrc, title, views,
 
         {/* Button */}
         <button onClick={handleViewDetail}
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
+          className="w-full bg-blue-600 text-white shadow-lg shadow-blue-400/50 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-700 text-white px-5 py-3 rounded-xl font-semibold text-sm shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
           Xem chi tiết
         </button>
       </div>

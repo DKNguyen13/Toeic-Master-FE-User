@@ -34,7 +34,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center group">
                 <Mail className="mr-2 text-blue-300 group-hover:text-white transition-colors duration-300" size={20} />
-                <a href="mailto:nbn18@gmail.com" className="hover:underline">nbn18@gmail.com</a>
+                <a href="mailto:support@toeicmaster.com" className="hover:underline">support@toeicmaster.com</a>
               </li>
               <li className="flex items-center group">
                 <MapPin className="mr-2 text-blue-300 group-hover:text-white transition-colors duration-300" size={20} />

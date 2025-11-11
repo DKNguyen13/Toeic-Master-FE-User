@@ -49,7 +49,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
           {message.isLoading ? (
             <LoadingDots />
           ) : (
-            <p className={`text-sm leading-relaxed ${isBot ? "text-gray-800" : "text-white"}`}>{message.text}</p>
+            <p className={`text-sm leading-relaxed ${isBot ? "text-gray-800" : "text-white"} whitespace-pre-line`}>{message.text}</p>
           )}
         </div>
         <span className="text-xs text-gray-400 mt-1 px-1">

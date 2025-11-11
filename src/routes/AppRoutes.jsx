@@ -28,6 +28,8 @@ import TestList from "../pages/MockTest/TestList";
 import HomePage from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import NotFound from "../pages/NotFound/NotFound";
+import Terms from "../pages/Info/Terms";
+import Privacy from "../pages/Info/Privacy";
 
 const RefreshTokenLoader = () => {
   useRefreshTokenOnLoad();
@@ -79,7 +81,22 @@ const routes = [
       </MainLayout>
     ),
   },
-
+  {
+    path: "/terms",
+    element: (
+      <MainLayout>
+        <Terms />
+      </MainLayout>
+    ),
+  },
+  {
+    path: "/privacy",
+    element: (
+      <MainLayout>
+        <Privacy />
+      </MainLayout>
+    ),
+  },
   {
     path: "/register",
     element: (
@@ -88,7 +105,6 @@ const routes = [
       </MainLayout>
     ),
   },
-
   {
     path: "/tests",
     element: (

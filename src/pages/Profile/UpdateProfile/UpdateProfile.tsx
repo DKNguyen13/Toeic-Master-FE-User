@@ -239,7 +239,7 @@ const UpdateProfile: React.FC = () => {
                   value={fullname}
                   onChange={(e) => setFullname(e.target.value)}
                   placeholder="Nhập họ và tên"
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-transparent transition-all"
                   disabled={loading}
                 />
               </div>
@@ -252,7 +252,7 @@ const UpdateProfile: React.FC = () => {
                 <DatePicker
                   selected={dob ? new Date(dob) : null}
                   onChange={(date: Date | null) => setDob(date ? date.toISOString().split("T")[0] : null)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-700"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-transparent transition-all text-gray-700"
                   dateFormat="yyyy-MM-dd"
                   placeholderText="Chọn ngày sinh"
                   maxDate={new Date()}
@@ -354,7 +354,7 @@ const UpdateProfile: React.FC = () => {
                         onChange={(e) =>
                           setPasswords({ ...passwords, [type + "Password"]: e.target.value } as any)
                         }
-                        className={`w-full px-4 py-3 pr-12 border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all ${
+                        className={`w-full px-4 py-3 pr-12 border rounded-xl focus:border-transparent transition-all ${
                           errorMap[type] ? "border-red-400 bg-red-50" : "border-gray-200"
                         }`}
                         maxLength={50}
@@ -385,7 +385,7 @@ const UpdateProfile: React.FC = () => {
               )}
 
               <div className="flex justify-end pt-4">
-                <button onClick={handlePasswordSubmit} className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2">
+                <button onClick={handlePasswordSubmit} className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2">
                   <Lock size={18} />
                   Đổi mật khẩu
                 </button>

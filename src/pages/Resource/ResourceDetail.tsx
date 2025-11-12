@@ -1,8 +1,8 @@
 import api, { isLoggedIn } from "../../config/axios";
 import { useParams } from "react-router-dom";
-import { FaEye, FaHeart } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import LoginModal from "../../layouts/common/LoginModal";
+import { Eye, Heart } from "lucide-react";
 
 const LessonDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -73,19 +73,19 @@ const LessonDetailPage: React.FC = () => {
       <div className="flex items-center gap-6 text-gray-600 mb-6">
         {/* Views */}
         <div className="flex items-center gap-2">
-          <FaEye className="text-gray-400" />
+          <Eye className="text-gray-400" />
           <span>{lesson.views || 0} lượt xem</span>
         </div>
 
         {/* Favorite */}
         <div className="flex items-center gap-2 cursor-pointer select-none"
           onClick = { handleToggleFavorite }>
-          <FaHeart className = { isFavorite ? "text-red-500" : "text-gray-400"} />
+          <Heart className = { isFavorite ? "text-red-500 fill-red-500" : "text-gray-400"} />
           <span>{favoriteCount} yêu thích</span>
         </div>
 
         {/* Type */}
-        <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm">
+        <span className="px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 font-medium text-sm border border-blue-100 shadow-sm">
           {lesson.type}
         </span>
       </div>

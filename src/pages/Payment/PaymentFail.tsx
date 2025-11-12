@@ -12,7 +12,7 @@ const PaymentFail: React.FC = () => {
       <div className="max-w-lg w-full">
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-[1.02]">
-          {/* Header đỏ nhẹ */}
+          {/* Header */}
           <div className="bg-gradient-to-r from-rose-500 to-red-600 p-8 text-white">
             <div className="flex flex-col items-center">
               <div className="relative">
@@ -30,7 +30,7 @@ const PaymentFail: React.FC = () => {
             </div>
           </div>
 
-          {/* Nội dung */}
+          {/* Content */}
           <div className="p-8 space-y-6">
             <div className="text-center space-y-3">
               <div className="flex justify-center">
@@ -52,7 +52,7 @@ const PaymentFail: React.FC = () => {
               </ul>
             </div>
 
-            {/* Nút hành động chính */}
+            {/* Button */}
             <div className="flex flex-col gap-4">
               <Link
                 to="/payment"
@@ -88,7 +88,7 @@ const PaymentFail: React.FC = () => {
           </div>
         </div>
 
-        {/* Decorative dots - nhẹ nhàng hơn */}
+        {/* Decorative dots */}
         <div className="mt-8 flex justify-center gap-3">
           <div className="w-3 h-3 bg-rose-400 rounded-full animate-pulse"></div>
           <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: "150ms" }}></div>

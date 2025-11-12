@@ -16,9 +16,9 @@ const PaymentSuccess: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 flex items-center justify-center px-4 py-12">
       <div className="max-w-lg w-full">
-        {/* Card chính */}
+        {/* Main card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:scale-[1.02]">
-          {/* Header xanh lá */}
+          {/* Header */}
           <div className="bg-gradient-to-r from-emerald-500 to-green-600 p-8 text-white">
             <div className="flex flex-col items-center">
               <div className="relative">
@@ -36,7 +36,7 @@ const PaymentSuccess: React.FC = () => {
             </div>
           </div>
 
-          {/* Nội dung */}
+          {/* Content */}
           <div className="p-8 space-y-6">
             <div className="text-center">
               <p className="text-gray-600 leading-relaxed">
@@ -51,7 +51,7 @@ const PaymentSuccess: React.FC = () => {
               </p>
             </div>
 
-            {/* Nút hành động */}
+            {/* Button */}
             <div className="flex flex-col gap-4">
               <Link
                 to="/purchase-history"

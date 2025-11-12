@@ -31,6 +31,7 @@ import Feat from "../pages/Login/FeaturesPage";
 import NotFound from "../pages/NotFound/NotFound";
 import Terms from "../pages/Info/Terms";
 import Privacy from "../pages/Info/Privacy";
+import Support from "../pages/Support/Support";
 
 const RefreshTokenLoader = () => {
   useRefreshTokenOnLoad();
@@ -59,6 +60,16 @@ const routes = [
     ),
   },
     {
+    path: "/support",
+    element: (
+      <ProtectedRoute allowedRoles={["admin", "user"]}>
+        <MainLayout>
+          <Support />
+        </MainLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/features", // Trang dành cho Guest (Guest-only)
     element: (
       <MainLayout>

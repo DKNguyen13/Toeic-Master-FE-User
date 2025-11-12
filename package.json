@@ -17,6 +17,7 @@
     "@react-spring/web": "^9.7.5",
     "aos": "^2.3.4",
     "axios": "^1.12.2",
+    "canvas-confetti": "^1.9.4",
     "chart.js": "^4.4.8",
     "class-variance-authority": "^0.7.1",
     "date-fns": "^4.1.0",

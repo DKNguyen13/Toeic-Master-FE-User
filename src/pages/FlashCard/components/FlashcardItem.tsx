@@ -108,9 +108,7 @@ const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, onDelete }) =>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (window.confirm('Bạn có chắc muốn xóa flashcard này?')) {
-                      onDelete(flashcard._id!);
-                    }
+                    onDelete(flashcard._id!);
                   }}
                   className="px-4 py-2 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors duration-200 flex items-center gap-2">
                   <Trash className="text-white text-xl" />

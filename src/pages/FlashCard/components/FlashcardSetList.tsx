@@ -27,6 +27,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: "", description: "" });
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [deleteSetId, setDeleteSetId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -51,6 +52,19 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     }
   };
 
+  const confirmDelete = async () => {
+    if (!deleteSetId) return;
+    try {
+      await api.delete(`/flashcard-set/${deleteSetId}`);
+      setSets(prev => prev.filter(s => s._id !== deleteSetId));
+      showToast("Xóa bộ flashcard thành công!", "success", { autoClose: 1500 });
+    } catch (err: any) {
+      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", { autoClose: 1500 });
+    } finally {
+      setDeleteSetId(null);
+    }
+  };
+
   const handleAdd = async () => {
     if (!isLoggedIn) {
       setShowLoginModal(true);
@@ -71,18 +85,6 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       setError("");
     } catch (err: any) {
       setError(err.response?.data?.message || "Lỗi khi tạo bộ từ vựng!");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Bạn có chắc muốn xóa bộ flashcard này?')) return;
-    
-    try {
-      await api.delete(`/flashcard-set/${id}`);
-      setSets((prev) => prev.filter((s) => s._id !== id));
-      showToast("Xóa bộ flashcard thành công!", "success", { autoClose: 1500 });
-    } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", { autoClose: 1500 });
     }
   };
 
@@ -152,6 +154,32 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
             </div>
             )}
 
+            {/* Modal xác nhận xóa */}
+            {deleteSetId && (
+              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fadeIn">
+                  <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Xác nhận xóa</h2>
+                  <p className="text-gray-600 mb-6">
+                    Bạn có chắc muốn xóa bộ {sets.find(s => s._id === deleteSetId)?.name || ""} này?<br></br> Hành động này không thể hoàn tác.
+                  </p>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      onClick={() => setDeleteSetId(null)}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                    >
+                      Hủy
+                    </button>
+                    <button
+                      onClick={confirmDelete}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Flashcard Sets */}
             {sets.length > 0 ? (
               sets.map((set) => (
@@ -170,7 +198,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(set._id!);
+                            setDeleteSetId(set._id!);
                           }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-50">
                           <Trash className="text-red-500 text-lg" />

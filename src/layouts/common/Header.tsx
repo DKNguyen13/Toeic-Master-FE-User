@@ -296,7 +296,7 @@ const Header: React.FC = () => {
                                 <span className="text-lg">{notification.data.avatarUrl}</span>
                               )}
                             </div> */}
-                            <img className="w-8 h-8 rounded-full object-cover" src={notification.data.avatarUrl}></img>
+                            <img className="w-8 h-8 rounded-full object-cover" src={notification.data?.avatarUrl || "/img/avatar/system.png"} ></img>
                             
                             {/* Content */}
                             <div className="flex-1 min-w-0">
@@ -311,9 +311,9 @@ const Header: React.FC = () => {
                               <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                                 {notification.message}
                               </p>
-                              {notification.data.postTitle && (
+                              {notification.data?.postTitle && (
                                 <p className="text-xs text-blue-600 mt-1 font-medium">
-                                  📝 {notification.data.postTitle}
+                                  📝 {notification.data?.postTitle}
                                 </p>
                               )}
                               <p className="text-xs text-gray-400 mt-1">
@@ -356,7 +356,7 @@ const Header: React.FC = () => {
           {fullname ? (
             <div className="relative">
               <button onClick={() => setOpenMenu(!openMenu)} className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition w-full max-w-xs">
-                <img src={avatarUrl}
+                <img src={avatarUrl || "/img/avatar/default_avatar.jpg"}
                   alt="Avatar"
                   className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                 />

@@ -87,7 +87,7 @@ const Login: React.FC = () => {
             <span className="text-lg font-semibold text-blue-700">TOEIC MASTER</span>
           </div>
 
-          <h1 className="text-5xl font-extrabold text-gray-900 leading-tight">
+          <h1 className="text-5xl font-bold text-gray-900 leading-tight">
             Chinh phục <span className="text-blue-600">TOEIC 990</span> cùng chúng tôi!
           </h1>
 

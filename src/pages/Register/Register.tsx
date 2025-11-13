@@ -151,7 +151,7 @@ const Register: React.FC = () => {
                   value={email}
                   maxLength={40}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
+                  placeholder="Nhập email của bạn"
                   className={`w-full pl-10 pr-4 py-2.5 rounded-xl border-2 bg-white/50 focus:bg-white transition-all outline-none ${
                     errors.email
                       ? "border-red-300 focus:border-red-500"

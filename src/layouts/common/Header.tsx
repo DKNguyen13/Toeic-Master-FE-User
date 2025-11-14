@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import api, { setAccessToken } from "../../config/axios.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/SocketContext.jsx";
-import { FaBell, FaUsers, FaHome, FaClipboardList, FaFileAlt, FaSearch, FaCrown, FaSignOutAlt, FaHistory, FaUser } from "react-icons/fa";
+import { FaBell, FaHome, FaClipboardList, FaFileAlt, FaSearch, FaCrown, FaSignOutAlt, FaHistory, FaUser } from "react-icons/fa";
+import { ClipboardList, History, User, UserCircle } from "lucide-react";
 
 interface Notification {
   _id: string;
@@ -50,8 +51,7 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    // Set initial user
-    updateUser();
+    updateUser(); // Set initial user
 
     const handleUserUpdated = () => updateUser();
     window.addEventListener("userUpdated", handleUserUpdated);
@@ -184,6 +184,12 @@ const Header: React.FC = () => {
     { to: "/payment", label: "Premium", icon: <FaCrown className="text-xl text-yellow-500" />, premium: true },
   ];
 
+  const userMenu = [
+    { label: "Thông tin cá nhân", to: "/profile", icon: <FaUser /> },
+    { label: "Lịch sử làm bài", to: "/history", icon: <FaClipboardList /> },
+    { label: "Lịch sử mua hàng", to: "/purchase-history", icon: <FaHistory /> },
+  ];
+
   const filteredNavLinks = navLinks;
 
   return (
@@ -236,8 +242,7 @@ const Header: React.FC = () => {
                   fetchNotifications(1, true);
                 }
               }}
-              className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition"
-            >
+              className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition">
               <FaBell className="text-xl" />
               {/* Notification badge */}
               {unreadCount > 0 && (
@@ -254,10 +259,8 @@ const Header: React.FC = () => {
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-800">Thông báo</h3>
                   {notifications.some(n => !n.read) && (
-                    <button 
-                      onClick={markAllAsRead}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-                    >
+                    <button onClick={markAllAsRead}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                       Đánh dấu tất cả đã đọc
                     </button>
                   )}
@@ -365,25 +368,23 @@ const Header: React.FC = () => {
 
               {/* User Dropdown */}
               {openMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden z-50 transition transform duration-200 ease-out scale-100 opacity-100">
-                  <Link to="/profile" onClick={() => setOpenMenu(false)}
-                    className="flex items-center px-4 py-3 gap-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium">
-                    <FaUser className="text-lg" />
-                    Thông tin cá nhân
-                  </Link>
-                  <Link to="/history" onClick={() => setOpenMenu(false)}
-                    className="flex items-center px-4 py-3 gap-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium">
-                    <FaClipboardList className="text-lg" />
-                    <span>Lịch sử làm bài</span>
-                  </Link>
-                  <Link to="/purchase-history" onClick={() => setOpenMenu(false)}
-                    className="flex items-center px-4 py-3 gap-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium">
-                    <FaHistory className="text-lg" />
-                    Lịch sử mua hàng
-                  </Link>
-                  <button onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-3 gap-2 text-gray-700 hover:bg-red-50 hover:text-red-500 transition font-medium">
-                    <FaSignOutAlt className="text-lg" />
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden z-50">
+                  {userMenu.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setOpenMenu(false)}
+                      className="flex items-center px-4 py-3 gap-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium"
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center w-full px-4 py-3 gap-2 text-gray-700 hover:bg-red-50 hover:text-red-500 transition font-medium"
+                  >
+                    <FaSignOutAlt />
                     Đăng xuất
                   </button>
                 </div>

@@ -37,7 +37,6 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
     { to: "/profile", icon: UserCircle, label: "Thông tin cá nhân" },
     { to: "/history", icon: ClipboardList, label: "Lịch sử làm bài" },
     { to: "/purchase-history", icon: History, label: "Lịch sử mua hàng" },
-    { to: "/payment", icon: Crown, label: "VIP/Premium" },
     { to: "/support", icon: HelpCircle, label: "Hỗ trợ / Liên hệ" },
   ];
 

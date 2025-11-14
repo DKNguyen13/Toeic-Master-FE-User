@@ -1,5 +1,5 @@
 import React from "react";
-import IcBreadcrumbGbk from "../../../assets/icons/IcBreadcrumbGbk";
+import { ArrowLeft } from "lucide-react";
 
 interface TestHeaderProps {
   session: any;
@@ -15,11 +15,14 @@ const TestHeader: React.FC<TestHeaderProps> = ({
   return (
     <div className="w-full flex items-center justify-between mb-5">
       {/* Return button */}
-      <div
-        className="inline-flex items-center gap-3 text-lg text-main font-normal cursor-pointer"
+      <div className="
+          inline-flex items-center gap-2 text-lg text-main
+          cursor-pointer transition-colors duration-200 
+          hover:text-blue-600
+        "
         onClick={onGoBack}
       >
-        <IcBreadcrumbGbk />
+        <ArrowLeft className="w-4 h-4" />
         <span>{isView ? "Trở về" : "Thoát"}</span>
       </div>
 

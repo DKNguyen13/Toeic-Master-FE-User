@@ -6,7 +6,7 @@ interface NavigationProps {
   questions: Question[];
   currentPart: number;
   currentQuestion: number;
-  answers?: (string | null)[]; // ✅ cho phép optional
+  answers?: (string | null)[]; // Cho phép optional
   onNavigate: (indexInPart: number) => void;
   onSubmit?: () => void;
   time?: number;
@@ -72,7 +72,7 @@ const Navigation: React.FC<NavigationProps> = ({
   // 🔹 Hiển thị nút câu hỏi
   const renderQuestionButtons = () =>
     questionsInPart.map((q, idx) => {
-      // ✅ Kiểm tra có câu trả lời hay không, an toàn hơn
+      // Kiểm tra có câu trả lời hay không, an toàn hơn
       const answered =
         Array.isArray(answers) &&
         typeof answers[q.globalQuestionNumber - 1] === "string" &&

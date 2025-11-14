@@ -49,7 +49,7 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
         shadow-md hover:shadow-2xl
         transition-all duration-300 ease-out
         hover:-translate-y-2
-        group cursor-pointer
+        group
         flex flex-col gap-4
       "
     >

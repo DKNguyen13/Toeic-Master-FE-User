@@ -49,11 +49,19 @@ const Result: React.FC<ResultProps> = ({
 }) => {
   const navigate = useNavigate();
   const handleGoBack = () => {
-    navigate(`/session/view/${id}`);
+    navigate(`/history`);
   };
+  
   const correctPercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
   const wrongPercentage = ((wrongAnswers / totalQuestions) * 100).toFixed(1);
   const skippedPercentage = ((skippedQuestions / totalQuestions) * 100).toFixed(1);
+
+  const stats = [
+    { label: "Tổng số câu hỏi", value: totalQuestions, color: "text-gray-800" },
+    { label: "Số câu bỏ qua", value: skippedQuestions, color: "text-gray-500" },
+    { label: "Số câu đúng", value: correctAnswers, color: "text-green-600" },
+    { label: "Số câu sai", value: wrongAnswers, color: "text-red-500" },
+  ];
 
   // Dữ liệu cho biểu đồ hình tròn
   const data = {
@@ -61,90 +69,114 @@ const Result: React.FC<ResultProps> = ({
     datasets: [
       {
         data: [correctPercentage, wrongPercentage, skippedPercentage],
-        backgroundColor: ["#4CAF50", "#F44336", "#BDBDBD"],
-        hoverBackgroundColor: ["#45a049", "#e53935", "#9E9E9E"],
-        borderColor: "#fff",
-        borderWidth: 1,
+        backgroundColor: ["rgba(34, 197, 94, 0.85)", "rgba(239, 68, 68, 0.85)", "rgba(156, 163, 175, 0.85)"],
+        hoverBackgroundColor: ["rgba(34, 197, 94, 1)", "rgba(239, 68, 68, 1)", "rgba(156, 163, 175, 1)"],
+        borderColor: "#ffffff",
+        borderWidth: 2,
       },
     ],
   };
 
   const options = {
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: function (context: TooltipItem<'pie'>) {
-          const label = context.label || "";
-          const value = context.parsed || 0;
-          return `${label}: ${value}%`;
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context: TooltipItem<'pie'>) {
+            const label = context.label || "";
+            const value = context.parsed || 0;
+            return `${label}: ${value}%`;
+          },
         },
       },
+      legend: {
+        position: "bottom" as const,
+      },
     },
-    legend: {
-      position: "bottom" as const,
-    },
-  },
-};
+  };
 
   return (
-    <div className="max-w-4xl min-w-[700px] mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-center text-3xl font-bold text-blue-700 mb-4">
+    <div className="max-w-4xl min-w-[700px] mx-auto p-6 bg-white rounded-lg shadow-2xl mt-8 mb-8 relative">
+      <button
+        onClick={handleGoBack}
+        className="
+          absolute top-4 left-4
+          px-3 py-1.5
+          bg-gray-100 hover:bg-gray-200
+          text-gray-700 font-medium
+          rounded-lg shadow-md
+          transition
+        ">
+        ← Quay lại
+      </button>
+      <h2 className="text-center text-3xl font-bold text-gray-700 mb-6">
         {testTitle}
       </h2>
 
       {isFullTest && (
         <div className="text-center mb-8">
           <div className="text-7xl text-yellow-500 mb-8">🏆</div>
-          <h1 className="text-4xl font-bold text-gray-800">{`Your Score: ${
+          <h1 className="text-2xl font-bold text-gray-800">{`Your Score: ${
             totalScore ?? 0
           }/990`}</h1>
           <p className="mt-2 text-lg text-gray-500">
-            Đây là trình độ ước tính của bạn. Để cải thiện điểm số, bạn có thể
-            tìm hiểu các tài nguyên học tập của trang web.
+            Đây là trình độ ước tính của bạn. Hãy tham khảo tài nguyên học tập để nâng cao điểm số.
           </p>
         </div>
       )}
 
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Tổng số câu hỏi:</span>
-          <span className="font-semibold text-gray-800">{totalQuestions}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Số câu bỏ qua:</span>
-          <span className="font-semibold text-gray-400">
-            {skippedQuestions}
-          </span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Số câu đúng:</span>
-          <span className="font-semibold text-green-600">{correctAnswers}</span>
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-gray-600">Số câu sai:</span>
-          <span className="font-semibold text-red-500">{wrongAnswers}</span>
-        </div>
+        {stats.map((item) => (
+          <div key={item.label}
+            className="flex justify-between items-center p-4 rounded-lg bg-gray-200 shadow-sm hover:shadow-md transition">
+            <span className="text-gray-600">{item.label}:</span>
+            <span className={`font-semibold ${item.color}`}>{item.value}</span>
+          </div>
+        ))}
       </div>
 
       {isFullTest && (
-        <div className="grid grid-cols-2 text-center mb-16">
-          <div>
-            <p className="text-gray-600">Listening</p>
-            <p className="text-2xl font-semibold text-gray-800">
-              {listeningScore}/495
-            </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
+          {/* Listening Card */}
+          <div className="p-6 bg-gray-50 rounded-xl shadow-md text-center hover:shadow-lg transition">
+            <p className="text-gray-600 font-medium">Listening</p>
+            <p className="text-2xl font-bold text-gray-600 mt-3 mb-3">{listeningScore}/495</p>
+            
+            {/* Progress Bar */}
+            <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div className="h-full bg-gray-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${(listeningScore / 495) * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs font-medium text-gray-500">
+              <span>0</span>
+              <span className="text-gray-600">{((listeningScore / 495) * 100).toFixed(1)}%</span>
+              <span>495</span>
+            </div>
           </div>
-          <div>
-            <p className="text-gray-600">Reading</p>
-            <p className="text-2xl font-semibold text-gray-800">
-              {readingScore}/495
-            </p>
+
+          {/* Reading Card */}
+          <div className="p-6 bg-gray-50 rounded-xl shadow-md text-center hover:shadow-lg transition">
+            <p className="text-gray-600 font-medium">Reading</p>
+            <p className="text-2xl font-bold text-gray-600 mt-3 mb-3">{readingScore}/495</p>
+            
+            {/* Progress Bar */}
+            <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div className="h-full bg-gray-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${(readingScore / 495) * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs font-medium text-gray-500">
+              <span>0</span>
+              <span className="text-gray-600">{((readingScore / 495) * 100).toFixed(1)}%</span>
+              <span>495</span>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Pie Chart */}
       <div className="flex justify-center mb-6">
-        <div className="w-1/2 text-center">
+        <div className="w-2/5 text-center">
           <h3 className="text-xl text-gray-700">Thống kê bài làm</h3>
           <div className="mt-4">
             <Pie data={data} options={options} />
@@ -156,20 +188,12 @@ const Result: React.FC<ResultProps> = ({
         {/* <p className="text-lg text-blue-500">
           Bạn cần cải thiện Phần 3 - Hội thoại ngắn
         </p> */}
-        <div className="space-x-9">
-          <button
-            onClick={handleGoBack}
-            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600"
-          >
-            Xem lại bài làm
-          </button>
-          {/* <button
-            onClick={() => navigate("/leaderboard")}
-            className="mt-4 px-6 py-2 bg-yellow-500 text-white rounded-lg shadow-md hover:bg-yellow-600"
-          >
-            Bảng xếp hạng
-          </button> */}
-        </div>
+        <div className="px-8 pb-8 text-center">
+            <button onClick={() => navigate(`/session/view/${id}`)}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white font-medium rounded-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all duration-200">
+              Xem lại bài làm
+            </button>
+          </div>
       </div>
     </div>
   );

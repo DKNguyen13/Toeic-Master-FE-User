@@ -41,12 +41,12 @@ export const useTestSession = () => {
 
     const selectedLetter = indexToLetter[answerIndex];
     
-    // ✅ Lưu answer letter thay vì index
+    // Lưu answer letter thay vì index
     const updatedAnswers = [...answers];
     updatedAnswers[question.globalQuestionNumber - 1] = selectedLetter;
     setAnswers(updatedAnswers);
 
-    // ✅ Cập nhật unsent answers
+    // Cập nhật unsent answers
     setUnsentAnswers((prev) => {
       const filtered = prev.filter((ans) => ans.questionId !== question._id);
       return [

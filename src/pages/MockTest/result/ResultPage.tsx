@@ -1,6 +1,7 @@
 import React from "react";
 import Result from "./Result";
 import { useResult } from "../hooks/useTestSession";
+import LoadingSkeleton from "../../../components/common/LoadingSpinner/LoadingSkeleton";
 
 const ResultPage: React.FC = () => {
   const {
@@ -9,7 +10,7 @@ const ResultPage: React.FC = () => {
     resultData
   } = useResult();
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (loading) return <LoadingSkeleton/>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (!resultData) return <p className="text-center">No result found</p>;
 

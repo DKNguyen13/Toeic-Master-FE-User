@@ -8,7 +8,7 @@ export function useBlockNavigation(
   const navigate = useNavigate();
   const originalNavigate = useRef(navigate);
 
-  // 1️⃣ Cảnh báo khi reload / đóng tab
+  // Cảnh báo khi reload / đóng tab
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (shouldBlock) {
@@ -20,7 +20,7 @@ export function useBlockNavigation(
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [shouldBlock]);
 
-  // 2️⃣ Chặn click link nội bộ
+  // Chặn click link nội bộ
   useEffect(() => {
     if (!shouldBlock) return;
 
@@ -39,12 +39,12 @@ export function useBlockNavigation(
       }
     };
 
-    // ✅ Thêm useCapture = true
+    // Thêm useCapture = true
     document.addEventListener("click", handleClick, true);
     return () => document.removeEventListener("click", handleClick, true);
   }, [shouldBlock, onConfirmLeave, navigate]);
 
-  // 3️⃣ Ghi đè navigate() trong code
+  // Ghi đè navigate() trong code
   useEffect(() => {
     if (!shouldBlock) return;
 

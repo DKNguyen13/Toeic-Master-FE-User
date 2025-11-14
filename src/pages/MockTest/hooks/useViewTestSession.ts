@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSessionResults } from "../../../service/sessionService";
 import { Question, UserAnswer } from "../interface/interfaces";
-import { da } from "date-fns/locale";
+import { getSessionResults } from "../../../service/sessionService";
 
 export const useViewSession = () => {
   const navigate = useNavigate();
@@ -33,7 +32,7 @@ export const useViewSession = () => {
 
         const data = await getSessionResults(id);
         console.log(data.answers);
-        // ✅ Kiểm tra dữ liệu hợp lệ
+        // Kiểm tra dữ liệu hợp lệ
         if (!data || !data.session || !Array.isArray(data.answers) || data.answers.length === 0) {
           setError("Không tìm thấy dữ liệu cho bài thi này");
           return;

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import LeftSidebarUser from "../../components/LeftSidebarUser";
 import HistoryTestCard from "../../components/HistoryTestCard";
-import { Bar, Doughnut } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { useSessionsUser } from "../MockTest/hooks/useTestSession";
 import { getUserStatistics } from "../../service/sessionService";
 import Pagination from "../../components/common/Pagination/Pagination";
-import { BarChart3, BookOpen, PieChart, TrendingUp } from "lucide-react";
+import { BarChart3, BookOpen, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
@@ -19,8 +19,8 @@ interface HistoryProps {
 }
 
 const chartTypes = [
-  { id: "bar", name: "Cột", icon: BarChart3 },
-  { id: "doughnut", name: "Tròn", icon: PieChart },
+  { id: "bar", name: "Cột dọc", icon: BarChart3 },
+  { id: "horizontal", name: "Cột ngang", icon: BarChart3 },
 ] as const;
 
 type ChartTypeId = typeof chartTypes[number]["id"];
@@ -57,11 +57,13 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
         backgroundColor: ["rgba(249, 115, 22, 0.8)", "rgba(37, 99, 235, 0.8)"],
         borderColor: ["rgb(249, 115, 22)", "rgb(37, 99, 235)"],
         borderWidth: 2,
+        borderRadius: 6,
       },
     ],
   };
 
-  const chartOptions = {
+  const verticalBarOptions = {
+    indexAxis: "x" as const,
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -78,39 +80,44 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
       },
     },
     scales: {
-      y: { beginAtZero: true, max: 495, title: { display: true, text: "Điểm số" } },
+      y: {
+        beginAtZero: true,
+        max: 495,
+        title: { display: true, text: "Điểm số" },
+        grid: { display: false },
+      },
+      x: {
+        grid: { display: false },
+      },
     },
   };
 
-  const maxScore = 495;
-  // const doughnutData = {
-  //   labels: ["Listening", "Reading", "Còn lại"],
-  //   datasets: [
-  //     {
-  //       data: [
-  //         statistics?.averageListeningScore || 0,
-  //         statistics?.averageReadingScore || 0,
-  //         maxScore * 2 - ((statistics?.averageListeningScore || 0) + (statistics?.averageReadingScore || 0)), // phần còn lại
-  //       ],
-  //       backgroundColor: ["rgba(249, 115, 22, 0.8)", "rgba(37, 99, 235, 0.8)", "rgba(200,200,200,0.3)"],
-  //       borderColor: ["rgb(249, 115, 22)", "rgb(37, 99, 235)", "rgba(200,200,200,0.5)"],
-  //       borderWidth: 2,
-  //     },
-  //   ],
-  // };
-  const doughnutData = chartData;
-
-  const doughnutOptions = {
+  const horizontalBarOptions = {
+    indexAxis: "y" as const, // Đây là điểm khác biệt chính
     responsive: true,
     maintainAspectRatio: false,
-    cutout: "60%",
     plugins: {
-      legend: { display: true, position: "bottom" as const },
-      title: { display: true, text: "Điểm trung bình theo kỹ năng", font: { size: 16, weight: "bold" as const } },
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Điểm trung bình theo kỹ năng",
+        font: { size: 16, weight: "bold" as const },
+      },
       tooltip: {
         callbacks: {
-          label: (context: any) => `${context.label}: ${context.parsed} điểm`,
+          label: (context: any) => `${context.parsed.x} điểm`,
         },
+      },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        max: 495,
+        title: { display: true, text: "Điểm số" },
+        grid: { display: false },
+      },
+      y: {
+        grid: { display: false },
       },
     },
   };
@@ -161,7 +168,10 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
                 <div className="w-full h-64 flex items-center justify-center text-gray-400">Chưa có dữ liệu thống kê</div>
               ) : (
                 <div className="w-full h-64">
-                  {selectedChart === "bar" ? <Bar data={chartData} options={chartOptions} /> : <Doughnut data={doughnutData} options={doughnutOptions} />}
+                  <Bar
+                    data={chartData}
+                    options={selectedChart === "bar" ? verticalBarOptions : horizontalBarOptions}
+                  />
                 </div>
               )}
 
@@ -221,7 +231,7 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
                 </div>
                 <h2 className="text-xl font-bold text-gray-800 mb-3">Chưa có lịch sử làm bài</h2>
                 <p className="text-gray-600 text-center max-w-md mb-8">
-                 Bạn chưa có bài thi nào. Hãy bắt đầu làm thử để xem kết quả và theo dõi tiến độ học tập của mình!
+                  Bạn chưa có bài thi nào. Hãy bắt đầu làm thử để xem kết quả và theo dõi tiến độ học tập của mình!
                 </p>
                 <Link to="/tests">
                   <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">

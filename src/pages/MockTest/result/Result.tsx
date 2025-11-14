@@ -11,7 +11,6 @@ import {
   type TooltipItem,
 } from "chart.js";
 import { useNavigate } from "react-router-dom";
-import { Eye } from "lucide-react";
 
 // Đăng ký các phần tử của Chart.js
 ChartJS.register(
@@ -70,30 +69,30 @@ const Result: React.FC<ResultProps> = ({
     datasets: [
       {
         data: [correctPercentage, wrongPercentage, skippedPercentage],
-        backgroundColor: ["#4CAF50", "#F44336", "#BDBDBD"],
-        hoverBackgroundColor: ["#45a049", "#e53935", "#9E9E9E"],
-        borderColor: "#fff",
-        borderWidth: 1,
+        backgroundColor: ["rgba(34, 197, 94, 0.85)", "rgba(239, 68, 68, 0.85)", "rgba(156, 163, 175, 0.85)"],
+        hoverBackgroundColor: ["rgba(34, 197, 94, 1)", "rgba(239, 68, 68, 1)", "rgba(156, 163, 175, 1)"],
+        borderColor: "#ffffff",
+        borderWidth: 2,
       },
     ],
   };
 
   const options = {
-  plugins: {
-    tooltip: {
-      callbacks: {
-        label: function (context: TooltipItem<'pie'>) {
-          const label = context.label || "";
-          const value = context.parsed || 0;
-          return `${label}: ${value}%`;
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context: TooltipItem<'pie'>) {
+            const label = context.label || "";
+            const value = context.parsed || 0;
+            return `${label}: ${value}%`;
+          },
         },
       },
+      legend: {
+        position: "bottom" as const,
+      },
     },
-    legend: {
-      position: "bottom" as const,
-    },
-  },
-};
+  };
 
   return (
     <div className="max-w-4xl min-w-[700px] mx-auto p-6 bg-white rounded-lg shadow-2xl mt-8 mb-8 relative">
@@ -106,11 +105,10 @@ const Result: React.FC<ResultProps> = ({
           text-gray-700 font-medium
           rounded-lg shadow-md
           transition
-        "
-      >
+        ">
         ← Quay lại
       </button>
-      <h2 className="text-center text-3xl font-bold text-gray-700 mb-4">
+      <h2 className="text-center text-3xl font-bold text-gray-700 mb-6">
         {testTitle}
       </h2>
 
@@ -128,9 +126,8 @@ const Result: React.FC<ResultProps> = ({
 
       <div className="grid grid-cols-2 gap-4 mb-8">
         {stats.map((item) => (
-          <div
-            key={item.label}
-            className="flex justify-between items-center p-4 rounded-lg bg-gray-50 shadow-sm hover:shadow-md transition">
+          <div key={item.label}
+            className="flex justify-between items-center p-4 rounded-lg bg-gray-200 shadow-sm hover:shadow-md transition">
             <span className="text-gray-600">{item.label}:</span>
             <span className={`font-semibold ${item.color}`}>{item.value}</span>
           </div>
@@ -138,18 +135,41 @@ const Result: React.FC<ResultProps> = ({
       </div>
 
       {isFullTest && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center mb-16">
-          <div className="p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
-            <p className="text-gray-500 font-medium">Listening</p>
-            <p className="text-3xl font-bold text-gray-600 mt-2">
-              {listeningScore}/495
-            </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
+          {/* Listening Card */}
+          <div className="p-6 bg-gray-50 rounded-xl shadow-md text-center hover:shadow-lg transition">
+            <p className="text-gray-600 font-medium">Listening</p>
+            <p className="text-2xl font-bold text-gray-600 mt-3 mb-3">{listeningScore}/495</p>
+            
+            {/* Progress Bar */}
+            <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div className="h-full bg-gray-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${(listeningScore / 495) * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs font-medium text-gray-500">
+              <span>0</span>
+              <span className="text-gray-600">{((listeningScore / 495) * 100).toFixed(1)}%</span>
+              <span>495</span>
+            </div>
           </div>
-          <div className="p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition">
-            <p className="text-gray-500 font-medium">Reading</p>
-            <p className="text-3xl font-bold text-gray-600 mt-2">
-              {readingScore}/495
-            </p>
+
+          {/* Reading Card */}
+          <div className="p-6 bg-gray-50 rounded-xl shadow-md text-center hover:shadow-lg transition">
+            <p className="text-gray-600 font-medium">Reading</p>
+            <p className="text-2xl font-bold text-gray-600 mt-3 mb-3">{readingScore}/495</p>
+            
+            {/* Progress Bar */}
+            <div className="h-3 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div className="h-full bg-gray-500 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${(readingScore / 495) * 100}%` }}
+              ></div>
+            </div>
+            <div className="flex justify-between text-xs font-medium text-gray-500">
+              <span>0</span>
+              <span className="text-gray-600">{((readingScore / 495) * 100).toFixed(1)}%</span>
+              <span>495</span>
+            </div>
           </div>
         </div>
       )}
@@ -169,10 +189,9 @@ const Result: React.FC<ResultProps> = ({
           Bạn cần cải thiện Phần 3 - Hội thoại ngắn
         </p> */}
         <div className="px-8 pb-8 text-center">
-            <button
-              onClick={() => navigate(`/session/view/${id}`)}
+            <button onClick={() => navigate(`/session/view/${id}`)}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white font-medium rounded-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all duration-200">
-              <Eye/>Xem lại bài làm
+              Xem lại bài làm
             </button>
           </div>
       </div>

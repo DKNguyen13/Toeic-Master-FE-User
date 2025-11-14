@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Send, MessageCircle, X, Minimize2, Sparkles, Bot, User } from "lucide-react";
 import socketService from "../../service/socket";
+import { Send, MessageCircle, X, Minimize2, Sparkles, Bot, User } from "lucide-react";
 
 // Types
 interface Message {
@@ -118,8 +118,7 @@ const ChatInput = ({
                    hover:from-blue-600 hover:to-blue-700 
                    disabled:opacity-50 disabled:cursor-not-allowed
                    transition-all duration-200 hover:scale-105 active:scale-95
-                   shadow-md"
-      >
+                   shadow-md">
         <Send className="w-4 h-4" />
       </button>
     </div>
@@ -181,7 +180,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http:
         socket.off("disconnect");
         socket.off("response");
         socket.off("error");
-        socketService.disconnect(); // cleanup connection
+        socketService.disconnect();
       };
     }
   }, [isOpen, socketUrl]);

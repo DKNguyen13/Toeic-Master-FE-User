@@ -114,7 +114,7 @@
 //       ))}
 //       {showCorrectAns && correctLetter && (
 //         <p className="text-sm text-green-600 font-semibold mt-2">
-//           ✅ Đáp án đúng: {correctLetter}
+//           Đáp án đúng: {correctLetter}
 //         </p>
 //       )}
 //     </div>
@@ -235,7 +235,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
 
       {showCorrectAns && correctLetter && (
         <p className="text-sm text-green-600 font-semibold mt-2">
-          ✅ Đáp án đúng: {correctLetter}
+          Đáp án đúng: {correctLetter}
         </p>
       )}
     </div>

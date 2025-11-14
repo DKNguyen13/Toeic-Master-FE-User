@@ -2,7 +2,7 @@ import React from "react";
 import { showToast } from "../utils/toast.js";
 import { Link, useNavigate } from "react-router-dom";
 import api, { setAccessToken } from "../config/axios.js";
-import { Crown, LogOut, UserCircle, ClipboardList, History, HelpCircle } from "lucide-react";
+import { LogOut, UserCircle, ClipboardList, History, HelpCircle, Crown } from "lucide-react";
 
 interface LeftSidebarUserProps {
   customHeight?: string;
@@ -36,7 +36,8 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
     const menuItems = [
     { to: "/profile", icon: UserCircle, label: "Thông tin cá nhân" },
     { to: "/history", icon: ClipboardList, label: "Lịch sử làm bài" },
-    { to: "/purchase-history", icon: History, label: "Lịch sử mua hàng" },
+    { to: "/purchase-history", icon: History, label: "Lịch sử mua hàng"},
+    { to: "/payment", icon: Crown, label: "VIP/Premium" },
     { to: "/support", icon: HelpCircle, label: "Hỗ trợ / Liên hệ" },
   ];
 

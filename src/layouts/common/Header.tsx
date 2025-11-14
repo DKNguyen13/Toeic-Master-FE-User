@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import api, { setAccessToken } from "../../config/axios.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/SocketContext.jsx";
-import { FaBell, FaHome, FaClipboardList, FaFileAlt, FaSearch, FaCrown, FaSignOutAlt, FaHistory, FaUser } from "react-icons/fa";
-import { ClipboardList, History, User, UserCircle } from "lucide-react";
+import { FaBell, FaHome, FaFileAlt, FaSearch, FaCrown, FaClipboardList } from "react-icons/fa";
+import { ClipboardList, HelpCircle, History, LogOut, UserCircle } from "lucide-react";
 
 interface Notification {
   _id: string;
@@ -29,6 +29,7 @@ interface PaginationInfo {
   hasNext: boolean;
   hasPrev: boolean;
 }
+
 const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -185,9 +186,10 @@ const Header: React.FC = () => {
   ];
 
   const userMenu = [
-    { label: "Thông tin cá nhân", to: "/profile", icon: <FaUser /> },
-    { label: "Lịch sử làm bài", to: "/history", icon: <FaClipboardList /> },
-    { label: "Lịch sử mua hàng", to: "/purchase-history", icon: <FaHistory /> },
+    { label: "Thông tin cá nhân", to: "/profile", icon: <UserCircle /> },
+    { label: "Lịch sử làm bài", to: "/history", icon: <ClipboardList /> },
+    { label: "Lịch sử mua hàng", to: "/purchase-history", icon: <History /> },
+    { label: "Hỗ trợ / Liên hệ", to: "/support", icon: <HelpCircle/>  }
   ];
 
   const filteredNavLinks = navLinks;
@@ -374,17 +376,14 @@ const Header: React.FC = () => {
                       key={item.to}
                       to={item.to}
                       onClick={() => setOpenMenu(false)}
-                      className="flex items-center px-4 py-3 gap-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium"
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
+                      className="flex items-center text-sm px-4 py-3 gap-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition font-medium">
+                      {React.cloneElement(item.icon, { size: 16 })}
+                      <span className="truncate">{item.label}</span>
                     </Link>
                   ))}
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-3 gap-2 text-gray-700 hover:bg-red-50 hover:text-red-500 transition font-medium"
-                  >
-                    <FaSignOutAlt />
+                  <button onClick={handleLogout}
+                    className="flex items-center text-sm w-full px-4 py-3 gap-2 text-gray-700 hover:bg-red-50 hover:text-red-500 transition font-medium">
+                    <LogOut size={16}/>
                     Đăng xuất
                   </button>
                 </div>

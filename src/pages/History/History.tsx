@@ -83,21 +83,22 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
   };
 
   const maxScore = 495;
-  const doughnutData = {
-    labels: ["Listening", "Reading", "Còn lại"],
-    datasets: [
-      {
-        data: [
-          statistics?.averageListeningScore || 0,
-          statistics?.averageReadingScore || 0,
-          maxScore * 2 - ((statistics?.averageListeningScore || 0) + (statistics?.averageReadingScore || 0)), // phần còn lại
-        ],
-        backgroundColor: ["rgba(249, 115, 22, 0.8)", "rgba(37, 99, 235, 0.8)", "rgba(200,200,200,0.3)"],
-        borderColor: ["rgb(249, 115, 22)", "rgb(37, 99, 235)", "rgba(200,200,200,0.5)"],
-        borderWidth: 2,
-      },
-    ],
-  };
+  // const doughnutData = {
+  //   labels: ["Listening", "Reading", "Còn lại"],
+  //   datasets: [
+  //     {
+  //       data: [
+  //         statistics?.averageListeningScore || 0,
+  //         statistics?.averageReadingScore || 0,
+  //         maxScore * 2 - ((statistics?.averageListeningScore || 0) + (statistics?.averageReadingScore || 0)), // phần còn lại
+  //       ],
+  //       backgroundColor: ["rgba(249, 115, 22, 0.8)", "rgba(37, 99, 235, 0.8)", "rgba(200,200,200,0.3)"],
+  //       borderColor: ["rgb(249, 115, 22)", "rgb(37, 99, 235)", "rgba(200,200,200,0.5)"],
+  //       borderWidth: 2,
+  //     },
+  //   ],
+  // };
+  const doughnutData = chartData;
 
   const doughnutOptions = {
     responsive: true,
@@ -205,7 +206,7 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
               <div className="w-full border-t-2 border-gray-200 mx-6 lg:mx-8"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-white px-6 py-2 text-sm font-semibold text-gray-600 rounded-full shadow-sm">
+              <span className="bg-white px-6 py-2 text-base font-semibold text-gray-600 rounded-full shadow-sm">
                 Lịch sử làm bài
               </span>
             </div>
@@ -215,21 +216,21 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
           <div className="px-6 lg:px-8 pb-8">
             {hasNoSessions ? (
               <div className="flex flex-col items-center justify-center py-16 px-4">
-                <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-full p-6 mb-6">
-                  <BookOpen className="w-16 h-16 text-blue-600" />
+                <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-full p-4 mb-4">
+                  <BookOpen className="w-8 h-8 text-blue-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-3">Chưa có lịch sử làm bài</h2>
+                <h2 className="text-xl font-bold text-gray-800 mb-3">Chưa có lịch sử làm bài</h2>
                 <p className="text-gray-600 text-center max-w-md mb-8">
-                  Bạn chưa thực hiện bài thi nào. Hãy bắt đầu làm bài để xem kết quả và theo dõi tiến độ học tập của bạn nhé!
+                 Bạn chưa có bài thi nào. Hãy bắt đầu làm thử để xem kết quả và theo dõi tiến độ học tập của mình!
                 </p>
                 <Link to="/tests">
                   <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
-                    <TrendingUp className="w-5 h-5" /> Làm bài ngay
+                    <TrendingUp className="w-5 h-5"/> Làm bài ngay
                   </button>
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {sessions.map((item) => (
                   <HistoryTestCard
                     key={item._id}

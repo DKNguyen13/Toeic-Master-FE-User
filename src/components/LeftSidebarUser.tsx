@@ -58,10 +58,10 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
             <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-base font-semibold text-gray-900 break-words">
+            <h2 className="text-sm font-semibold text-gray-900 break-words">
               Hi, {fullname}
             </h2>
-            <div className="flex items-center mt-1 text-base text-blue-600 font-medium">
+            <div className="flex items-center mt-1 text-sm text-blue-600 font-medium">
               <UserCircle className="w-3 h-3 mr-1" />
               User
             </div>
@@ -77,7 +77,7 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
             <Link
               key={item.to}
               to={item.to}
-              className="flex items-center gap-3 px-3 py-2.5 text-base font-medium text-gray-700 rounded-lg transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 group">
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 group">
               <Icon className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors" />
               <span>{item.label}</span>
             </Link>
@@ -88,7 +88,7 @@ const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
       {/* Logout Button */}
       <div className="p-4 border-t border-gray-300">
         <button onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 text-base font-medium text-red-600 rounded-lg transition-all duration-200 hover:bg-red-50 group">
+          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg transition-all duration-200 hover:bg-red-50 group">
           <LogOut className="w-5 h-5 text-red-500 group-hover:text-red-600 transition-colors" />
           <span>Đăng xuất</span>
         </button>

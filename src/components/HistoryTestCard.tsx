@@ -91,7 +91,7 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
             {result}/{totalQuestions}
           </span>
           {isFullTest && totalScore !== undefined && (
-            <span className="ml-2 font-bold text-red-600 truncate">
+            <span className="ml-2 font-bold text-gray-600 truncate">
               ({totalScore} điểm)
             </span>
           )}

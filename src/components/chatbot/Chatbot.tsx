@@ -79,15 +79,13 @@ const ChatContainer = ({ messages }: { messages: Message[] }) => {
   );
 };
 
-// Chat Input
-const ChatInput = ({
-  onSendMessage,
-  disabled,
-}: {
+  // Chat Input
+const ChatInput = React.forwardRef<HTMLInputElement, {
   onSendMessage: (text: string) => void;
   disabled: boolean;
-}) => {
+}>(({ onSendMessage, disabled }, ref) => {
   const [input, setInput] = useState("");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim() && !disabled) {
@@ -95,9 +93,11 @@ const ChatInput = ({
       setInput("");
     }
   };
+
   return (
     <div className="relative">
       <input
+        ref={ref}
         type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -123,7 +123,7 @@ const ChatInput = ({
       </button>
     </div>
   );
-};
+});
 
 // Main Chatbot
 const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http://localhost:3001" }) => {
@@ -137,6 +137,13 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http:
   ]);
   const [isConnected, setIsConnected] = useState(false);
   const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+  const chatInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isWaitingResponse) {
+      chatInputRef.current?.focus();
+    }
+  }, [isWaitingResponse]);
 
   // Socket logic đúng
   useEffect(() => {
@@ -185,7 +192,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http:
     }
   }, [isOpen, socketUrl]);
 
-  // Handle gửi tin nhắn
+  // Handle send message
   const handleSendMessage = useCallback((text: string) => {
     const userMessage: Message = {
       id: `user-${Date.now()}`,
@@ -287,7 +294,11 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http:
             <ChatContainer messages={messages} />
 
             <div className="p-4 bg-white border-t border-gray-100">
-              <ChatInput onSendMessage={handleSendMessage} disabled={!isConnected || isWaitingResponse} />
+              <ChatInput
+                  ref={chatInputRef}
+                  onSendMessage={handleSendMessage}
+                  disabled={!isConnected || isWaitingResponse}
+                />
             </div>
           </div>
         </div>

@@ -31,7 +31,7 @@ export const useViewSession = () => {
         setLoading(true);
 
         const data = await getSessionResults(id);
-        console.log(data.answers);
+        console.log('ans',data.answers);
         // Kiểm tra dữ liệu hợp lệ
         if (!data || !data.session || !Array.isArray(data.answers) || data.answers.length === 0) {
           setError("Không tìm thấy dữ liệu cho bài thi này");
@@ -52,6 +52,7 @@ export const useViewSession = () => {
             partNumber: q.partNumber,
             group: q.group,
             choices: q.choices,
+            explanation: q.explanation,
             userAnswer: {
               selectedAnswer: ans.selectedAnswer,
               timeSpent: ans.timeSpent,

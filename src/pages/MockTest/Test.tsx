@@ -37,6 +37,8 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   } = hookData as ReturnType<typeof useTestSession> &
     ReturnType<typeof useViewSession>;
 
+    console.log('part', questionsInPart);
+
   useBlockNavigation(!isView, handleSubmitSession);
 
   useEffect(() => {

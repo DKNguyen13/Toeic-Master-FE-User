@@ -11,6 +11,8 @@ import {
   type TooltipItem,
 } from "chart.js";
 import { useNavigate } from "react-router-dom";
+import { MessageCircle, X } from "lucide-react";
+import api from "../../../config/axios";
 
 // Đăng ký các phần tử của Chart.js
 ChartJS.register(
@@ -52,9 +54,35 @@ const Result: React.FC<ResultProps> = ({
     navigate(`/history`);
   };
   
+  const fetchFeedback = async () => {
+    if (feedback) return;
+
+    setLoadingFb(true);
+
+    try {
+      const res = await api.post("/analysis/result", {
+        correctAnswers,
+        wrongAnswers,
+        skippedQuestions,
+        totalQuestions,
+        listeningScore,
+        readingScore,
+      });
+      setFeedback(res.data.feedback);
+    } catch (err) {
+      console.error(err);
+      setFeedback("Không thể phân tích kết quả lúc này.");
+    } finally {
+      setLoadingFb(false);
+    }
+  };
+
   const correctPercentage = ((correctAnswers / totalQuestions) * 100).toFixed(1);
   const wrongPercentage = ((wrongAnswers / totalQuestions) * 100).toFixed(1);
   const skippedPercentage = ((skippedQuestions / totalQuestions) * 100).toFixed(1);
+  const [feedback, setFeedback] = React.useState("");
+  const [loadingFb, setLoadingFb] = React.useState(false);
+  const [showFeedback, setShowFeedback] = React.useState(false);
 
   const stats = [
     { label: "Tổng số câu hỏi", value: totalQuestions, color: "text-gray-800" },
@@ -63,7 +91,7 @@ const Result: React.FC<ResultProps> = ({
     { label: "Số câu sai", value: wrongAnswers, color: "text-red-500" },
   ];
 
-  // Dữ liệu cho biểu đồ hình tròn
+  // Data for pie chart
   const data = {
     labels: ["Correct", "Wrong", "Skipped"],
     datasets: [
@@ -114,13 +142,22 @@ const Result: React.FC<ResultProps> = ({
 
       {isFullTest && (
         <div className="text-center mb-8">
-          <div className="text-7xl text-yellow-500 mb-8">🏆</div>
+          <div className="text-6xl text-yellow-500 mb-8">🏆</div>
           <h1 className="text-2xl font-bold text-gray-800">{`Your Score: ${
             totalScore ?? 0
           }/990`}</h1>
-          <p className="mt-2 text-lg text-gray-500">
-            Đây là trình độ ước tính của bạn. Hãy tham khảo tài nguyên học tập để nâng cao điểm số.
-          </p>
+          <button onClick={async () => {
+                setShowFeedback(true);
+                await fetchFeedback();
+              }}
+                className="
+                  mt-4 inline-flex items-center gap-1.5 px-3 py-1.5
+                  bg-blue-50 text-blue-700 text-sm font-medium
+                  rounded-full hover:bg-blue-100 hover:shadow-sm
+                  transition-all duration-200 border border-blue-200
+                "><MessageCircle size={18} />
+                Xem đánh giá & gợi ý học tập
+              </button>
         </div>
       )}
 
@@ -185,9 +222,6 @@ const Result: React.FC<ResultProps> = ({
       </div>
 
       <div className="text-center">
-        {/* <p className="text-lg text-blue-500">
-          Bạn cần cải thiện Phần 3 - Hội thoại ngắn
-        </p> */}
         <div className="px-8 pb-8 text-center">
             <button onClick={() => navigate(`/session/view/${id}`)}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white font-medium rounded-xl shadow-lg hover:bg-blue-600 hover:shadow-xl transition-all duration-200">
@@ -195,6 +229,69 @@ const Result: React.FC<ResultProps> = ({
             </button>
           </div>
       </div>
+
+      {showFeedback && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/20 backdrop-blur-sm animate-fadeIn"
+          onClick={() => setShowFeedback(false)}>
+          {/* CARD */}
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl
+                      shadow-xl overflow-hidden animate-modalPop
+                      border border-gray-100"
+            onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="bg-gradient-to-r from-sky-50 to-indigo-50 p-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-sky-100 rounded-xl">
+                    <MessageCircle className="w-5 h-5 text-sky-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      Nhận xét từ AI
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Phân tích chi tiết & gợi ý học tập
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Body – scroll */}
+            <div className="p-6 max-h-96 overflow-y-auto">
+              {loadingFb ? (
+                /* Loading */
+                <div className="space-y-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-4 bg-gray-200 rounded-full animate-pulse
+                                ${i % 2 === 0 ? "w-full" : "w-4/5"}`}
+                    />
+                  ))}
+                  <div className="flex justify-center mt-5">
+                    <div className="w-7 h-7 border-2 border-sky-400 border-t-transparent
+                                    rounded-full animate-spin" />
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                  {feedback || "Chưa có nhận xét nào."}
+                </p>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-end">
+              <button onClick={() => setShowFeedback(false)}
+                className="px-5 py-2 bg-sky-500 text-white font-medium
+                          rounded-xl hover:bg-sky-600 shadow-sm
+                          hover:shadow transition">Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

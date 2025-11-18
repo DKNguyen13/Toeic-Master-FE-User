@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginModal from "../../layouts/common/LoginModal";
 import {  Crown,  Check,  Star, AlertCircle, X } from "lucide-react";
+import EmptyState from "../../components/EmptyState.js";
 
 interface Package {
   _id: string;
@@ -68,7 +69,6 @@ const PaymentPage: React.FC = () => {
     return Math.round(((original - discounted) / original) * 100);
   };
 
-  // Tìm gói phổ biến nhất (2 tháng)
   const isPopular = (months: number) => months === 2;
 
   return (
@@ -99,10 +99,7 @@ const PaymentPage: React.FC = () => {
               <p className="text-gray-600 mt-4">Đang tải gói dịch vụ...</p>
             </div>
           ) : packages.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <AlertCircle className="mx-auto mb-4 w-10 h-10 text-red-400" />
-              <p>Hiện chưa có gói dịch vụ nào. Vui lòng quay lại sau!</p>
-            </div>
+            <EmptyState message="Hiện chưa có gói dịch vụ nào. Vui lòng quay lại sau!" />
           ): (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
               {packages.map((pkg) => {

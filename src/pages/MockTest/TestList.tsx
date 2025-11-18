@@ -5,6 +5,7 @@ import { getAllTest } from "../../service/testService";
 import Pagination from "../../components/common/Pagination/Pagination";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 import { FileText } from "lucide-react";
+import EmptyState from "../../components/EmptyState";
 
 interface TestListProps {
   limit?: number; // Giới hạn số test mỗi trang
@@ -57,11 +58,7 @@ const TestList: React.FC<TestListProps> = ({
     return <LoadingSkeleton />
 
   if (error)
-    return (
-      <div className="flex justify-center items-center mt-12">
-        <div className="text-red-500">Error: {error}</div>
-      </div>
-    );
+    return <EmptyState/>
 
   const containerClass = compact
   ? "flex flex-row gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent snap-x snap-mandatory"

@@ -15,7 +15,6 @@ const FloatingDictionary = () => {
   const menuItems = [
     { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true) },
     { icon: FileText, color: "green", label: "Ghi chú", onClick: () => alert("Ghi chú") },
-    { icon: MessageCircle, color: "purple", label: "Chat AI", onClick: () => alert("Chat AI") },
   ];
 
   return (

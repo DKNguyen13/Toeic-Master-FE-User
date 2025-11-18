@@ -119,7 +119,7 @@ const Home = ({ setIsOpen }) => {
             Luyện tập
           </h1>
           {/* Test list */}
-          <TestList limit={4} showPagination={false} compact={true} />
+          <TestList limit={4} showPagination={false} compact={true} hideHeaderWhenLoading={true}/>
         </div>
 
         <Link to={"/tests"}>

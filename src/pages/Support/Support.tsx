@@ -202,12 +202,10 @@ const Support: React.FC = () => {
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
                       <FaEnvelope className="text-white text-lg" />
                     </div>
-                    <div className="flex-1 min-w-0"> {/* ← Quan trọng: min-w-0 để cho phép truncate */}
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-600">Email hỗ trợ</p>
-                      <a 
-                        href="mailto:support@toeicmaster.com" 
-                        className="text-base font-semibold text-blue-700 hover:text-blue-900 transition-colors flex items-center gap-1 truncate block"
-                      >
+                      <a href="mailto:support@toeicmaster.com" 
+                        className="text-base font-semibold text-blue-700 hover:text-blue-900 transition-colors flex items-center gap-1 truncate block">
                         <span className="truncate">support@toeicmaster.com</span>
                         <ExternalLink className="text-xs opacity-70 flex-shrink-0" />
                       </a>
@@ -215,24 +213,24 @@ const Support: React.FC = () => {
                   </div>
 
                   {/* Hotline */}
-                  <div className="group flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-50 rounded-2xl hover:from-emerald-100 hover:to-green-100 transition-all duration-300">
-                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform">
-                      <Phone className="text-white text-lg" />
+                  <div className="group flex items-center gap-4 p-5 bg-gradient-to-r from-emerald-50/80 to-teal-50/80 rounded-2xl hover:from-emerald-100 hover:to-teal-100 transition-all duration-300 cursor-pointer">
+                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-110 group-hover:shadow-emerald-500/30 transition-all duration-300">
+                      <Phone className="text-white text-xl" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-600">Hotline (24/7)</p>
-                      <a 
-                        href="tel:0123456789" 
-                        className="text-base font-semibold text-emerald-700 hover:text-emerald-900 transition-colors flex items-center gap-1"
-                      >
-                        0123-456-789
-                        <PhoneCall className="text-xs opacity-70" />
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-600 leading-none">Hotline (24/7)</p>
+                      <a href="tel:0123456789"
+                        className="mt-1 text-base font-bold text-emerald-700 hover:text-emerald-900 transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                        <span className="truncate">0123 456 789</span>
+                        <PhoneCall className="w-4 h-4 opacity-70 flex-shrink-0" />
                       </a>
                     </div>
                   </div>
                 </div>
               </div>
-
+              
               {/* Tips Card */}
               <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-2xl p-7 text-white overflow-hidden relative">
                 <div className="absolute inset-0 opacity-20">

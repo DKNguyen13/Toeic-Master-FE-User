@@ -2,18 +2,7 @@ import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import api, { setAccessToken } from "../../config/axios.js";
-import {
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  ArrowRight,
-  ShieldCheck,
-  Target,
-  Trophy,
-  BookOpen,
-  GraduationCap,
-} from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ShieldCheck, Target, BookOpen, GraduationCap, Library } from "lucide-react";
 
 type LoginErrors = {
   email?: string;
@@ -101,18 +90,18 @@ const Login: React.FC = () => {
                 <Target className="w-7 h-7 text-indigo-700" />
               </div>
               <div>
-                <p className="font-bold text-gray-800">Lộ trình cá nhân hóa</p>
+                <p className="font-bold text-gray-800">Lộ trình cá nhân</p>
                 <p className="text-sm text-gray-500">Phù hợp từng trình độ</p>
               </div>
             </div>
 
             <div className="flex items-center gap-4 p-6 bg-white rounded-2xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="p-3 bg-blue-100 rounded-xl">
-                <Trophy className="w-7 h-7 text-blue-700" />
+                <Library className="w-7 h-7 text-blue-700" />
               </div>
               <div>
-                <p className="font-bold text-gray-800">Học bổng TOEIC</p>
-                <p className="text-sm text-gray-500">Top 10 mỗi tháng</p>
+                <p className="font-bold text-gray-800">Flashcard</p>
+                <p className="text-sm text-gray-500">Ôn từ vựng mỗi ngày</p>
               </div>
             </div>
 

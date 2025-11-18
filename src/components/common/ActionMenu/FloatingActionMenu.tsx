@@ -21,7 +21,7 @@ const FloatingDictionary = () => {
   return (
     <>
       {/* Floating Menu */}
-      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-50 flex items-center">
+      <div className="fixed right-4 bottom-40 z-50 flex items-center">
         <div
           className={`flex flex-col gap-4 transition-all duration-300 ${
             menuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
@@ -34,9 +34,9 @@ const FloatingDictionary = () => {
                   e.stopPropagation();
                   item.onClick();
                 }}
-                className={`p-3.5 bg-${item.color}-500 hover:bg-${item.color}-600 text-white rounded-full shadow-xl transition-all hover:scale-110`}
+                className={`p-2.5 bg-${item.color}-500 hover:bg-${item.color}-600 text-white rounded-full shadow-xl transition-all hover:scale-110`}
               >
-                <item.icon className="w-6 h-6" />
+                <item.icon className="w-5 h-5" />
               </button>
               <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
                 {item.label}
@@ -51,9 +51,9 @@ const FloatingDictionary = () => {
             e.stopPropagation();
             setMenuOpen(!menuOpen);
           }}
-          className="ml-4 p-3.5 bg-slate-700 hover:bg-slate-800 text-white rounded-full shadow-xl transition-all">
+          className="ml-4 p-2.5 bg-slate-700 hover:bg-slate-800 text-white rounded-full shadow-xl transition-all">
           <ChevronLeft
-            className={`w-6 h-6 transition-transform duration-300 ${
+            className={`w-5 h-5 transition-transform duration-300 ${
               menuOpen ? "rotate-0" : "-rotate-180"
             }`}
           />

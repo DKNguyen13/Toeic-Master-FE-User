@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { NotepadText, CircleUserRound, NotebookPen, FlipHorizontal, ArrowRight, Sparkles, MessageCircle, CheckCircle2 } from 'lucide-react';
 import BannerSlider from "./component/BannerSlider";
 import TestList from "../MockTest/TestList";
-import React, { useState } from "react";
 
 export interface Exam {
   id: number;
@@ -14,7 +13,11 @@ export interface Exam {
   level: "Beginner" | "Intermediate" | "Advanced";
 }
 
-const Home = ({ setIsOpen }) => {
+interface HomeProps {
+  setIsOpen: (open: boolean) => void;
+}
+
+const Home : React.FC<HomeProps> = ({ setIsOpen })  => {
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -51,7 +54,7 @@ const Home = ({ setIsOpen }) => {
 
       <BannerSlider />
 
-      {/* Features Section - Card-based layout like Login */}
+      {/* Features Section */}
       <div className="flex justify-center w-full py-16 bg-gradient-to-br from-blue-50 via-white to-orange-50">
         <div className="max-w-6xl w-full px-6">
           <h2 className="text-4xl font-bold text-gray-800 text-center mb-12">

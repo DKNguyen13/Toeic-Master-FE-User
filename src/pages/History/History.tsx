@@ -9,6 +9,7 @@ import { BarChart3, BookOpen, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -93,7 +94,7 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
   };
 
   const horizontalBarOptions = {
-    indexAxis: "y" as const, // Đây là điểm khác biệt chính
+    indexAxis: "y" as const,
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -124,7 +125,7 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
 
   const { sessions, error, loading, pagination, setPage } = useSessionsUser(1, limit);
   if (loading) return <LoadingSkeleton />;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (error) return <EmptyState message={error || "Đã có lỗi xảy ra"} />;
 
   const hasNoSessions = !sessions || sessions.length === 0;
 

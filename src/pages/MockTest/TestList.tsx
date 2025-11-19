@@ -74,7 +74,7 @@ const TestList: React.FC<TestListProps> = ({
             Danh sách đề thi
           </h2>
         </div>
-        <p className="text-gray-600 mt-2 text-base max-w-xl">
+        <p className="text-gray-600 mt-4 text-lg max-w-xl">
           Lựa chọn đề thi TOEIC phù hợp để ôn luyện và kiểm tra trình độ.
         </p>
       </div>

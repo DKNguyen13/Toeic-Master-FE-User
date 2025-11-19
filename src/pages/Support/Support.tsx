@@ -76,11 +76,6 @@ const Support: React.FC = () => {
             {/* Form Section */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                  <FaPaperPlane className="text-blue-500" />
-                  Gửi tin nhắn
-                </h2>
-
                 {/* Status Messages */}
                 {status === "success" && (
                   <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3 animate-fadeIn">
@@ -167,8 +162,7 @@ const Support: React.FC = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 focus:ring-4 focus:ring-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-                  >
+                    className="w-full py-3 px-6 bg-blue-500 text-white font-semibold rounded-lg focus:ring-4 focus:ring-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
                     {loading ? (
                       <>
                         <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -232,12 +226,7 @@ const Support: React.FC = () => {
               </div>
               
               {/* Tips Card */}
-              <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl shadow-2xl p-7 text-white overflow-hidden relative">
-                <div className="absolute inset-0 opacity-20">
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
-                  <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-pink-300 rounded-full blur-3xl"></div>
-                </div>
-
+              <div className="bg-blue-600 rounded-3xl shadow-xl p-7 text-white overflow-hidden relative">
                 <div className="relative z-10">
                   <h3 className="text-xl font-bold mb-4 flex items-center gap-3">
                     <span className="text-2xl">Hỗ trợ nhanh</span>

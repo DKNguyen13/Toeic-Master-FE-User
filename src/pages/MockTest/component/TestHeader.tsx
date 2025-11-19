@@ -16,7 +16,7 @@ const TestHeader: React.FC<TestHeaderProps> = ({
     <div className="w-full flex items-center justify-between mb-5">
       {/* Return button */}
       <div className="
-          inline-flex items-center gap-2 text-lg text-main
+          inline-flex items-center gap-2 text-base text-main
           cursor-pointer transition-colors duration-200 
           hover:text-blue-600
         "

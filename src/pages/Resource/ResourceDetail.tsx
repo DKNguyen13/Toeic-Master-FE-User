@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LoginModal from "../../layouts/common/LoginModal";
 import { Eye, Heart } from "lucide-react";
+import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
+import EmptyState from "../../components/EmptyState";
 
 const LessonDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -63,8 +65,8 @@ const LessonDetailPage: React.FC = () => {
     }
   };
 
-  if (loading) return <p className="p-4">Đang tải dữ liệu...</p>;
-  if (!lesson) return <p className="p-4">Không tìm thấy bài học</p>;
+  if (loading) return <LoadingSkeleton/>
+  if (!lesson) return <EmptyState message="Dữ liệu bài học đang được cập nhật. Vui lòng thử lại sau!"/>
 
   return (
     <div className="max-w-4xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-lg">

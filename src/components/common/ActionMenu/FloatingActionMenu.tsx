@@ -5,6 +5,21 @@ const FloatingDictionary = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [notes, setNotes] = useState("");
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
+
+  const maxNoteLength = 500;
+
+  useEffect(() => {
+    const saved = localStorage.getItem("toeic_notes");
+    if (saved) setNotes(saved);
+  }, []);
+
+  const handleCloseNoteModal = () => {
+    localStorage.setItem("toeic_notes", notes);
+    setNoteModalOpen(false);
+  };
+
   useEffect(() => {
     if (!menuOpen) return;
     const handleClickOutside = () => setMenuOpen(false);
@@ -13,9 +28,16 @@ const FloatingDictionary = () => {
   }, [menuOpen]);
 
   const menuItems = [
-    { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true) },
-    { icon: FileText, color: "green", label: "Ghi chú", onClick: () => alert("Ghi chú") },
+    { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true)},
+    { icon: FileText, color: "green", label: "Ghi chú", onClick: () => setNoteModalOpen(true)},
   ];
+
+  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newNotes = e.target.value;
+    if (newNotes.length <= maxNoteLength) {
+      setNotes(newNotes);
+    }
+  };
 
   return (
     <>
@@ -94,6 +116,46 @@ const FloatingDictionary = () => {
                 sandbox="allow-scripts allow-same-origin allow-modals allow-popups allow-forms allow-top-navigation"
               />
             </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal Notes */}
+      {noteModalOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur"
+          onClick={() => setNoteModalOpen(false)}
+        >
+          <div
+            className="bg-white w-full max-w-2xl mx-4 rounded-2xl shadow-xl p-6 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Ghi chú</h2>
+              <button
+                onClick={handleCloseNoteModal} // Save notes when modal is closed
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X />
+              </button>
+            </div>
+
+            <textarea
+              value={notes}
+              onChange={handleNoteChange}
+              className="w-full h-72 p-4 border rounded-xl focus:ring focus:ring-blue-300 outline-none resize-none"
+              placeholder="Nhập ghi chú của bạn..."
+            />
+
+            <p className="text-xs text-gray-500 mt-3">
+              Nội dung sẽ được lưu tạm thời vui lòng không dùng để lưu thông tin quan trọng.
+            </p>
+
+            {notes.length >= maxNoteLength && (
+              <p className="text-xs text-red-500 mt-2">
+                Bạn đã đạt giới hạn {maxNoteLength} ký tự.
+              </p>
+            )}
           </div>
         </div>
       )}

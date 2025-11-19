@@ -1,5 +1,5 @@
-import { ChevronLeft, BookOpen, FileText, MessageCircle, X, Compass } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronLeft, BookOpen, FileText, X, Compass, ArrowUpCircle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 const FloatingDictionary = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -8,6 +8,8 @@ const FloatingDictionary = () => {
   const [notes, setNotes] = useState("");
   const [noteModalOpen, setNoteModalOpen] = useState(false);
 
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
   const maxNoteLength = 500;
 
   useEffect(() => {
@@ -15,10 +17,18 @@ const FloatingDictionary = () => {
     if (saved) setNotes(saved);
   }, []);
 
-  const handleCloseNoteModal = () => {
-    localStorage.setItem("toeic_notes", notes);
-    setNoteModalOpen(false);
-  };
+   useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -27,9 +37,20 @@ const FloatingDictionary = () => {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [menuOpen]);
 
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   const menuItems = [
-    { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true)},
-    { icon: FileText, color: "green", label: "Ghi chú", onClick: () => setNoteModalOpen(true)},
+    { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true), visible: true},
+    { icon: FileText, color: "green", label: "Ghi chú", onClick: () => setNoteModalOpen(true), visible: true},
+    { 
+      icon: ArrowUpCircle, 
+      color: "red", 
+      label: "Back to Top", 
+      onClick: scrollToTop,
+      visible: showBackToTop,
+    },
   ];
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -37,6 +58,11 @@ const FloatingDictionary = () => {
     if (newNotes.length <= maxNoteLength) {
       setNotes(newNotes);
     }
+  };
+
+  const handleCloseNoteModal = () => {
+    localStorage.setItem("toeic_notes", notes);
+    setNoteModalOpen(false);
   };
 
   return (
@@ -48,7 +74,9 @@ const FloatingDictionary = () => {
             menuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
-          {menuItems.map((item, i) => (
+          {menuItems
+            .filter(item => item.visible)
+            .map((item, i) => (
             <div key={i} className="relative group">
               <button
                 onClick={(e) => {
@@ -133,7 +161,7 @@ const FloatingDictionary = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Ghi chú</h2>
               <button
-                onClick={handleCloseNoteModal} // Save notes when modal is closed
+                onClick={handleCloseNoteModal}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <X />

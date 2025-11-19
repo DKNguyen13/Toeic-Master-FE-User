@@ -259,7 +259,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http:
         <div className="fixed bottom-24 right-6 w-96 h-[550px] z-[9999] animate-scaleIn origin-bottom-right">
           <div className="w-full h-full bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden backdrop-blur-xl">
             {/* Header */}
-            <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 text-white p-4 shadow-lg">
+            <div className="relative bg-blue-600 text-white p-4 shadow-lg">
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-24 h-24 bg-white rounded-full blur-2xl"></div>

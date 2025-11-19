@@ -115,6 +115,7 @@ const BannerSlider = () => {
                 <div className="inline-flex items-center gap-3 mb-2">
                   <div className="relative">
                     <div className="w-20 h-20 rounded-full bg-white flex flex-col items-center justify-center shadow-2xl animate-bounce">
+                      <span className="text-[10px] text-red-600 leading-tight">Up to</span>
                       <span className="text-3xl font-black text-red-600">50%</span>
                       <span className="text-xs font-bold text-red-500">OFF</span>
                     </div>
@@ -133,7 +134,7 @@ const BannerSlider = () => {
                 </h2>
 
                 <p className="text-lg text-white/90 max-w-xl font-medium">
-                  Nâng cấp Premium ngay hôm nay và nhận ngay 6 tháng học với mức giá ưu đãi chưa từng có!
+                  Nâng cấp Premium ngay hôm nay và nhận ngay 12 tháng học với mức giá ưu đãi chưa từng có!
                 </p>
 
                 <div className="flex items-end gap-4 pt-2">
@@ -144,14 +145,14 @@ const BannerSlider = () => {
                   <div className="text-white pb-1">→</div>
                   <div className="bg-white/20 backdrop-blur-md rounded-2xl px-5 py-2 border-2 border-white/40">
                     <div className="text-xs font-medium text-yellow-300">Giá ưu đãi</div>
-                    <div className="text-3xl font-black">499.000đ</div>
+                    <div className="text-3xl font-black">699.000đ</div>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-4 pt-2">
                   <Link to="/payment">
                     <button className="group px-6 py-3 bg-white text-red-600 font-black rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-base">
-                      🛒 Mua ngay - Tiết kiệm 500K
+                      Mua ngay - Tiết kiệm
                       <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
                     </button>
                   </Link>

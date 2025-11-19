@@ -246,9 +246,9 @@ const Home = ({ setIsOpen }) => {
             <div className="flex justify-center lg:justify-end order-1 lg:order-2">
               <div className="relative">                
                 <img
-                  src="src\assets\images\robot_img.png"
+                  src="src\assets\images\robot_img1.png"
                   alt="Chatbot AI TOEIC"
-                  className="relative z-10 w-full max-w-md h-[360px] object-contain"
+                  className="relative z-10 w-full max-w-md"
                 />             
               </div>
             </div>

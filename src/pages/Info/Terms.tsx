@@ -3,7 +3,7 @@ import React from "react";
 const Terms: React.FC = () => {
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl text-center font-bold mb-4">Điều khoản sử dụng</h1>
+      <h1 className="text-3xl text-center font-bold mt-4 mb-4">Điều khoản sử dụng</h1>
       <p className="mb-4">
         Chào mừng bạn đến với Toeic Master! Trang web này cung cấp các công cụ luyện thi TOEIC trực tuyến nhằm
         hỗ trợ bạn cải thiện kỹ năng tiếng Anh và đạt điểm số cao trong kỳ thi TOEIC. Bằng cách sử dụng dịch vụ của chúng tôi, bạn đồng ý với các điều khoản sau:
@@ -39,7 +39,7 @@ const Terms: React.FC = () => {
         Nếu bạn có bất kỳ câu hỏi nào về Điều khoản sử dụng này, hoặc cần hỗ trợ liên quan đến dịch vụ, vui lòng liên hệ với chúng tôi qua email <strong>support@toeicmaster.com</strong> hoặc gọi đến số điện thoại <strong>(123) 456-7890</strong>.
       </p>
 
-      <p className="mt-4">
+      <p className="mt-4 mb-2">
         Cảm ơn bạn đã sử dụng dịch vụ của Toeic Master. Chúng tôi hy vọng bạn sẽ có những trải nghiệm học tập hiệu quả và đạt được kết quả tốt trong kỳ thi TOEIC!
       </p>
     </div>

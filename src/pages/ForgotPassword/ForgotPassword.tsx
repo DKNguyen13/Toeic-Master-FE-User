@@ -149,7 +149,7 @@ const ForgotPassword: React.FC = () => {
               <button
                 type="submit"
                 disabled={countdown > 0}
-                className={`w-full max-w-sm py-4 rounded-2xl font-bold text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] mx-auto ${
+                className={`w-full max-w-sm py-4 rounded-2xl font-semibold text-white flex items-center justify-center gap-3 transition-all transform hover:scale-[1.02] mx-auto ${
                   countdown > 0
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-gradient-to-r from-blue-500 to-blue-800 hover:shadow-xl hover:shadow-blue-500/30"

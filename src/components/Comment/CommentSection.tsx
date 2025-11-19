@@ -122,7 +122,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
       <div className="space-y-4">
         {comments.length === 0 ? (
           <p className="text-gray-500 text-center py-8 italic">
-            No comments yet. Be the first to comment!
+            Chưa có bình luận nào. Hãy là người bình luận đầu tiên!
           </p>
         ) : (
           comments.map((comment) => (

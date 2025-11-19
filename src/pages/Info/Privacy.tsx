@@ -3,7 +3,7 @@ import React from "react";
 const Privacy: React.FC = () => {
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl text-center font-bold mb-4">Chính sách bảo mật</h1>
+      <h1 className="text-3xl text-center font-bold mt-2 mb-4">Chính sách bảo mật</h1>
       <p className="mb-4">
         Chúng tôi tại Toeic Master cam kết bảo vệ quyền riêng tư của bạn khi sử dụng dịch vụ của chúng tôi. Trang Chính sách bảo mật này giải thích về cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân của bạn. Khi sử dụng website của chúng tôi, bạn đồng ý với các điều khoản trong Chính sách bảo mật này.
       </p>
@@ -59,7 +59,7 @@ const Privacy: React.FC = () => {
       </p>
 
       <h3 className="text-xl font-semibold mt-4">8. Liên hệ với chúng tôi</h3>
-      <p>
+      <p className="mb-4">
         Nếu bạn có bất kỳ câu hỏi nào về Chính sách bảo mật hoặc cách chúng tôi xử lý thông tin cá nhân của bạn, vui lòng liên hệ với chúng tôi qua email tại <strong>support@toeicmaster.com</strong> hoặc qua số điện thoại <strong>(123) 456-7890</strong>.
       </p>
     </div>

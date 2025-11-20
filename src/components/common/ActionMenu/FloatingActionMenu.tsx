@@ -1,4 +1,4 @@
-import { ChevronLeft, BookOpen, FileText, X, Compass, ArrowUpCircle } from "lucide-react";
+import { ChevronLeft, BookOpen, FileText, X, Compass, ArrowUpCircle, ArrowUp } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 const FloatingDictionary = () => {
@@ -44,13 +44,7 @@ const FloatingDictionary = () => {
   const menuItems = [
     { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true), visible: true},
     { icon: FileText, color: "green", label: "Ghi chú", onClick: () => setNoteModalOpen(true), visible: true},
-    { 
-      icon: ArrowUpCircle, 
-      color: "red", 
-      label: "Back to Top", 
-      onClick: scrollToTop,
-      visible: showBackToTop,
-    },
+    { icon: ArrowUp, color: "gray",  label: "Lên đầu trang",  onClick: scrollToTop, visible: showBackToTop },
   ];
 
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -83,9 +77,9 @@ const FloatingDictionary = () => {
                   e.stopPropagation();
                   item.onClick();
                 }}
-                className={`p-2.5 bg-${item.color}-500 hover:bg-${item.color}-600 text-white rounded-full shadow-xl transition-all hover:scale-110`}
+                className={`p-2.5 bg-${item.color}-400 hover:bg-${item.color}-500 text-white rounded-full shadow-xl transition-all hover:scale-110`}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-4 h-4" />
               </button>
               <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">
                 {item.label}

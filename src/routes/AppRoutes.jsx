@@ -18,7 +18,6 @@ import Resource from "../pages/Resource/Resource";
 import History from "../pages/History/History";
 import ResourceDetail from "../pages/Resource/ResourceDetail";
 import DetailTestPage from "../pages/Detail/DetailTestPage";
-import { Wishlist } from "../pages/Wishlist/Wishlist";
 import PaymentFail from "../pages/Payment/PaymentFail";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 import ResultPage from "../pages/MockTest/result/ResultPage";
@@ -59,7 +58,7 @@ const routes = [
       </MainLayout>
     ),
   },
-    {
+  {
     path: "/support",
     element: (
       <ProtectedRoute allowedRoles={["admin", "user"]}>
@@ -149,7 +148,6 @@ const routes = [
       </MainLayout>
     ),
   },
-
   {
     path: "/leaderboard",
     element: (
@@ -282,15 +280,7 @@ const routes = [
         <FlashcardListPage />
       </MainLayout>
     ),
-  },
-  {
-    path: "/wishlist",
-    element: (
-      <MainLayout>
-        <Wishlist />
-      </MainLayout>
-    ),
-  },
+  }
 ];
 
 const AppRoutes = () => {

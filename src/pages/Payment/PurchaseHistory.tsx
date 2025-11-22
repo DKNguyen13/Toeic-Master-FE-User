@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import LeftSidebarUser from "../../components/LeftSidebarUser";
 import { FaCheckCircle, FaTimesCircle, FaClock } from "react-icons/fa";
+import Pagination from "../../components/common/Pagination/Pagination";
 
 interface PurchaseOrder {
   _id: string;
@@ -15,7 +16,7 @@ interface PurchaseOrder {
   status: "pending" | "success" | "fail";
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 7;
 
 const PurchaseHistory: React.FC = () => {
   const [orders, setOrders] = useState<PurchaseOrder[]>([]);
@@ -121,38 +122,12 @@ const PurchaseHistory: React.FC = () => {
                   </table>
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex justify-center mt-4 gap-2">
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-                    >
-                      Prev
-                    </button>
-                    {Array.from({ length: totalPages }, (_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setCurrentPage(i + 1)}
-                        className={`px-3 py-1 rounded ${
-                          currentPage === i + 1
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-200 hover:bg-gray-300"
-                        }`}
-                      >
-                        {i + 1}
-                      </button>
-                    ))}
-                    <button
-                      onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-                      disabled={currentPage === totalPages}
-                      className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
+                <Pagination
+                  totalItems={orders.length}
+                  currentPage={currentPage}
+                  itemsPerPage={PAGE_SIZE}
+                  onPageChange={setCurrentPage}
+                />
               </>
             )}
           </div>

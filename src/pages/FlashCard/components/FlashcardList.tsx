@@ -313,7 +313,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               <button 
                 onClick={prevCard} 
                 disabled={flashcards.length <= 1} 
-                className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-200 ${
+                className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
                   flashcards.length > 1 
                     ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100'
@@ -330,7 +330,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               <button 
                 onClick={nextCard} 
                 disabled={flashcards.length <= 1} 
-                className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-200 ${
+                className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
                   flashcards.length > 1 
                     ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105' 
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100'

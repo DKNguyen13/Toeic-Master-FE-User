@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LoginModal from "../../layouts/common/LoginModal";
 import { Eye, Heart } from "lucide-react";
-import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 import EmptyState from "../../components/EmptyState";
+import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 
 const LessonDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +25,7 @@ const LessonDetailPage: React.FC = () => {
         const data = res.data.data;
         setLesson(data);
 
-        // Set favorite từ API
+        // Set favorite from API
         setIsFavorite(data.isFavorite || false);
         setFavoriteCount(data.favoriteCount || 0);
       } catch (err : any) {
@@ -92,7 +92,7 @@ const LessonDetailPage: React.FC = () => {
         </span>
       </div>
 
-      {/* Render nội dung bài học */}
+      {/* Render content */}
       <div
         className="article-content prose"
         dangerouslySetInnerHTML={{ __html: lesson.content }}

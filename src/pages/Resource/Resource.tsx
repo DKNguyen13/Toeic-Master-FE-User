@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api, { isLoggedIn } from "../../config/axios";
 import ResourceCard from "../../components/ResourceCard";
+import Pagination from "../../components/common/Pagination/Pagination";
 import { Book, BookOpen, Clipboard, Layers, Search, Video } from "lucide-react";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 
@@ -182,46 +183,12 @@ const ResourcePage: React.FC = () => {
                     ))}
                   </div>
 
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-center mt-12 space-x-2">
-                      <button onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                      </button>
-
-                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                        const page = currentPage > 3 ? currentPage - 2 + i : i + 1;
-                        if (page > totalPages) return null;
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`px-4 py-2 border rounded-lg transition-all shadow-sm ${
-                              currentPage === page 
-                                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-md" 
-                                : "bg-white border-gray-300 hover:bg-gray-50 hover:shadow-md text-gray-700"
-                            }`}
-                          >
-                            {page === currentPage - 2 || page === currentPage + 2 ? "..." : page}
-                          </button>
-                        );
-                      })}
-
-                      <button onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
+                  <Pagination
+                    totalItems={filteredResources.length}
+                    currentPage={currentPage}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={handlePageChange}
+                  />
                 </>
               )}
             </main>

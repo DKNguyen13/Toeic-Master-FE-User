@@ -3,7 +3,6 @@ import CommentDetail from './CommentDetail';
 import { Comment } from '../Comment/types'
 import { isLoggedIn } from "../../config/axios";
 import LoginModal from "../../layouts/common/LoginModal";
-import Pagination from "../../components/common/Pagination/Pagination";
 import { createComment, deleteComment, editComment, getCommentByTestId, reactComment } from '../../service/commentService';
 import { showToast } from '../../utils/toast';
 

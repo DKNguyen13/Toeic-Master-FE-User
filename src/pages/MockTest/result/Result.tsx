@@ -11,10 +11,9 @@ import {
   type TooltipItem,
 } from "chart.js";
 import { useNavigate } from "react-router-dom";
-import { MessageCircle, X } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import api from "../../../config/axios";
 
-// Đăng ký các phần tử của Chart.js
 ChartJS.register(
   Title,
   Tooltip,

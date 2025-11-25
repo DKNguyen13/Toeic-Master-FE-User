@@ -17,7 +17,7 @@ const ResultPage: React.FC = () => {
   return (
     <Result
       id = {resultData.id}
-      testTitle={resultData.test.title}
+      testTitle={resultData.test?.title || "Bài thi không xác định"}
       totalQuestions={resultData.results.totalQuestions}
       correctAnswers={resultData.results.correctCount}
       wrongAnswers={resultData.results.incorrectCount}

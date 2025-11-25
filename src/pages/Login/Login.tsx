@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Link, useNavigate } from "react-router-dom";
 import api, { setAccessToken } from "../../config/axios.js";
@@ -13,15 +13,30 @@ type LoginErrors = {
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRemember(true);
+    }
+  }, []);
+
   const handleLogin = async (e?: React.SyntheticEvent) => {
     e?.preventDefault();
     setIsLoading(true);
     setErrors({});
+
+    if (remember) {
+      localStorage.setItem("rememberEmail", email);
+    } else {
+      localStorage.removeItem("rememberEmail");
+    }
 
     const newErrors: LoginErrors = {};
     if (!email) newErrors.email = "Vui lòng nhập email";
@@ -190,8 +205,8 @@ const Login: React.FC = () => {
               {/* Options */}
               <div className="flex items-center justify-between text-sm">
                 <label className="flex items-center text-gray-600 cursor-pointer">
-                  <input type="checkbox" className="mr-2 w-4 h-4 accent-indigo-600 rounded" />
-                  Nhớ mật khẩu
+                  <input type="checkbox" checked={remember} onChange={() => setRemember(!remember)} className="mr-2 w-4 h-4 accent-indigo-600 rounded" />
+                  Ghi nhớ đăng nhập
                 </label>
                 <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
                   Quên mật khẩu?

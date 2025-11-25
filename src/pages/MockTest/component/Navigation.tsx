@@ -80,7 +80,7 @@ const Navigation: React.FC<NavigationProps> = ({
 
       return (
         <button
-          key={q._id}
+          key={idx}
           onClick={() => onNavigate(idx)}
           className={`border rounded-md text-center text-sm p-1 transition-all duration-200
             ${

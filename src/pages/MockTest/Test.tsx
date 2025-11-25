@@ -4,7 +4,6 @@ import { useTestSession } from "./hooks/useTestSession";
 import TestHeader from "./component/TestHeader";
 import PartSelector from "./component/PartSelector";
 import QuestionList from "./component/QuestionList";
-import { useParams } from "react-router-dom";
 import { useViewSession } from "./hooks/useViewTestSession";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 import { useBlockNavigation } from "./hooks/useBlockNavigation";
@@ -16,7 +15,7 @@ interface TestProps {
 export const Test: React.FC<TestProps> = ({ isView }) => {
   //Chọn hook theo mode
   const hookData = isView ? useViewSession() : useTestSession();
-
+  console.log('hookData', hookData);
   const {
     session,
     parts,
@@ -37,9 +36,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   } = hookData as ReturnType<typeof useTestSession> &
     ReturnType<typeof useViewSession>;
 
-    console.log('part', questionsInPart);
-
-  useBlockNavigation(!isView, handleSubmitSession);
+  useBlockNavigation(!isView, () => handleSubmitSession(true));
 
   useEffect(() => {
     if (!isView) {

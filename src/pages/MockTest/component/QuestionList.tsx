@@ -38,21 +38,24 @@ const QuestionList: React.FC<QuestionListProps> = ({
       {/* Nhóm câu (Part 3,4,6,7) */}
       {groups.map((group) => {
         const firstQuestion = group[0];
-        const hasImage = !!firstQuestion.group.image;
+        const images: string[] = Array.isArray(firstQuestion.group.image) ? firstQuestion.group.image : [];
+        const hasImage = images.length > 0;
 
         return (
           <div
-            key={firstQuestion._id}
+            key={firstQuestion.id}
             className={`mb-6 flex flex-col md:flex-row gap-4 border-b border-gray-200 pb-4`}
           >
             {/* Nếu có ảnh thì hiển thị ảnh bên trái */}
             {hasImage && (
-              <div className="md:w-1/2 w-full overflow-auto max-h-[600px] flex justify-center items-center">
-                <img
-                  src={firstQuestion.group.image}
-                  alt={`group-${firstQuestion.group.groupId}`}
-                  className="rounded-lg max-w-full max-h-full object-contain"
-                />
+              <div className="md:w-1/2 w-full overflow-auto max-h-[600px] flex flex-col gap-3">
+                {images.map((img, idx) => (
+                  <img
+                    src={img}
+                    alt={`group-${firstQuestion.group.groupId}-${idx}`}
+                    className="rounded-lg max-w-full object-contain"
+                  />
+                ))}
               </div>
             )}
 
@@ -66,11 +69,11 @@ const QuestionList: React.FC<QuestionListProps> = ({
             >
               {group.map((question) => (
                 <QuestionItem
-                  key={question._id}
+                  key={question.id}
                   isView={isView}
                   question={question}
                   questionIndex={questionsInPart.findIndex(
-                    (q) => q._id === question._id
+                    (q) => q.id === question.id
                   )}
                   answers={answers}
                   handleAnswer={handleAnswer}
@@ -85,12 +88,12 @@ const QuestionList: React.FC<QuestionListProps> = ({
       {/* Các câu đơn lẻ (Part 1,2,5) */}
       <div className="w-full flex flex-col gap-6">
         {singles.map((question) => (
-          <div key={question._id} className="w-full max-w-4xl mx-auto px-4">
+          <div key={question.id} className="w-full max-w-4xl mx-auto px-4">
             <QuestionItem
               isView={isView}
               question={question}
               questionIndex={questionsInPart.findIndex(
-                (q) => q._id === question._id
+                (q) => q.id === question.id
               )}
               answers={answers}
               handleAnswer={handleAnswer}

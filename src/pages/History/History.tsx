@@ -246,7 +246,7 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
                   <HistoryTestCard
                     key={item._id}
                     id={item._id}
-                    title={item.testId.title}
+                    title={item.testId?.title}
                     totalScore={item?.results?.totalScore}
                     result={item.progress.answeredCount}
                     totalQuestions={item.progress.totalQuestions}

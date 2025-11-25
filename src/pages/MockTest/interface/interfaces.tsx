@@ -8,13 +8,13 @@ export interface Choice {
 }
 
 export interface Group {
-  image?: string;
+  image?: string[];
   audio?: string;
   text?: string;
 }
 
 export interface Question {
-  _id: string;
+  id: string;
   question: string;
   questionNumber: number;
   globalQuestionNumber: number; // số thứ tự toàn bài
@@ -61,7 +61,7 @@ export interface Session {
 
 export interface UserAnswer {
   questionId: {
-    _id: string;
+    id: string;
     questionNumber: number;
     question: string;
     partNumber: number;

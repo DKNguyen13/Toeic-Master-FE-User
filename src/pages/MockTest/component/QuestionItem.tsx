@@ -40,12 +40,21 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
   const correctLetter = correctChoice ? correctChoice.label : null;
 
   const userChoice = question.choices.find((c) => c.isUserChoice);
-  const isUserWrong =
-    isView && userChoice && userChoice.label !== correctLetter;
+  const isUserWrong = isView && userChoice && userChoice.label !== correctLetter;
   const isUserSkipped = isView && !userChoice;
   const showCorrectAns = isUserWrong || isUserSkipped;
 
   const shouldHideContent = !isView && (partNumber === 1 || partNumber === 2);
+
+  const firstImage =
+  Array.isArray(question.group.image) &&
+  question.group.image.find(
+    (img) =>
+      typeof img === "string" &&
+      img.trim() !== "" &&
+      img !== "null" &&
+      img !== "undefined"
+  );
 
   const getButtonStyle = (option: Choice, optionIndex: number): string => {
     const optionLetter = indexToLetter[optionIndex];
@@ -72,7 +81,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
       className="mb-4 border-b border-gray-200 pb-4"
     >
       {/* Chỉ hiển thị ảnh nếu không bị hide */}
-      {!hideImage && question.group.image && (
+      {!hideImage && firstImage && (
         <img
           src={question.group.image}
           alt={`question-${question.globalQuestionNumber}`}

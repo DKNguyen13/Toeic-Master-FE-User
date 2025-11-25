@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Question, Session } from "../interface/interfaces";
-import { getSession, getSessionQuestions } from "../../../service/sessionService";
+import { getSession } from "../../../service/sessionService";
 
 export const useSessionBase = (sessionId: string | null) => {
   const navigate = useNavigate();
@@ -29,19 +29,16 @@ export const useSessionBase = (sessionId: string | null) => {
           return;
         }
         setSession(sessionData.session);
+        const questions: Question[] = sessionData.questions || [];
 
-        const questionsData = await getSessionQuestions(sessionId);
-        const qs: Question[] = questionsData.questions || [];
-        console.log(questionsData);
-
-        if (qs.length === 0) {
+        if (questions.length === 0) {
           setError("Không có câu hỏi nào trong bài thi này.");
           return;
         }
 
-        setQuestions(qs);
+        setQuestions(questions);
 
-        const allParts = Array.from(new Set(qs.map((q) => q.partNumber))).sort(
+        const allParts = Array.from(new Set(questions.map((q) => q.partNumber))).sort(
           (a, b) => a - b
         );
         setParts(allParts);
@@ -75,7 +72,7 @@ export const useSessionBase = (sessionId: string | null) => {
       return {
         ...q,
         displayContent: isSimplePart ? null : q.question,
-        displayImage: q.group?.image,
+        displayImage: Array.isArray(q.group?.image) ? q.group!.image : [],
         displayChoices: q.choices.map((c) => ({
           ...c,
           displayText: isSimplePart ? c.label : `${c.label}. ${c.text}`,

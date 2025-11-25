@@ -7,23 +7,16 @@ export const startSession = async (payload) => {
 
 export const getSession = async (sessionId) => {
     const res = await api.get(`/session/${sessionId}`);
-    return res.data.data;
+    return res.data.data.result;
     
 };
 
-export const getSessionQuestions = async (sessionId) => {
-    const res = await api.get(`/session/${sessionId}/questions`);
-    return res.data.data;
-};
-
 export const submitBulkAnswers = async (sessionId, answers) => {
-    const res = await api.post(`/session/${sessionId}/answers/bulk`, {answers});
-    return res.data.data;
+    await api.post(`/session/${sessionId}/answers/bulk`, {answers});
 };
 
 export const submitSession = async (sessionId) => {
-    const res = await api.post(`/session/${sessionId}/submit`);
-    return res.data.data;
+    await api.post(`/session/${sessionId}/submit`);
 };
 
 export const getSessionResults = async (sessionId) => {

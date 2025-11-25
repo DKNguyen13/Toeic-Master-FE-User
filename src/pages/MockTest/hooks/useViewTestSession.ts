@@ -31,7 +31,7 @@ export const useViewSession = () => {
         setLoading(true);
 
         const data = await getSessionResults(id);
-        console.log('ans',data.answers);
+
         // Kiểm tra dữ liệu hợp lệ
         if (!data || !data.session || !Array.isArray(data.answers) || data.answers.length === 0) {
           setError("Không tìm thấy dữ liệu cho bài thi này");
@@ -45,7 +45,7 @@ export const useViewSession = () => {
         const qs: Question[] = data.answers.map((ans: UserAnswer) => {
           const q = ans.questionId;
           return {
-            _id: q._id,
+            id: q.id,
             questionNumber: q.questionNumber,
             globalQuestionNumber: ans.questionNumber,
             question: ans.questionId.question,
@@ -76,7 +76,7 @@ export const useViewSession = () => {
         const correctAns: Record<string, string> = {};
 
         data.answers.forEach((ans: UserAnswer) => {
-          const qId = ans.questionId._id;
+          const qId = ans.questionId.id;
           userAns[qId] = ans.selectedAnswer;
           correctAns[qId] = ans.questionId.correctAnswer;
         });
@@ -121,8 +121,8 @@ export const useViewSession = () => {
       ...q,
       choices: q.choices.map((c) => ({
         ...c,
-        isUserChoice: c.label === userAnswers[q._id],
-        isCorrect: c.label === correctAnswers[q._id],
+        isUserChoice: c.label === userAnswers[q.id],
+        isCorrect: c.label === correctAnswers[q.id],
       })),
     }));
 

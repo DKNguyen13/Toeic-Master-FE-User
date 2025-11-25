@@ -48,11 +48,11 @@ export const useTestSession = () => {
 
     // Cập nhật unsent answers
     setUnsentAnswers((prev) => {
-      const filtered = prev.filter((ans) => ans.questionId !== question._id);
+      const filtered = prev.filter((ans) => ans.questionId !== question.id);
       return [
         ...filtered,
         {
-          questionId: question._id,
+          questionId: question.id,
           selectedAnswer: selectedLetter,
           timeSpent: 0,  // TODO: Tính thời gian thực tế
         },
@@ -66,24 +66,6 @@ export const useTestSession = () => {
       setLoading(true);
       const nextPartIndex = parts.indexOf(currentPart) + 1;
       if (nextPartIndex < parts.length) {
-        // submit answers
-        const questionsInCurrentPart = questions.filter(
-          (q) => q.partNumber === currentPart
-        );
-        const answersToSubmit = unsentAnswers.filter((ans) =>
-          questionsInCurrentPart.some((q) => q._id === ans.questionId)
-        );
-
-        if (answersToSubmit.length) {
-          await submitBulkAnswers(sessionId!, answersToSubmit);
-          setUnsentAnswers((prev) =>
-            prev.filter(
-              (ans) =>
-                !answersToSubmit.some((s) => s.questionId === ans.questionId)
-            )
-          );
-        }
-
         setCurrentPart(parts[nextPartIndex]);
         setCurrentQuestion(0);
       }
@@ -102,15 +84,15 @@ export const useTestSession = () => {
       setLoading(true);
 
       if (unsentAnswers.length) {
-      await submitBulkAnswers(sessionId!, unsentAnswers);
-      setUnsentAnswers([]);
+        await submitBulkAnswers(sessionId!, unsentAnswers);
+        setUnsentAnswers([]);
       }
       await submitSession(sessionId!);
       if (!noRedirect) {
         navigate(`/session/${sessionId}/results`);
       }
     } catch (err: any) {
-      setError(err.message || "Lỗi khi chuyển phần tiếp theo");
+      setError(err.message || "Lỗi khi nộp bài");
     }
     finally{
       setLoading(false);
@@ -142,7 +124,7 @@ export const useResult = () => {
         const res = await getSessionResults(id);
         
         const result = res.session;
-        const answers = res.ansers;
+        const answers = res.answers;
 
         if (result) {
           setResultData(result);

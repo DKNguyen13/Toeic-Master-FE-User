@@ -164,7 +164,7 @@ const ResourcePage: React.FC = () => {
                 </div>
 
                 {/* Stats Card */}
-                <div className="bg-blue-600 rounded-2xl shadow-lg p-6 text-white">
+                <div className="bg-gray-500 rounded-2xl shadow-lg p-6 text-white">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
                       <Layers className="w-5 h-5" />

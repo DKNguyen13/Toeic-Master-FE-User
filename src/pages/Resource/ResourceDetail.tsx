@@ -2,6 +2,7 @@ import api, { isLoggedIn } from "../../config/axios";
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LoginModal from "../../layouts/common/LoginModal";
+import DOMPurify from "dompurify";
 import { Eye, Heart } from "lucide-react";
 import EmptyState from "../../components/EmptyState";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
@@ -93,9 +94,8 @@ const LessonDetailPage: React.FC = () => {
       </div>
 
       {/* Render content */}
-      <div
-        className="article-content prose"
-        dangerouslySetInnerHTML={{ __html: lesson.content }}
+      <div className="article-content prose"
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(lesson.content) }}
       />
       {showLogin && (
         <LoginModal

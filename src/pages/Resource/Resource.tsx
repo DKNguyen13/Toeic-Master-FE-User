@@ -1,19 +1,20 @@
+import type { LucideIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import api, { isLoggedIn } from "../../config/axios";
 import LoginModal from "../../layouts/common/LoginModal";
 import ResourceCard from "../../components/ResourceCard";
 import Pagination from "../../components/common/Pagination/Pagination";
-import { Book, BookOpen, Clipboard, Layers, Search, Video } from "lucide-react";
+import { Book, BookOpen, Clipboard, Layers, Search, Star, Video } from "lucide-react";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 
 const itemsPerPage = 9;
 
-const types = [
-  { key: "all", label: "Tất cả", icon: <Layers className="w-5 h-5 text-gray-400" /> },
-  { key: "vocabulary", label: "Từ vựng", icon: <Book className="w-5 h-5 text-gray-400" /> },
-  { key: "reading", label: "Đọc hiểu", icon: <BookOpen className="w-5 h-5 text-gray-400" /> },
-  { key: "grammar", label: "Ngữ pháp", icon: <Clipboard className="w-5 h-5 text-gray-400" /> },
-  { key: "video", label: "Video bài giảng", icon: <Video className="w-5 h-5 text-gray-400" /> },
+const types: { key: string; label: string; icon: LucideIcon }[] = [
+  { key: "all", label: "Tất cả", icon: Layers },
+  { key: "vocabulary", label: "Từ vựng", icon: Book },
+  { key: "reading", label: "Đọc hiểu", icon: BookOpen },
+  { key: "grammar", label: "Ngữ pháp", icon: Clipboard },
+  { key: "video", label: "Video bài giảng", icon: Video },
 ];
 
 const ResourcePage: React.FC = () => {
@@ -94,7 +95,7 @@ const ResourcePage: React.FC = () => {
               <div className="sticky top-6 space-y-6">
                 {/* Search Box */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                  <label className="block text-md font-bold text-gray-700 mb-3">
                     Tìm kiếm
                   </label>
                   <div className="relative">
@@ -114,44 +115,47 @@ const ResourcePage: React.FC = () => {
 
                 {/* Filter Navigation */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                  <label className="block text-sm font-bold text-gray-700 mb-4">
+                  <label className="block text-md font-bold text-gray-700 mb-4">
                     Loại bài học
                   </label>
                   <nav className="space-y-2">
-                    {types.map((t) => (
-                      <button
-                        key={t.key}
-                        onClick={() => {
-                          setSelectedType(t.key);
-                          setCurrentPage(1);
-                        }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
-                          selectedType === t.key
-                            ? "bg-blue-600 text-white shadow-lg shadow-blue-400/50"
-                            : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                        }`}
-                      >
-                        <div className={`${selectedType === t.key ? "text-white" : "text-gray-400"}`}>
-                          {t.icon}
-                        </div>
-                        <span className="flex-1 text-left">{t.label}</span>
-                        {selectedType === t.key && (
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        )}
-                      </button>
-                    ))}
+                    {types.map((t) => {
+                      const Icon = t.icon;
+                      return (
+                        <button
+                          key={t.key}
+                          onClick={() => {
+                            setSelectedType(t.key);
+                            setCurrentPage(1);
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
+                            selectedType === t.key
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-400/50"
+                              : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                          }`}
+                        >
+                          <div className={selectedType === t.key ? "text-white" : "text-gray-400"}>
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <span className="flex-1 text-left">{t.label}</span>
+                          {selectedType === t.key && (
+                            <div className="w-2 h-2 bg-white rounded-full" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </nav>
                 </div>
 
                 {/* Premium Quick Access */}
                 <div className="bg-yellow-500 rounded-2xl shadow-lg p-6 text-white">
                   <div className="flex items-center gap-2 mb-3">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
+                    <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                      <Star className="w-5 h-5" />
+                    </div>
                     <span className="font-bold text-lg">Luyện nghe và điền từ</span>
                   </div>
-                  <p className="text-yellow-50 text-xs mb-4">
+                  <p className="text-yellow-50 text-sm mb-4">
                     Truy cập các bài luyện đặc biệt
                   </p>
                   <button onClick={() => window.location.href="/practice/listen-fill"}
@@ -195,8 +199,8 @@ const ResourcePage: React.FC = () => {
                   <div className="absolute inset-0 opacity-5">
                     <div className="absolute inset-0" style={{
                       backgroundImage: 'radial-gradient(circle, #f59e0b 1px, transparent 1px)',
-                      backgroundSize: '20px 20px'
-                    }}></div>
+                      backgroundSize: '20px 20px'}}>
+                    </div>
                   </div>
 
                   {/* Badge Premium */}

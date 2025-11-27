@@ -15,6 +15,7 @@ import Payment from "../pages/Payment/Payment";
 import PurchaseHistory from "../pages/Payment/PurchaseHistory";
 import PaymentForm from "../pages/Payment/PaymentForm/PaymentForm";
 import Resource from "../pages/Resource/Resource";
+import ListeningFillBlank from "../pages/Resource/ListeningFillBlank";
 import History from "../pages/History/History";
 import ResourceDetail from "../pages/Resource/ResourceDetail";
 import DetailTestPage from "../pages/Detail/DetailTestPage";
@@ -234,6 +235,14 @@ const routes = [
     element: (
       <MainLayout>
         <Resource />
+      </MainLayout>
+    ),
+  },
+  {
+    path: "/practice/listen-fill",
+    element: (
+      <MainLayout>
+        <ListeningFillBlank />
       </MainLayout>
     ),
   },

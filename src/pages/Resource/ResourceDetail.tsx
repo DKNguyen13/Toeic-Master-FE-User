@@ -98,16 +98,17 @@ const LessonDetailPage: React.FC = () => {
         dangerouslySetInnerHTML={{ __html: lesson.content }}
       />
       {showLogin && (
-      <LoginModal
-        isOpen={showLogin}
-        onClose={() => {
-          setShowLoginModal(false)
-          setTimeout(() => setShowLoginModal(true), 100);
-        }}
-        onSuccess={() => {
-          setShowLoginModal(false);        }}
-      />
-    )}
+        <LoginModal
+          isOpen={showLogin}
+          onClose={() => {
+            setShowLoginModal(false)
+            setTimeout(() => setShowLoginModal(true), 100);
+          }}
+          onSuccess={() => {
+            setShowLoginModal(false);        
+          }}
+        />
+      )}
     </div>
   );
 };

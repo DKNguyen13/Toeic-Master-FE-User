@@ -10,6 +10,7 @@ import {
   Circle,
   FileText
 } from "lucide-react";
+import { SpeedDropdown } from "../../layouts/common/SpeedDropdown";
 
 interface Blank {
   position: number;
@@ -28,7 +29,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     {
       id: 1,
       sentence:
-        "The ___ will arrive at the station by 3 PM, and passengers should ___ their tickets.",
+        "The train will arrive at the station by 3 PM, and passengers should prepare their tickets.",
       blanks: [
         { position: 0, answer: "train" },
         { position: 1, answer: "prepare" }
@@ -45,6 +46,15 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
       userAnswers: ["", ""]
     }
   ]);
+
+  const buildSentenceWithBlanks = (q: Question) => {
+    let s = q.sentence;
+    q.blanks.forEach(b => {
+      const reg = new RegExp("\\b" + b.answer + "\\b", "i");
+      s = s.replace(reg, "___");
+    });
+    return s;
+  };
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -94,9 +104,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
       setIsPlaying(false);
       return;
     }
-    // Speak the sentence but replace blanks with a slight pause word so listener knows where blanks are
-    const spoken = current.sentence.replace(/___/g, "blank");
-    speak(spoken);
+    speak(current.sentence);
   };
 
   // Input handling
@@ -155,7 +163,8 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
 
   // Render the sentence with compact inline inputs
   const renderSentence = (q: Question) => {
-    const parts = q.sentence.split("___");
+    const blanked = buildSentenceWithBlanks(q);
+    const parts = blanked.split("___");
     return (
       <div className="flex flex-wrap items-center gap-2 text-base leading-snug">
         {parts.map((part, i) => (
@@ -200,18 +209,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
                 className="p-3 rounded-md bg-gradient-to-tr from-blue-600 to-blue-500 text-white hover:scale-105 transition-transform shadow">
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
-              <div className="flex items-center gap-2">
-                <select value={speechRate}
-                  onChange={(e) => setSpeechRate(parseFloat(e.target.value))}
-                  className="border rounded-md px-2 py-1 text-sm">
-                  <option value={0.5}>x0.5</option>
-                  <option value={0.75}>x0.75</option>
-                  <option value={1}>x1</option>
-                  <option value={1.25}>x1.25</option>
-                  <option value={1.5}>x1.5</option>
-                </select>
-              </div>
-
+              <SpeedDropdown value={speechRate} onChange={setSpeechRate} />
               <div className="text-sm text-slate-600 leading-relaxed py-1">
                 <div className="font-semibold text-base mb-1">Luyện nghe - Điền từ</div>
                 <div className="text-sm">Nhấn play để nghe, sau đó điền từ vào chỗ trống</div>
@@ -304,7 +302,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
           </div>
         </div>
 
-        {/* Small pager dots (compact) */}
+        {/* Small pager dots */}
         <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
           {questions.map((_, idx) => (
             <button

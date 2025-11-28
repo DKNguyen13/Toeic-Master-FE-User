@@ -9,7 +9,9 @@ import {
   Award,
   Clock,
   Circle,
-  FileText
+  FileText,
+  HelpCircle,
+  X
 } from "lucide-react";
 import { SpeedDropdown } from "../../layouts/common/SpeedDropdown";
 
@@ -35,6 +37,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
   const [score, setScore] = useState(0);
   const [speechRate, setSpeechRate] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showGuide, setShowGuide] = useState(false);
 
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -76,7 +79,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     };
   }, [showResults]);
 
-    if (loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white flex items-center justify-center">
         <div className="text-center">
@@ -131,7 +134,6 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     speak(current.sentence);
   };
 
-  // Input handling
   const setAnswer = (blankIdx: number, value: string) => {
     setQuestions((prev) => {
       const copy = [...prev];
@@ -155,6 +157,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
       setIsPlaying(false);
     }
   };
+
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex((i) => i - 1);
@@ -185,7 +188,6 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     setIsPlaying(false);
   };
 
-  // Render the sentence with compact inline inputs
   const renderSentence = (q: Question) => {
     const blanked = buildSentenceWithBlanks(q);
     const parts = blanked.split("___");
@@ -258,10 +260,16 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setShowGuide(true)}
+              className="p-2 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors"
+              title="Hướng dẫn sử dụng">
+              <HelpCircle className="w-5 h-5" />
+            </button>
+
             <button onClick={() => { window.speechSynthesis.cancel(); speak(current.sentence.replace(/___/g, 'blank')); }}
               className="text-sm px-3 py-2 rounded-md border hover:bg-slate-200"
-              title="Phát lại chậm">
+              title="Phát lại">
               Phát lại
             </button>
 
@@ -272,10 +280,10 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
               Làm mới
             </button>
 
-              <button onClick={handleSubmit}
-                className="text-sm px-3 py-2 rounded-md bg-emerald-500 text-white hover:bg-emerald-600">
-                Nộp bài
-              </button>
+            <button onClick={handleSubmit}
+              className="text-sm px-3 py-2 rounded-md bg-emerald-500 text-white hover:bg-emerald-600">
+              Nộp bài
+            </button>
           </div>
         </header>
 
@@ -286,7 +294,6 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
             {renderSentence(current)}
           </div>
 
-          {/* Inline small helper + accessibility */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="text-xs text-slate-500">Viết đúng chính tả — không cần hoa chữ cái.</div>
 
@@ -294,7 +301,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
               <button
                 onClick={handlePrev}
                 disabled={currentIndex === 0}
-                className="px-4 py-2 bg-gray-100 rounded-md disabled:opacity-50"
+                className="px-4 py-2 bg-gray-100 rounded-md disabled:opacity-50 hover:bg-gray-200"
               >
                 ← Trước
               </button>
@@ -324,7 +331,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
           <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
             <div
               style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-              className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-width"
+              className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-300"
             />
           </div>
         </div>
@@ -336,8 +343,8 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               aria-label={`Go to question ${idx + 1}`}
-              className={`min-w-[36px] h-9 rounded-md text-sm px-3 flex items-center justify-center border ${
-                idx === currentIndex ? "bg-blue-600 text-white" : "bg-white text-slate-700"
+              className={`min-w-[36px] h-9 rounded-md text-sm px-3 flex items-center justify-center border transition-colors ${
+                idx === currentIndex ? "bg-blue-600 text-white" : "bg-white text-slate-700 hover:bg-slate-50"
               }`}
             >
               {idx + 1}
@@ -381,11 +388,121 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
             </div>
 
             <div className="mt-4 flex gap-3 justify-center">
-              <button onClick={handleReset} className="px-4 py-2 bg-blue-500 text-white rounded-md">Làm lại</button>
+              <button onClick={handleReset} className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Làm lại</button>
             </div>
           </section>
         )}
 
+        {/* Guide Modal */}
+        {showGuide && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-800">Hướng dẫn sử dụng</h2>
+                <button 
+                  onClick={() => setShowGuide(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                  <h3 className="font-semibold text-blue-900 mb-2">Mục đích</h3>
+                  <p className="text-blue-800 text-sm">
+                    Luyện kỹ năng nghe hiểu tiếng Anh thông qua bài tập điền từ vào chỗ trống.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3">Cách làm bài:</h3>
+                  <ol className="space-y-3 text-sm text-gray-700">
+                    <li className="flex gap-3">
+                      <span className="font-bold text-blue-600 min-w-[24px]">1.</span>
+                      <span>Nhấn nút <strong>Play ▶️</strong> để nghe câu tiếng Anh</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-blue-600 min-w-[24px]">2.</span>
+                      <span>Điền từ bạn nghe được vào các ô trống (chỗ trống)</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-blue-600 min-w-[24px]">3.</span>
+                      <span>Bạn có thể nghe lại nhiều lần bằng nút <strong>Phát lại</strong></span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-blue-600 min-w-[24px]">4.</span>
+                      <span>Sử dụng nút <strong>← Trước</strong> và <strong>Sau →</strong> để chuyển câu</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-bold text-blue-600 min-w-[24px]">5.</span>
+                      <span>Khi hoàn thành tất cả, nhấn <strong>Nộp bài</strong> để xem kết quả</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3">⚙️ Các tính năng:</h3>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-3">
+                      <span className="text-blue-600">🔊</span>
+                      <div>
+                        <strong>Tốc độ nghe:</strong> Điều chỉnh tốc độ phát từ 0.5x đến 1.5x
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-blue-600">⏱️</span>
+                      <div>
+                        <strong>Đồng hồ:</strong> Theo dõi thời gian làm bài của bạn
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-blue-600">🔄</span>
+                      <div>
+                        <strong>Làm mới:</strong> Xóa tất cả câu trả lời đã điền
+                      </div>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-blue-600">📊</span>
+                      <div>
+                        <strong>Tiến độ:</strong> Xem bạn đã làm được bao nhiêu câu
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 className="font-semibold text-amber-900 mb-2">💡 Lưu ý:</h3>
+                  <ul className="space-y-1 text-sm text-amber-800">
+                    <li>• Viết đúng chính tả (không cần viết hoa chữ cái đầu)</li>
+                    <li>• Có thể nghe lại nhiều lần để nghe rõ hơn</li>
+                    <li>• Thử điều chỉnh tốc độ nghe nếu thấy quá nhanh</li>
+                    <li>• Kết quả sẽ hiển thị ngay sau khi nộp bài</li>
+                  </ul>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded">
+                  <h3 className="font-semibold text-green-900 mb-2">🎓 Mẹo học tập:</h3>
+                  <ul className="space-y-1 text-sm text-green-800">
+                    <li>• Nghe câu hoàn chỉnh trước khi điền</li>
+                    <li>• Tập trung vào ngữ cảnh của câu</li>
+                    <li>• Nghe lại phần khó nhiều lần</li>
+                    <li>• Kiên nhẫn và thực hành đều đặn</li>
+                  </ul>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <button
+                    onClick={() => setShowGuide(false)}
+                    className="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                  >
+                    Đã hiểu, bắt đầu làm bài!
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

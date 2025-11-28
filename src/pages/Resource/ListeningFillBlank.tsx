@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import api from "../../config/axios";
 import {
   Play,
   Pause,
@@ -18,44 +19,14 @@ interface Blank {
 }
 
 interface Question {
-  id: number;
+  _id: string;
   sentence: string;
   blanks: Blank[];
   userAnswers: string[];
 }
 
 export default function ListeningFillBlankOptimized(): JSX.Element {
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: 1,
-      sentence:
-        "The train will arrive at the station by 3 PM, and passengers should prepare their tickets.",
-      blanks: [
-        { position: 0, answer: "train" },
-        { position: 1, answer: "prepare" }
-      ],
-      userAnswers: ["", ""]
-    },
-    {
-      id: 2,
-      sentence: "Please ___ the documents before the ___ tomorrow morning.",
-      blanks: [
-        { position: 0, answer: "submit" },
-        { position: 1, answer: "deadline" }
-      ],
-      userAnswers: ["", ""]
-    }
-  ]);
-
-  const buildSentenceWithBlanks = (q: Question) => {
-    let s = q.sentence;
-    q.blanks.forEach(b => {
-      const reg = new RegExp("\\b" + b.answer + "\\b", "i");
-      s = s.replace(reg, "___");
-    });
-    return s;
-  };
-
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playCount, setPlayCount] = useState(0);
@@ -63,11 +34,32 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
   const [speechRate, setSpeechRate] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<number | null>(null);
 
-  const current = questions[currentIndex];
+  const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const res = await api.get("/practice/random?count=10");
+        const data = res.data?.data || [];
+        const withUserAnswers = data.map((q: any) => ({
+          ...q,
+          _id: q._id.toString(),
+          userAnswers: q.blanks.map(() => "")
+        }));
+        setQuestions(withUserAnswers);
+        setLoading(false);
+      } catch (err) {
+        console.error("Lấy câu hỏi thất bại:", err);
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
 
   // Timer
   useEffect(() => {
@@ -83,6 +75,38 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
       }
     };
   }, [showResults]);
+
+    if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">Đang tải câu hỏi...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!questions.length) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-lg text-gray-600">Không có câu hỏi</div>
+        </div>
+      </div>
+    );
+  }
+
+  const current = questions[currentIndex];
+
+  const buildSentenceWithBlanks = (q: Question) => {
+    let s = q.sentence;
+    q.blanks.forEach(b => {
+      const reg = new RegExp(`\\b${escapeRegExp(b.answer)}\\b`, "i");
+      s = s.replace(reg, "___");
+    });
+    return s;
+  };
 
   const speak = (text: string) => {
     if (!window.speechSynthesis) return;
@@ -234,21 +258,24 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => { window.speechSynthesis.cancel(); speak(current.sentence.replace(/___/g, 'blank')); }}
-              className="text-sm px-3 py-2 rounded-md border hover:bg-slate-50"
-              title="Phát lại chậm"
-            >
+          <div className="flex items-center gap-4">
+            <button onClick={() => { window.speechSynthesis.cancel(); speak(current.sentence.replace(/___/g, 'blank')); }}
+              className="text-sm px-3 py-2 rounded-md border hover:bg-slate-200"
+              title="Phát lại chậm">
               Phát lại
             </button>
 
             <button onClick={() => { setQuestions((qs) => qs.map(q => ({ ...q, userAnswers: q.blanks.map(() => "") }))); }}
-              className="text-sm px-3 py-2 rounded-md border hover:bg-slate-50"
+              className="text-sm px-3 py-2 rounded-md border hover:bg-slate-200"
               title="Xóa câu đã điền">
               <RotateCcw className="inline w-4 h-4 mr-2" />
               Làm mới
             </button>
+
+              <button onClick={handleSubmit}
+                className="text-sm px-3 py-2 rounded-md bg-emerald-500 text-white hover:bg-emerald-600">
+                Nộp bài
+              </button>
           </div>
         </header>
 
@@ -334,14 +361,14 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
               {questions.map((q, qi) => {
                 const ok = isQuestionCorrect(q);
                 return (
-                  <div key={q.id} className={`p-3 rounded-md border ${ok ? 'border-green-100 bg-green-50' : 'border-red-100 bg-red-50'}`}>
+                  <div key={q._id} className={`p-3 rounded-md border ${ok ? 'border-green-100 bg-green-50' : 'border-red-100 bg-red-50'}`}>
                     <div className="flex items-start gap-3">
                       <div>{ok ? <CheckCircle className="w-6 h-6 text-green-600" /> : <XCircle className="w-6 h-6 text-red-600" />}</div>
                       <div>
                         <div className="font-medium">Câu {qi + 1}</div>
                         <div className="text-sm text-slate-700">{q.sentence}</div>
                         {!ok && (
-                          <div className="mt-1 text-xs">
+                          <div className="mt-1 mb-1 text-xs">
                             <div><strong>Đáp án của bạn:</strong> {q.userAnswers.map(a => a || '—').join(', ')}</div>
                             <div><strong>Đáp án đúng:</strong> {q.blanks.map(b => b.answer).join(', ')}</div>
                           </div>

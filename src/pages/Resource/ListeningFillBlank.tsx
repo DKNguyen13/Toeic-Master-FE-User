@@ -324,17 +324,6 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
           </div>
         </main>
 
-        {/* Progress bar */}
-        <div className="mb-6">
-          <div className="text-xs text-slate-500 mb-2">Tiến độ</div>
-          <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
-            <div
-              style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-              className="h-3 rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-300"
-            />
-          </div>
-        </div>
-
         {/* Small pager dots */}
         <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
           {questions.map((_, idx) => (

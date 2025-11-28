@@ -301,8 +301,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
               <button
                 onClick={handlePrev}
                 disabled={currentIndex === 0}
-                className="px-4 py-2 bg-gray-100 rounded-md disabled:opacity-50 hover:bg-gray-200"
-              >
+                className="px-4 py-2 bg-gray-100 rounded-md disabled:opacity-50 hover:bg-gray-200">
                 ← Trước
               </button>
 

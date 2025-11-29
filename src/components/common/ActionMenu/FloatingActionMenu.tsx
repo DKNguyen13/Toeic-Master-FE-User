@@ -1,15 +1,12 @@
-import { ChevronLeft, BookOpen, FileText, X, Compass, ArrowUpCircle, ArrowUp } from "lucide-react";
+import { ChevronLeft, FileText, X, Compass, ArrowUp, Library } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 const FloatingDictionary = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-
   const [notes, setNotes] = useState("");
   const [noteModalOpen, setNoteModalOpen] = useState(false);
-
   const [showBackToTop, setShowBackToTop] = useState(false);
-
   const maxNoteLength = 500;
 
   useEffect(() => {
@@ -42,7 +39,7 @@ const FloatingDictionary = () => {
   }, []);
 
   const menuItems = [
-    { icon: BookOpen, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true), visible: true},
+    { icon: Library, color: "blue", label: "Từ điển", onClick: () => setModalOpen(true), visible: true},
     { icon: FileText, color: "green", label: "Ghi chú", onClick: () => setNoteModalOpen(true), visible: true},
     { icon: ArrowUp, color: "gray",  label: "Lên đầu trang",  onClick: scrollToTop, visible: showBackToTop },
   ];
@@ -66,8 +63,8 @@ const FloatingDictionary = () => {
         <div
           className={`flex flex-col gap-4 transition-all duration-300 ${
             menuOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
-          }`}
-        >
+          }`}>
+
           {menuItems
             .filter(item => item.visible)
             .map((item, i) => (
@@ -77,8 +74,7 @@ const FloatingDictionary = () => {
                   e.stopPropagation();
                   item.onClick();
                 }}
-                className={`p-2.5 bg-${item.color}-400 hover:bg-${item.color}-500 text-white rounded-full shadow-xl transition-all hover:scale-110`}
-              >
+                className={`p-2.5 bg-${item.color}-400 hover:bg-${item.color}-500 text-white rounded-full shadow-xl transition-all hover:scale-110`}>
                 <item.icon className="w-4 h-4" />
               </button>
               <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none">

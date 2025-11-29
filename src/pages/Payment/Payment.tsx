@@ -21,6 +21,8 @@ const PaymentPage: React.FC = () => {
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -36,13 +38,20 @@ const PaymentPage: React.FC = () => {
     fetchPackages();
   }, []);
 
-  const handleBuy = async (pkgId: string) => {
+  const handleBuyClick = (pkg: Package) => {
     if (!isLoggedIn()) {
       setShowLoginModal(true);
       return;
     }
+    setSelectedPkg(pkg);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmBuy = async () => {
+    if (!selectedPkg) return;
+    setShowConfirmModal(false);
     try {
-      const res = await api.post("/payment/create", { packageId: pkgId });
+      const res = await api.post("/payment/create", { packageId: selectedPkg._id });
       if (res.data.paymentUrl) {
         window.location.href = res.data.paymentUrl;
       }
@@ -167,7 +176,7 @@ const PaymentPage: React.FC = () => {
                           </span>
                         </div>
                       {/* CTA Button */}
-                      <button onClick={() => handleBuy(pkg._id)}
+                      <button onClick={() => handleBuyClick(pkg)}
                         className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
                           popular
                             ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
@@ -199,10 +208,32 @@ const PaymentPage: React.FC = () => {
           )}
         </div>
 
+        {showConfirmModal && selectedPkg && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+              <h3 className="text-lg text-center font-semibold mb-4">Xác nhận mua gói</h3>
+              <p className="text-gray-700 mb-6">
+                Bạn có chắc muốn mua gói <strong>{selectedPkg.name}</strong> với giá{" "}
+                <strong>{selectedPkg.discountedPrice.toLocaleString()}đ/tháng</strong>?
+              </p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setShowConfirmModal(false)}
+                  className="px-4 py-2 rounded-lg border hover:bg-gray-100">
+                  Hủy
+                </button>
+                <button onClick={handleConfirmBuy}
+                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                  Xác nhận
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Error Popup */}
         {popupMessage && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
               <div className="flex items-start gap-4 mb-4">
                 <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                   <AlertCircle className="text-red-600" size={20} />
@@ -211,17 +242,13 @@ const PaymentPage: React.FC = () => {
                   <h3 className="font-semibold text-gray-900 mb-1">Thông báo</h3>
                   <p className="text-gray-600 text-sm">{popupMessage}</p>
                 </div>
-                <button
-                  onClick={() => setPopupMessage(null)}
-                  className="flex-shrink-0 text-gray-400 hover:text-gray-600"
-                >
+                <button onClick={() => setPopupMessage(null)}
+                  className="flex-shrink-0 text-gray-400 hover:text-gray-600">
                   <X size={20} />
                 </button>
               </div>
-              <button
-                onClick={() => setPopupMessage(null)}
-                className="w-full py-2.5 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors"
-              >
+              <button onClick={() => setPopupMessage(null)}
+                className="w-full py-2.5 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors">
                 Đóng
               </button>
             </div>

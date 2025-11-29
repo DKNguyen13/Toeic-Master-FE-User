@@ -1,18 +1,21 @@
+import type { LucideIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import api, { isLoggedIn } from "../../config/axios";
+import LoginModal from "../../layouts/common/LoginModal";
 import ResourceCard from "../../components/ResourceCard";
 import Pagination from "../../components/common/Pagination/Pagination";
-import { Book, BookOpen, Clipboard, Layers, Search, Video } from "lucide-react";
+import { Book, BookOpen, Clipboard, Layers, Search, Star, Video } from "lucide-react";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
+import { showToast } from "../../utils/toast";
 
 const itemsPerPage = 9;
 
-const types = [
-  { key: "all", label: "Tất cả", icon: <Layers className="w-5 h-5 text-gray-400" /> },
-  { key: "vocabulary", label: "Từ vựng", icon: <Book className="w-5 h-5 text-gray-400" /> },
-  { key: "reading", label: "Đọc hiểu", icon: <BookOpen className="w-5 h-5 text-gray-400" /> },
-  { key: "grammar", label: "Ngữ pháp", icon: <Clipboard className="w-5 h-5 text-gray-400" /> },
-  { key: "video", label: "Video bài giảng", icon: <Video className="w-5 h-5 text-gray-400" /> },
+const types: { key: string; label: string; icon: LucideIcon }[] = [
+  { key: "all", label: "Tất cả", icon: Layers },
+  { key: "vocabulary", label: "Từ vựng", icon: Book },
+  { key: "reading", label: "Đọc hiểu", icon: BookOpen },
+  { key: "grammar", label: "Ngữ pháp", icon: Clipboard },
+  { key: "video", label: "Video bài giảng", icon: Video },
 ];
 
 const ResourcePage: React.FC = () => {
@@ -21,7 +24,9 @@ const ResourcePage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  
+  const [showLogin, setShowLoginModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
   useEffect(() => {
     const fetchResources = async () => {
       try {
@@ -37,6 +42,28 @@ const ResourcePage: React.FC = () => {
 
     fetchResources();
   }, []);
+
+  const handleListenFillClick = async () => {
+    if (!isLoggedIn()) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    try {
+      const res = await api.get("/auth/check-vip");
+      if (res.data.data?.access) {
+        window.location.href = "/practice/listen-fill";
+      } else {
+        setShowUpgradeModal(true);
+      }
+    } catch (err: any) {
+      if (err.response?.status === 403) {
+        setShowUpgradeModal(true);
+      } else {
+        showToast(err.response?.data?.message || "Hệ thống đang bảo trì!", "error");
+      }
+    }
+  };
 
   // Filter theo type và search
   const filteredResources = resources
@@ -64,16 +91,16 @@ const ResourcePage: React.FC = () => {
             "linear-gradient(to right, #f1eadfff 0%, #D6EAF8 60%, #D6EAF8 100%)",
         }}>
         <div className="flex flex-col items-start mb-4">
-        <i className="far fa-clone text-4xl mr-4 text-white"></i>
-        <span className="text-3xl font-bold text-black">
-          📖 Danh sách bài học
-        </span>
-      </div>
+          <i className="far fa-clone text-4xl mr-4 text-white"></i>
+          <span className="text-3xl font-bold text-black">
+            📖 Danh sách bài học
+          </span>
+        </div>
 
-      {/* Mô tả */}
-      <p className="text-gray-600 text-lg max-w-full">
-        Danh sách bài học và tài liệu giúp bạn ôn luyện và cải thiện kỹ năng TOEIC của mình.
-      </p>
+        {/* Mô tả */}
+        <p className="text-gray-600 text-lg max-w-full">
+          Danh sách bài học và tài liệu giúp bạn ôn luyện và cải thiện kỹ năng TOEIC của mình.
+        </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-12 items-start justify-center px-4 lg:px-8">
@@ -84,7 +111,7 @@ const ResourcePage: React.FC = () => {
               <div className="sticky top-6 space-y-6">
                 {/* Search Box */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                  <label className="block text-md font-bold text-gray-700 mb-3">
                     Tìm kiếm
                   </label>
                   <div className="relative">
@@ -104,37 +131,60 @@ const ResourcePage: React.FC = () => {
 
                 {/* Filter Navigation */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                  <label className="block text-sm font-bold text-gray-700 mb-4">
+                  <label className="block text-md font-bold text-gray-700 mb-4">
                     Loại bài học
                   </label>
                   <nav className="space-y-2">
-                    {types.map((t) => (
-                      <button
-                        key={t.key}
-                        onClick={() => {
-                          setSelectedType(t.key);
-                          setCurrentPage(1);
-                        }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
-                          selectedType === t.key
-                            ? "bg-blue-600 text-white shadow-lg shadow-blue-400/50"
-                            : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                        }`}
-                      >
-                        <div className={`${selectedType === t.key ? "text-white" : "text-gray-400"}`}>
-                          {t.icon}
-                        </div>
-                        <span className="flex-1 text-left">{t.label}</span>
-                        {selectedType === t.key && (
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        )}
-                      </button>
-                    ))}
+                    {types.map((t) => {
+                      const Icon = t.icon;
+                      return (
+                        <button
+                          key={t.key}
+                          onClick={() => {
+                            setSelectedType(t.key);
+                            setCurrentPage(1);
+                          }}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
+                            selectedType === t.key
+                              ? "bg-blue-600 text-white shadow-lg shadow-blue-400/50"
+                              : "text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                          }`}
+                        >
+                          <div className={selectedType === t.key ? "text-white" : "text-gray-400"}>
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <span className="flex-1 text-left">{t.label}</span>
+                          {selectedType === t.key && (
+                            <div className="w-2 h-2 bg-white rounded-full" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </nav>
                 </div>
 
+                {/* Premium Quick Access */}
+                <div className="bg-yellow-500 rounded-2xl shadow-lg p-6 text-white">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+                      <Star className="w-5 h-5" />
+                    </div>
+                    <span className="font-bold text-lg">Luyện nghe và điền từ</span>
+                  </div>
+                  <p className="text-yellow-50 text-sm mb-4">
+                    Truy cập các bài luyện đặc biệt
+                  </p>
+                  <button onClick={handleListenFillClick}
+                    className="w-full bg-white text-yellow-600 font-semibold py-3 px-4 rounded-xl hover:bg-yellow-50 transition text-sm flex items-center justify-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    </svg>
+                    Luyện nghe và điền từ còn thiếu
+                  </button>
+                </div>
+
                 {/* Stats Card */}
-                <div className="bg-blue-600 rounded-2xl shadow-lg p-6 text-white">
+                <div className="bg-gray-500 rounded-2xl shadow-lg p-6 text-white">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
                       <Layers className="w-5 h-5" />
@@ -157,6 +207,68 @@ const ResourcePage: React.FC = () => {
 
             {/* Resource Grid */}
             <main className="flex-1">
+              {/* Premium Feature Banner */}
+              <div className="mb-8">
+                <div onClick={handleListenFillClick}
+                  className="cursor-pointer bg-gradient-to-r from-yellow-50 to-amber-50 border-2 border-yellow-400 shadow-lg rounded-2xl p-6 hover:shadow-xl transition-all group relative overflow-hidden">
+                  {/* Animated Background Pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: 'radial-gradient(circle, #f59e0b 1px, transparent 1px)',
+                      backgroundSize: '20px 20px'}}>
+                    </div>
+                  </div>
+
+                  {/* Badge Premium */}
+                  <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 shadow-md">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    Premium
+                  </div>
+
+                  <div className="flex items-center gap-6 relative z-10">
+                    {/* Icon */}
+                    <div className="bg-gradient-to-br from-yellow-400 to-amber-500 p-6 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+                      <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                      </svg>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                        🎧 Luyện nghe và điền từ còn thiếu
+                      </h3>
+                      <p className="text-gray-600 mb-3">
+                        Luyện nghe chuyên sâu với bài tập điền từ - Nâng cao khả năng nghe hiểu
+                      </p>
+                      <div className="flex flex-wrap items-center gap-4 text-sm">
+                        <div className="flex items-center gap-2 text-yellow-700 bg-yellow-100 px-3 py-1.5 rounded-lg">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                          </svg>
+                          <span className="font-medium">Yêu cầu gói Premium</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          <span>Bài tập tương tác</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div className="text-yellow-600 group-hover:translate-x-2 transition-transform">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {filteredResources.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="mx-auto w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4">
@@ -195,6 +307,35 @@ const ResourcePage: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowUpgradeModal(false)}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+            <h3 className="text-xl text-center font-bold mb-4">Nâng cấp tài khoản</h3>
+            <p className="mb-6">
+              Bạn cần nâng cấp lên gói Premium để mở khóa tính năng này và tận hưởng đầy đủ ưu đãi!
+            </p>
+            <div className="flex justify-end gap-4">
+              <button onClick={() => setShowUpgradeModal(false)}
+                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+                Hủy
+              </button>
+              <button onClick={() => window.location.href = "/payment"}
+                className="px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600">
+                Nâng cấp ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogin && (
+        <LoginModal
+          isOpen={showLogin}
+          onClose={() => setShowLoginModal(false)}
+          onSuccess={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 };

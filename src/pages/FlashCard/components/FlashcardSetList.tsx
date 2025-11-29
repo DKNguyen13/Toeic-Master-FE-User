@@ -260,10 +260,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all duration-300 scale-100"
             onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-full mb-4 shadow-md">
-                <Library className="w-8 h-8" />
-              </div>
-              <h2 className="text-3xl font-bold text-gray-800">Tạo bộ từ vựng mới</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Tạo bộ từ vựng mới</h2>
               <p className="text-gray-500 mt-2">Bắt đầu xây dựng bộ từ vựng của riêng bạn</p>
             </div>
             

@@ -1,5 +1,6 @@
 import api from "../../config/axios";
 import React, { useEffect, useRef, useState } from "react";
+import EmptyState from "../../components/EmptyState";
 import { SpeedDropdown } from "../../layouts/common/SpeedDropdown";
 import { Play, Pause, RotateCcw, CheckCircle, XCircle, Award, Clock, Circle, FileText, HelpCircle, X } from "lucide-react";
 
@@ -101,13 +102,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
   }
 
   if (!questions.length) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-lg text-gray-600">Không có câu hỏi</div>
-        </div>
-      </div>
-    );
+    return <EmptyState message="Hệ thống hiện tại đang bảo trì. Vui lòng thử lại sau!"/>  
   }
 
   const current = questions[currentIndex];

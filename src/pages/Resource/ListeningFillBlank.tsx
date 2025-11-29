@@ -330,7 +330,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
           </div>
 
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="text-xs text-slate-500">Viết đúng chính tả — không cần hoa chữ cái.</div>
+            <div className="text-xs text-slate-500">Nhấn ? để xem hướng dẫn chi tiết</div>
 
             <div className="flex items-center gap-2">
               <button

@@ -77,7 +77,7 @@ const getVipConfig = (type: string | null) => {
           bg: "bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500", 
           icon: "", 
           label: "PREMIUM", 
-          textColor: "text-gray-900",
+          textColor: "text-white",
           glow: "shadow-lg shadow-yellow-500/50"
         };
       default:

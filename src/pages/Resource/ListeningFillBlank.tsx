@@ -1,19 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
 import api from "../../config/axios";
-import {
-  Play,
-  Pause,
-  RotateCcw,
-  CheckCircle,
-  XCircle,
-  Award,
-  Clock,
-  Circle,
-  FileText,
-  HelpCircle,
-  X
-} from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { SpeedDropdown } from "../../layouts/common/SpeedDropdown";
+import { Play, Pause, RotateCcw, CheckCircle, XCircle, Award, Clock, Circle, FileText, HelpCircle, X } from "lucide-react";
 
 interface Blank {
   position: number;
@@ -26,6 +14,8 @@ interface Question {
   blanks: Blank[];
   userAnswers: string[];
 }
+  
+const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default function ListeningFillBlankOptimized(): JSX.Element {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -41,13 +31,21 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
 
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<number | null>(null);
-
-  const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   
   useEffect(() => {
+    const saved = localStorage.getItem("lfb_questions");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setQuestions(parsed.questions);
+      setCurrentIndex(parsed.index);
+      setSeconds(parsed.time);
+      setLoading(false);
+      return;
+    }
+
     const fetchQuestions = async () => {
       try {
-        const res = await api.get("/practice/random?count=10");
+        const res = await api.get("/practice/random?count=25");
         const data = res.data?.data || [];
         const withUserAnswers = data.map((q: any) => ({
           ...q,
@@ -63,6 +61,18 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     };
     fetchQuestions();
   }, []);
+
+  useEffect(() => {
+    if (!questions.length) return;
+
+    const t = setTimeout(() => {
+      localStorage.setItem("lfb_questions", JSON.stringify({
+        questions, index: currentIndex, time: seconds
+      }));
+    }, 300);
+
+    return () => clearTimeout(t);
+  }, [questions, currentIndex, seconds]);
 
   // Timer
   useEffect(() => {
@@ -155,6 +165,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
       setCurrentIndex((i) => i + 1);
       window.speechSynthesis.cancel();
       setIsPlaying(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -163,6 +174,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
       setCurrentIndex((i) => i - 1);
       window.speechSynthesis.cancel();
       setIsPlaying(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -177,15 +189,38 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     setIsPlaying(false);
   };
 
-  const handleReset = () => {
-    setQuestions((prev) => prev.map((q) => ({ ...q, userAnswers: q.blanks.map(() => "") })));
-    setCurrentIndex(0);
-    setPlayCount(0);
-    setSeconds(0);
-    setShowResults(false);
-    setScore(0);
-    window.speechSynthesis.cancel();
-    setIsPlaying(false);
+  const handleReset = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/practice/random?count=25");
+      const data = res.data?.data || [];
+
+      const withUserAnswers = data.map((q: any) => ({
+        ...q,
+        _id: q._id.toString(),
+        userAnswers: q.blanks.map(() => "")
+      }));
+
+      setQuestions(withUserAnswers);
+      setCurrentIndex(0);
+      setPlayCount(0);
+      setSeconds(0);
+      setShowResults(false);
+      setScore(0);
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+
+      localStorage.setItem("lfb_questions", JSON.stringify({
+        questions: withUserAnswers,
+        index: 0,
+        time: 0
+      }));
+
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
   };
 
   const renderSentence = (q: Question) => {

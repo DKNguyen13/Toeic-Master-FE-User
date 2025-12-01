@@ -3,8 +3,8 @@ import CommentDetail from './CommentDetail';
 import { Comment } from '../Comment/types'
 import { isLoggedIn } from "../../config/axios";
 import LoginModal from "../../layouts/common/LoginModal";
-import { toast, ToastContainer } from "react-toastify";
 import { createComment, deleteComment, editComment, getCommentByTestId, reactComment } from '../../service/commentService';
+import { showToast } from '../../utils/toast';
 
 interface CommentSectionProps {
   comments: Comment[];
@@ -92,9 +92,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
       console.error('Error posting comment:', error);
       setComment('');
       if (error.response && error.response.data?.message) {
-        toast.error(error.response.data.message);
+        showToast(error.response.data.message, "error", { autoClose: 500 })
       } else {
-        toast.error("Có lỗi xảy ra! Vui lòng thử lại.");
+        showToast("Có lỗi xảy ra! Vui lòng thử lại.", "error", { autoClose: 500 })
       }
     }
   }
@@ -137,6 +137,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
           ))
         )}
       </div>
+
       {totalComments > 10 && (
         <div className="flex justify-center mt-6 pt-4 border-t border-gray-200">
           <nav className="flex items-center space-x-2">
@@ -168,21 +169,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
         </div>
       )}
     </div>
+
     <LoginModal
       isOpen={showLoginModal}
       onClose={() => setShowLoginModal(false)}
       onSuccess={() => window.location.reload()}/>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
   </>
   );
 };

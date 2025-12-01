@@ -168,7 +168,7 @@ const UpdateProfile: React.FC = () => {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
                     activeTab === tab.id
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                      ? "bg-blue-600 text-white shadow-md"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
@@ -268,7 +268,7 @@ const UpdateProfile: React.FC = () => {
               <button
                 onClick={handleSubmitBasic}
                 disabled={loading}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-8 py-3 bg-blue-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {loading ? (
                   <>
@@ -313,7 +313,7 @@ const UpdateProfile: React.FC = () => {
               <div className="flex justify-end pt-4">
                 <button
                   onClick={handlePrivacySubmit}
-                  className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2"
+                  className="px-8 py-3 bg-green-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2"
                 >
                   <Check size={18} />
                   Lưu cài đặt
@@ -385,7 +385,7 @@ const UpdateProfile: React.FC = () => {
               )}
 
               <div className="flex justify-end pt-4">
-                <button onClick={handlePasswordSubmit} className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2">
+                <button onClick={handlePasswordSubmit} className="px-8 py-3 bg-blue-600 text-white font-medium rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center gap-2">
                   <Lock size={18} />
                   Đổi mật khẩu
                 </button>

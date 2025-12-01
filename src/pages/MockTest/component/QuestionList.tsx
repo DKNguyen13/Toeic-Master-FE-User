@@ -1,19 +1,21 @@
 import React from "react";
 import QuestionItem from "./QuestionItem";
+import GroupQuestion from "./GroupQuestion";
+import { AnswerState, Question } from "../interface/interfaces";
 
 interface QuestionListProps {
   isView: boolean;
-  questionsInPart: any[];
-  answers: (string | null)[];
+  questionsInPart: Question[];
+  answers: AnswerState[];
   handleAnswer?: (questionIndex: number, optionIndex: number) => void;
 }
 
-const groupQuestions = (questions: any[]) => {
+const groupQuestions = (questions: Question[]) => {
   const groups: Record<string, any[]> = {};
   const singles: any[] = [];
 
   questions.forEach((q) => {
-    if ([3, 4, 6, 7].includes(q.partNumber) && q.group.groupId) {
+    if ([1, 3, 4, 6, 7].includes(q.partNumber) && q.group.groupId) {
       const groupId = q.group.groupId;
       if (!groups[groupId]) groups[groupId] = [];
       groups[groupId].push(q);
@@ -35,55 +37,17 @@ const QuestionList: React.FC<QuestionListProps> = ({
 
   return (
     <div className="w-full max-w-7xl">
-      {/* Nhóm câu (Part 3,4,6,7) */}
-      {groups.map((group) => {
-        const firstQuestion = group[0];
-        const images: string[] = Array.isArray(firstQuestion.group.image) ? firstQuestion.group.image : [];
-        const hasImage = images.length > 0;
-
-        return (
-          <div
-            key={firstQuestion.id}
-            className={`mb-6 flex flex-col md:flex-row gap-4 border-b border-gray-200 pb-4`}
-          >
-            {/* Nếu có ảnh thì hiển thị ảnh bên trái */}
-            {hasImage && (
-              <div className="md:w-1/2 w-full overflow-auto max-h-[600px] flex flex-col gap-3">
-                {images.map((img, idx) => (
-                  <img
-                    src={img}
-                    alt={`group-${firstQuestion.group.groupId}-${idx}`}
-                    className="rounded-lg max-w-full object-contain"
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Nội dung câu: chiếm 1/2 nếu có ảnh, full width nếu không */}
-            <div
-              className={`flex flex-col gap-4 pr-2 ${
-                hasImage
-                  ? "md:w-1/2 w-full overflow-auto max-h-[600px]"
-                  : "w-full"
-              }`}
-            >
-              {group.map((question) => (
-                <QuestionItem
-                  key={question.id}
-                  isView={isView}
-                  question={question}
-                  questionIndex={questionsInPart.findIndex(
-                    (q) => q.id === question.id
-                  )}
-                  answers={answers}
-                  handleAnswer={handleAnswer}
-                  hideImage={hasImage} // nếu có ảnh thì ẩn ảnh trong QuestionItem
-                />
-              ))}
-            </div>
-          </div>
-        );
-      })}
+      {/* Nhóm câu (Part 1,3,4,6,7) */}
+      {groups.map((group) => (
+        <GroupQuestion
+          key={group[0].id}
+          group={group}
+          questionsInPart={questionsInPart}
+          answers={answers}
+          handleAnswer={handleAnswer}
+          isView={isView}
+        />
+      ))}
 
       {/* Các câu đơn lẻ (Part 1,2,5) */}
       <div className="w-full flex flex-col gap-6">

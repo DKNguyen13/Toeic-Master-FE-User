@@ -15,7 +15,6 @@ interface TestProps {
 export const Test: React.FC<TestProps> = ({ isView }) => {
   //Chọn hook theo mode
   const hookData = isView ? useViewSession() : useTestSession();
-  console.log('hookData', hookData);
   const {
     session,
     parts,
@@ -28,7 +27,6 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
     handleGoBack,
     loading,
     error,
-    // Các ham trong useTestSession
     handleAnswer,
     handleNextPart,
     handleSubmitSession,
@@ -42,9 +40,6 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
     if (!isView) {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         event.preventDefault();
-        event.returnValue = "";
-        // Dòng này bắt buộc để trình duyệt hiển thị popup:
-        // “Changes you made may not be saved. [Leave] [Cancel]”
       };
 
       window.addEventListener("beforeunload", handleBeforeUnload);
@@ -55,7 +50,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
     }
   }, [isView]);
 
-  // ⚠️ 2. Cảnh báo khi bấm nút quay lại
+  // Cảnh báo khi bấm nút quay lại
   const handleBackClick = async () => {
     if (!isView) {
       const confirmExit = window.confirm(

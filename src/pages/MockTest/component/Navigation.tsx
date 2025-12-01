@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Question } from "../interface/interfaces";
+import { AnswerState, Question } from "../interface/interfaces";
 
 interface NavigationProps {
   isView: boolean;
   questions: Question[];
   currentPart: number;
   currentQuestion: number;
-  answers?: (string | null)[]; // Cho phép optional
+  answers?: AnswerState[];
   onNavigate: (indexInPart: number) => void;
   onSubmit?: () => void;
   time?: number;
@@ -25,14 +25,13 @@ const Navigation: React.FC<NavigationProps> = ({
   const [isFullScreen, setIsFullScreen] = useState(false);
   const hasTime = typeof time === "number" && time > 0;
   const [remainingTime, setRemainingTime] = useState(hasTime ? time * 60 : 0);
-
   useEffect(() => {
     if (typeof time === "number" && time > 0) {
       setRemainingTime(time * 60);
     }
   }, [time]);
 
-  // 🔹 Đếm ngược thời gian
+  // Đếm ngược thời gian
   useEffect(() => {
     if (!isView && hasTime && remainingTime > 0) {
       const timer = setInterval(() => {
@@ -66,30 +65,45 @@ const Navigation: React.FC<NavigationProps> = ({
     }
   };
 
-  // 🔹 Lọc câu hỏi thuộc part hiện tại
+  // câu hỏi thuộc part hiện tại
   const questionsInPart = questions.filter((q) => q.partNumber === currentPart);
 
-  // 🔹 Hiển thị nút câu hỏi
+  // Hiển thị nút câu hỏi
   const renderQuestionButtons = () =>
     questionsInPart.map((q, idx) => {
-      // Kiểm tra có câu trả lời hay không, an toàn hơn
-      const answered =
-        Array.isArray(answers) &&
-        typeof answers[q.globalQuestionNumber - 1] === "string" &&
-        answers[q.globalQuestionNumber - 1] != "";
+      const answerState = answers?.[q.globalQuestionNumber - 1];
+
+      let buttonClass =
+        "border rounded-md text-center text-sm p-1 transition-all duration-200";
+
+      if (isView) {
+        // Chế độ xem kết quả
+        const result = q.answerResult;
+        if (result?.isSkipped) {
+          buttonClass +=
+            " border-2 border-yellow-500 bg-yellow-50 text-yellow-700";
+        } else if (result?.isCorrect) {
+          buttonClass +=
+            " border-2 border-green-500 bg-green-50 text-green-700";
+        } else {
+          buttonClass += " border-2 border-red-500 bg-red-50 text-red-700";
+        }
+      } else {
+        // Chế độ làm bài
+        const answered = answerState?.selectedAnswer != null;
+        buttonClass +=
+          currentQuestion === idx
+            ? " bg-blue-500 text-white"
+            : answered
+            ? " bg-green-500 text-white"
+            : " bg-transparent hover:bg-blue-100 text-gray-800";
+      }
 
       return (
         <button
           key={idx}
           onClick={() => onNavigate(idx)}
-          className={`border rounded-md text-center text-sm p-1 transition-all duration-200
-            ${
-              currentQuestion === idx
-                ? "bg-blue-500 text-white"
-                : answered
-                ? "bg-green-500 text-white"
-                : "hover:bg-blue-500 hover:text-white"
-            }`}
+          className={buttonClass}
         >
           {q.globalQuestionNumber}
         </button>
@@ -99,7 +113,7 @@ const Navigation: React.FC<NavigationProps> = ({
   return (
     <div className="max-w-xs mx-auto p-4 bg-white h-full bottom-5 w-44">
       <div className="space-y-4">
-        {/* 🔹 Đếm giờ chỉ hiện khi đang làm bài */}
+        {/* Đếm giờ chỉ hiện khi đang làm bài */}
         {!isView && hasTime && (
           <div className="flex justify-between mb-4">
             <span className="text-sm">Thời gian còn lại:</span>
@@ -109,7 +123,7 @@ const Navigation: React.FC<NavigationProps> = ({
           </div>
         )}
 
-        {/* 🔹 Chế độ fullscreen */}
+        {/* Chế độ fullscreen */}
         {!isView && (
           <div className="mb-4 flex justify-end">
             <button
@@ -121,12 +135,12 @@ const Navigation: React.FC<NavigationProps> = ({
           </div>
         )}
 
-        {/* 🔹 Danh sách câu hỏi */}
-        <div className="grid grid-cols-4 gap-2 mb-4">
+        {/* Danh sách câu hỏi */}
+        <div className="grid grid-cols-5 gap-3 mb-6">
           {renderQuestionButtons()}
         </div>
 
-        {/* 🔹 Nút nộp bài */}
+        {/* Nút nộp bài */}
         {!isView && (
           <div className="mt-4 text-center">
             <button

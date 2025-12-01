@@ -1,30 +1,98 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSessionResults, getSessionsUser, submitBulkAnswers, submitSession } from "../../../service/sessionService";
-import { useSessionBase } from "./useSessionBase";
-
+import { AnswerState, Question, Session } from "../interface/interfaces";
+import { getSession, getSessionResults, getSessionsUser, submitBulkAnswers, submitSession } from "../../../service/sessionService";
 
 export const useTestSession = () => {
-
   const navigate = useNavigate();
-  
   const sessionId = localStorage.getItem("toeic-session-id");
 
-  const base = useSessionBase(sessionId);
-  const {
-    questions,
-    currentPart,
-    parts,
-    setCurrentPart,
-    setCurrentQuestion,
-  } = base;
-
-  const [answers, setAnswers] = useState<(string | null)[]>([]);
+  // State base 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentPart, setCurrentPart] = useState<number>(1);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [parts, setParts] = useState<number[]>([]);
+  const [answers, setAnswers] = useState<AnswerState[]>([]);
   const [unsentAnswers, setUnsentAnswers] = useState<
     { questionId: string; selectedAnswer: string | null }[]
   >([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        if (!sessionId) {
+          setError("Không tìm thấy bài thi.");
+          return;
+        }
+
+        const sessionData = await getSession(sessionId);
+        if (!sessionData?.session) {
+          setError("Bài thi không tồn tại hoặc đã bị xóa.");
+          return;
+        }
+
+        setSession(sessionData.session);
+        const fetchedQuestions = (sessionData.questions ?? []) as Question[];
+
+        if (fetchedQuestions.length === 0) {
+          setError("Không có câu hỏi nào trong bài thi này.");
+          return;
+        }
+
+        setQuestions(fetchedQuestions);
+
+        const allParts = sessionData?.session?.testConfig?.selectedParts;
+        setParts(allParts);
+        setCurrentPart(allParts[0] || 1);
+        setCurrentQuestion(0);
+
+        if (fetchedQuestions.length > 0) {
+          const initialAnswers: AnswerState[] = questions.map(q => ({
+            selectedAnswer: null,
+            timeSpent: 0,
+            isSkipped: true,
+            isFlagged: false,
+          }));
+          setAnswers(initialAnswers);
+        }
+
+      } catch {
+        setError("Lỗi khi tải dữ liệu bài thi.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [sessionId]);
+
+  // ====== Phần transform câu hỏi của 1 part (memoize) ======
+  const questionsInPart: Question[] = useMemo(() => {
+    return questions
+      .filter(q => q.partNumber === currentPart)
+      .map(q => {
+        const isSimple = [1, 2].includes(q.partNumber);
+        const images = Array.isArray(q.group?.image) ? q.group.image : [];
+        return {
+          ...q,
+          question: isSimple ? null : q.question,
+          group: {
+            ...q.group,
+            image: images
+          },
+          choices: q.choices.map(c => ({
+            ...c,
+            text: isSimple ? c.label : `${c.text}`
+          }))
+        };
+      });
+  }, [questions, currentPart]);
 
   const indexToLetter = ["A", "B", "C", "D"];
 
@@ -39,12 +107,29 @@ export const useTestSession = () => {
       return;
     }
 
-    const selectedLetter = indexToLetter[answerIndex];
+    const selectedLetter = indexToLetter[answerIndex] as "A" | "B" | "C" | "D";
     
-    // Lưu answer letter thay vì index
-    const updatedAnswers = [...answers];
-    updatedAnswers[question.globalQuestionNumber - 1] = selectedLetter;
-    setAnswers(updatedAnswers);
+    setAnswers(prev => {
+    const updated = [...prev];
+    // nếu câu chưa có dữ liệu trong answers → tạo mặc định là skip
+    if (!updated[question.globalQuestionNumber - 1]) {
+      updated[question.globalQuestionNumber - 1] = {
+        selectedAnswer: null,
+        timeSpent: 0,
+        isSkipped: true,
+        isFlagged: false,
+      };
+    }
+
+    // cập nhật đáp án + isSkipped
+    updated[question.globalQuestionNumber - 1] = {
+      ...updated[question.globalQuestionNumber - 1],
+      selectedAnswer: selectedLetter,
+      isSkipped: selectedLetter ? false : true,
+    };
+
+    return updated;
+  });
 
     // Cập nhật unsent answers
     setUnsentAnswers((prev) => {
@@ -58,6 +143,16 @@ export const useTestSession = () => {
         },
       ];
     });
+  };
+
+  // Điều hướng câu hỏi trong part
+  const handleNavigateQuestion = (indexInPart: number) => {
+    const questionsInPart = questions.filter((q) => q.partNumber === currentPart);
+    setCurrentQuestion(indexInPart);
+    const element = document.getElementById(
+      `question-${questionsInPart[indexInPart].globalQuestionNumber}`
+    );
+    if (element) element.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleNextPart = async () => {
@@ -100,16 +195,28 @@ export const useTestSession = () => {
     
   };
 
+  const handleGoBack = () => navigate(-1);
+
   return {
-    ...base, // thừa kế từ useSessionBase
+    sessionId,
+    session,
+    questions,
+    parts,
+    currentPart,
+    setCurrentPart,
+    currentQuestion,
+    questionsInPart,
     answers,
     handleAnswer,
+    handleNavigateQuestion,
     handleNextPart,
     handleSubmitSession,
+    handleGoBack,
     loading,
     error
   };
 };
+
 
 export const useResult = () => {
   const { id } = useParams();

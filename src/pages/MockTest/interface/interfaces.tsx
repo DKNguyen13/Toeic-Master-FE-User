@@ -8,25 +8,39 @@ export interface Choice {
 }
 
 export interface Group {
+  groupId: string;
   image?: string[];
   audio?: string;
   text?: string;
 }
 
+export interface AnswerState {
+  selectedAnswer: "A" | "B" | "C" | "D" | null;
+  timeSpent: number;
+  isSkipped: boolean;
+  isFlagged: boolean;
+}
+
+export interface UserAnswerResult {
+  questionId: string;
+  selectedAnswer: "A" | "B" | "C" | "D" | null;
+  isCorrect: boolean;
+  timeSpent: number;
+  isSkipped: boolean;
+  isFlagged: boolean;
+  explanation?: string;
+}
+
 export interface Question {
   id: string;
-  question: string;
+  question: string | null;
   questionNumber: number;
   globalQuestionNumber: number; // số thứ tự toàn bài
   partNumber: number;           // part nào
   group: Group;
   choices: Choice[];
-  userAnswer?: {                // nên dùng object để tương thích với API
-    selectedAnswer?: 'A' | 'B' | 'C' | 'D' | null;    // index của choice đã chọn
-    timeSpent?: number;
-    isSkipped?: boolean;
-    isFlagged?: boolean;
-  } | null;
+  answerState?: AnswerState;
+  answerResult?: UserAnswerResult | null; // chỉ dùng khi review kết quả
 }
 
 export interface SessionProgress {
@@ -57,25 +71,6 @@ export interface Session {
   progress: SessionProgress;
   testId: TestId;
   timeRemaining: number; // milliseconds còn lại
-}
-
-export interface UserAnswer {
-  questionId: {
-    id: string;
-    questionNumber: number;
-    question: string;
-    partNumber: number;
-    group: Group;
-    choices: Choice[];
-    correctAnswer: string;
-    explanation?: string;
-  };
-  questionNumber: number;
-  selectedAnswer: 'A' | 'B' | 'C' | 'D' | null;
-  isCorrect: boolean;
-  timeSpent: number;
-  isSkipped: boolean;
-  isFlagged: boolean;
 }
 
 export interface UnsentAnswer {

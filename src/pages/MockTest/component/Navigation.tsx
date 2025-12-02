@@ -23,31 +23,36 @@ const Navigation: React.FC<NavigationProps> = ({
   time,
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const hasTime = typeof time === "number" && time > 0;
-  const [remainingTime, setRemainingTime] = useState(hasTime ? time * 60 : 0);
+  const [remainingTime, setRemainingTime] = useState(
+    typeof time === "number" && time > 0 ? time * 60 : 0
+  );
+
+  const isCountDown = typeof time === "number" && time > 0;
+
   useEffect(() => {
-    if (typeof time === "number" && time > 0) {
-      setRemainingTime(time * 60);
+    if (isCountDown) {
+      setRemainingTime(time! * 60);
     }
   }, [time]);
 
   // Đếm ngược thời gian
   useEffect(() => {
-    if (!isView && hasTime && remainingTime > 0) {
-      const timer = setInterval(() => {
-        setRemainingTime((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            if (onSubmit) onSubmit();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+  if (!isView && isCountDown) {
+    const timer = setInterval(() => {
+      setRemainingTime(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onSubmit?.();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-      return () => clearInterval(timer);
-    }
-  }, [isView, hasTime, remainingTime, onSubmit]);
+    return () => clearInterval(timer);
+  }
+}, [isView, isCountDown, onSubmit]);
+
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -65,7 +70,6 @@ const Navigation: React.FC<NavigationProps> = ({
     }
   };
 
-  // câu hỏi thuộc part hiện tại
   const questionsInPart = questions.filter((q) => q.partNumber === currentPart);
 
   // Hiển thị nút câu hỏi
@@ -73,8 +77,8 @@ const Navigation: React.FC<NavigationProps> = ({
     questionsInPart.map((q, idx) => {
       const answerState = answers?.[q.globalQuestionNumber - 1];
 
-      let buttonClass =
-        "border rounded-md text-center text-sm p-1 transition-all duration-200";
+      let buttonClass = "border rounded-md text-center text-base w-7 h-7 flex items-center justify-center transition-all duration-200";
+
 
       if (isView) {
         // Chế độ xem kết quả
@@ -91,11 +95,8 @@ const Navigation: React.FC<NavigationProps> = ({
       } else {
         // Chế độ làm bài
         const answered = answerState?.selectedAnswer != null;
-        buttonClass +=
-          currentQuestion === idx
+        buttonClass += answered
             ? " bg-blue-500 text-white"
-            : answered
-            ? " bg-green-500 text-white"
             : " bg-transparent hover:bg-blue-100 text-gray-800";
       }
 
@@ -103,8 +104,7 @@ const Navigation: React.FC<NavigationProps> = ({
         <button
           key={idx}
           onClick={() => onNavigate(idx)}
-          className={buttonClass}
-        >
+          className={buttonClass}>
           {q.globalQuestionNumber}
         </button>
       );
@@ -113,11 +113,12 @@ const Navigation: React.FC<NavigationProps> = ({
   return (
     <div className="max-w-xs mx-auto p-4 bg-white h-full bottom-5 w-44">
       <div className="space-y-4">
-        {/* Đếm giờ chỉ hiện khi đang làm bài */}
-        {!isView && hasTime && (
-          <div className="flex justify-between mb-4">
-            <span className="text-sm">Thời gian còn lại:</span>
-            <span className="font-semibold text-xl text-blue-600">
+        {!isView && (
+          <div className="flex flex-col mb-4">
+            <span className="text-sm">
+              {isCountDown ? "Thời gian còn lại:" : "Thời gian làm bài:"}
+            </span>
+            <span className="font-semibold text-lg text-blue-600">
               {remainingTime > 0 ? formatTime(remainingTime) : "Hết giờ"}
             </span>
           </div>
@@ -125,18 +126,16 @@ const Navigation: React.FC<NavigationProps> = ({
 
         {/* Chế độ fullscreen */}
         {!isView && (
-          <div className="mb-4 flex justify-end">
-            <button
-              onClick={toggleFullScreen}
-              className="text-sm text-blue-500 hover:underline"
-            >
+          <div className="mb-4 flex justify-center">
+            <button onClick={toggleFullScreen}
+              className="text-sm text-blue-500 hover:underline">
               {isFullScreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
             </button>
           </div>
         )}
 
         {/* Danh sách câu hỏi */}
-        <div className="grid grid-cols-5 gap-3 mb-6">
+        <div className="flex flex-wrap gap-2 justify-start mb-6">
           {renderQuestionButtons()}
         </div>
 
@@ -147,8 +146,7 @@ const Navigation: React.FC<NavigationProps> = ({
               onClick={() => {
                 if (onSubmit) onSubmit();
               }}
-              className="bg-blue-500 text-white p-2 rounded-md w-full hover:bg-blue-600"
-            >
+              className="bg-blue-500 text-white p-2 rounded-md w-full hover:bg-blue-600">
               Nộp bài
             </button>
           </div>

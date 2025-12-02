@@ -37,22 +37,24 @@ const Navigation: React.FC<NavigationProps> = ({
 
   // Đếm ngược thời gian
   useEffect(() => {
-  if (!isView && isCountDown) {
+    if (isView) return;
+
     const timer = setInterval(() => {
-      setRemainingTime(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onSubmit?.();
-          return 0;
+      setRemainingTime((prev) => {
+        if (isCountDown) {
+          if (prev <= 1) {
+            clearInterval(timer);
+            if (onSubmit) onSubmit();
+            return 0;
+          }
+          return prev - 1;
         }
-        return prev - 1;
+        return prev + 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }
-}, [isView, isCountDown, onSubmit]);
-
+  }, [isView, isCountDown, onSubmit]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -119,7 +121,7 @@ const Navigation: React.FC<NavigationProps> = ({
               {isCountDown ? "Thời gian còn lại:" : "Thời gian làm bài:"}
             </span>
             <span className="font-semibold text-lg text-blue-600">
-              {remainingTime > 0 ? formatTime(remainingTime) : "Hết giờ"}
+              {formatTime(remainingTime)}
             </span>
           </div>
         )}

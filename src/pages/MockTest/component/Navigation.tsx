@@ -24,14 +24,14 @@ const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [remainingTime, setRemainingTime] = useState(
-    typeof time === "number" && time > 0 ? time * 60 : 0
+    typeof time === "number" && time > 0 ? time : 0
   );
 
   const isCountDown = typeof time === "number" && time > 0;
 
   useEffect(() => {
     if (isCountDown) {
-      setRemainingTime(time! * 60);
+      setRemainingTime(time);
     }
   }, [time]);
 

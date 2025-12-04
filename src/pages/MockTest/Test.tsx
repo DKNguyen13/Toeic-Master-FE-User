@@ -128,7 +128,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
         <div className="p-4 bg-white h-full w-fit overflow-y-scroll">
           <Navigation
             isView={isView}
-            time={session?.testConfig?.timeLimit ?? 0}
+            time={session?.timeRemaining ?? 0}
             questions={questionsInPart}
             currentPart={currentPart}
             currentQuestion={currentQuestion}

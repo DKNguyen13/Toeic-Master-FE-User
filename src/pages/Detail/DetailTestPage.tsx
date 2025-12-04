@@ -54,7 +54,6 @@ function MockDetailTests() {
       </div>
     );
   }
-  console.log('Test data: ', testData);
   return (
     <div className="min-h-screen bg-background">
       <DetailToeicTest

@@ -65,14 +65,14 @@ export const useStartTest = (testData) => {
 
     try {
       const session = await startSession(payload);
+      console.log(session);
       localStorage.setItem('toeic-session-id', session.id);
       navigate(`/session/${session.id}`);
     } catch (err) {
       const errorMessage =
-        err.response?.data?.message || // thông báo từ backend
+        err.response?.data?.errors || // thông báo từ backend
         err.message ||                 // fallback từ Axios
         "Failed to start session";
-
       setSessionError(errorMessage);
     } finally {
       setSessionLoading(false);

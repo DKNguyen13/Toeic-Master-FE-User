@@ -320,7 +320,7 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
         {/* Card: sentence */}
         <main className="bg-white rounded-2xl shadow-sm p-6 mb-6 border">
           <div className="mb-4 font-semibold text-base text-gray-800">Câu {currentIndex + 1}</div>
-          <div className="rounded-lg p-4 bg-gradient-to-r from-white to-slate-50 border border-gray-100">
+          <div className="rounded-lg p-4 bg-gradient-to-r from-white to-slate-50 border border-gray-300">
             {renderSentence(current)}
           </div>
 

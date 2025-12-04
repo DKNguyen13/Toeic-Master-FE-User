@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnswerState, Question, Session } from "../interface/interfaces";
-import { getSession, getSessionResults, getSessionsUser, submitBulkAnswers, submitSession } from "../../../service/sessionService";
+import { getSession, getSessionResults, getSessionsUser, pauseSession, resumeSession, submitBulkAnswers, submitSession } from "../../../service/sessionService";
 
 export const useTestSession = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ export const useTestSession = () => {
   const [unsentAnswers, setUnsentAnswers] = useState<
     { questionId: string; selectedAnswer: string | null }[]
   >([]);
+  const hasPausedRef = useRef(false); // chống gọi nhiều lần
 
   useEffect(() => {
     const fetchData = async () => {
@@ -197,6 +198,30 @@ export const useTestSession = () => {
 
   const handleGoBack = () => navigate(-1);
 
+  const handlePauseTestSession = useCallback(async () => {
+    if(hasPausedRef.current) {
+      return;
+    }
+
+    hasPausedRef.current = true;
+    try {
+      await pauseSession(sessionId);
+
+    } catch (err: any) {
+      setError(`Lỗi khi pause session : ${err.message}`);
+    }
+  }, [sessionId]);
+
+  const handleResumeTestSession = useCallback(async () => {
+    try {
+      await resumeSession(sessionId);
+      hasPausedRef.current = false; 
+
+    } catch (err) {
+      console.error("Resume failed:", err);
+    }
+  }, [sessionId]);
+
   return {
     sessionId,
     session,
@@ -213,7 +238,9 @@ export const useTestSession = () => {
     handleSubmitSession,
     handleGoBack,
     loading,
-    error
+    error,
+    handlePauseTestSession,
+    handleResumeTestSession
   };
 };
 

@@ -31,10 +31,18 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
     handleNextPart,
     handleSubmitSession,
     answers,
+    handlePauseTestSession,
+    handleResumeTestSession,
   } = hookData as ReturnType<typeof useTestSession> &
     ReturnType<typeof useViewSession>;
 
-  useBlockNavigation(!isView, () => handleSubmitSession(true));
+  useBlockNavigation(!isView, handlePauseTestSession);
+
+  useEffect(() => {
+    if (!isView && session && session.status === "paused") {
+      handleResumeTestSession();
+    }
+  }, [session, isView]);
 
   useEffect(() => {
     if (!isView) {
@@ -54,10 +62,10 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   const handleBackClick = async () => {
     if (!isView) {
       const confirmExit = window.confirm(
-        "Bạn có chắc muốn thoát không? Bài làm sẽ được nộp."
+        "Bạn có chắc muốn thoát không? Bài làm sẽ tạm dừng."
       );
       if (confirmExit) {
-        await handleSubmitSession(true); // nộp bài nhung khong redirect den trang ket qua
+        await handlePauseTestSession(); // pause session
         handleGoBack(); // quay lại trang trước
       }
     } else {
@@ -66,10 +74,10 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   };
 
   if (loading) {
-    return <LoadingSkeleton/>
+    return <LoadingSkeleton />;
   }
 
-   if (error) {
+  if (error) {
     return (
       <div className="flex justify-center items-center mt-12">
         <div className="text-red-500">Error: {error}</div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Clock,
   BookOpen,
@@ -13,6 +13,7 @@ import { Select } from "../../components/ui/select";
 import CommentSection from "../../components/Comment/CommentSection";
 import LoginModal from "../../layouts/common/LoginModal";
 import { ToastContainer } from "react-toastify";
+import { showToast } from "../../utils/toast";
 
 type Comment = {
   _id: string;
@@ -45,7 +46,7 @@ type ToeicTestProps = {
   setSelectedTime: React.Dispatch<React.SetStateAction<number>>;
   onStartPractice: (mode?: "practice" | "fulltest") => void;
   sessionLoading?: boolean;
-  sessionError?: string | null;
+  sessionError?: string;
   showLoginModal: boolean;
   setShowLoginModal: React.Dispatch<React.SetStateAction<boolean>>;
   testId: string;
@@ -73,6 +74,11 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
   setShowLoginModal,
   testId,
 }) => {
+  useEffect(() => {
+    if(sessionError) {
+      showToast(sessionError, "warn");
+    }
+  })
   const [activeTab, setActiveTab] = useState<TabType>(defaultActiveTab);
   const handlePartToggle = (partNumber: number) => {
     if (selectedParts.includes(partNumber)) {
@@ -302,9 +308,6 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
                         : "Bắt đầu luyện tập"}
                     </Button>
                   </div>
-                  {sessionError && (
-                    <p className="text-red-500 text-sm">{sessionError}</p>
-                  )}
                 </div>
               </div>
             )}
@@ -333,9 +336,6 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
                 >
                   {sessionLoading ? "Đang khởi tạo..." : "Bắt đầu thi thử"}
                 </Button>
-                {sessionError && (
-                  <p className="text-red-500 text-sm mt-2">{sessionError}</p>
-                )}
               </div>
             )}
           </div>

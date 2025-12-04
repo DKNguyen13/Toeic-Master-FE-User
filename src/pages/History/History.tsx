@@ -251,9 +251,10 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
                     result={item.progress.answeredCount}
                     totalQuestions={item.progress.totalQuestions}
                     accuracy={item?.results?.accuracy}
-                    time={item.time}
+                    time={item.timeSpent}
                     createdAt={item.createdAt}
                     sessionType={item.sessionType}
+                    status={item.status}
                   />
                 ))}
               </div>

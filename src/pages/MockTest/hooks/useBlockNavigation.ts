@@ -30,7 +30,7 @@ export function useBlockNavigation(
         e.preventDefault();
         e.stopPropagation(); // chặn lan truyền thêm
         const confirmLeave = window.confirm(
-          "Bạn có chắc muốn rời trang này không? Mọi thay đổi chưa lưu sẽ bị mất."
+          "Bạn có chắc muốn rời trang này không? Bài thi sẽ được tạm dừng"
         );
         if (confirmLeave) {
           onConfirmLeave?.();

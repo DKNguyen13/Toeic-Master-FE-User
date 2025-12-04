@@ -1,5 +1,11 @@
 import React from "react";
-import { Clock, Calendar, ArrowRight, BookOpen, CheckCircle } from "lucide-react";
+import {
+  Clock,
+  Calendar,
+  ArrowRight,
+  BookOpen,
+  CheckCircle,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface HistoryTestCardProps {
@@ -9,9 +15,10 @@ interface HistoryTestCardProps {
   result: number;
   totalQuestions: number;
   accuracy?: number;
-  time: string;
+  time: number;
   createdAt: string;
   sessionType: "practice" | "full-test" | string;
+  status: string;
 }
 
 const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
@@ -24,6 +31,7 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
   time,
   createdAt,
   sessionType,
+  status,
 }) => {
   const formattedDate = new Date(createdAt).toLocaleDateString("vi-VN", {
     day: "2-digit",
@@ -39,6 +47,22 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
       : "Khác";
 
   const isFullTest = sessionType === "full-test";
+
+  const formatTime = (sec: number) => {
+    if (!sec || sec < 0) return "—";
+
+    const hours = Math.floor(sec / 3600);
+    const minutes = Math.floor((sec % 3600) / 60);
+    const seconds = sec % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes.toString().padStart(2, "0")}m ${seconds
+        .toString()
+        .padStart(2, "0")}s`;
+    }
+
+    return `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
+  };
 
   return (
     <div
@@ -72,13 +96,18 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
             text-xs font-bold px-3 py-1.5 rounded-full shadow-sm
             ring-1 ring-inset transition-all duration-200
             flex items-center justify-center gap-1.5
-            ${isFullTest
-              ? "bg-gradient-to-r from-orange-50 to-pink-50 text-orange-700 ring-orange-200"
-              : "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 ring-emerald-200"
+            ${
+              isFullTest
+                ? "bg-gradient-to-r from-orange-50 to-pink-50 text-orange-700 ring-orange-200"
+                : "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 ring-emerald-200"
             }
           `}
         >
-          {isFullTest ? <BookOpen className="w-3 h-3" /> : <CheckCircle className="w-3 h-3" />}
+          {isFullTest ? (
+            <BookOpen className="w-3 h-3" />
+          ) : (
+            <CheckCircle className="w-3 h-3" />
+          )}
           {typeLabel}
         </span>
       </div>
@@ -110,7 +139,7 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
         <div className="flex flex-wrap gap-4">
           <span className="flex items-center gap-1.5 min-w-0">
             <Clock className="w-4 h-4 text-gray-400" />
-            <span className="font-medium truncate">{time}</span>
+            <span className="font-medium truncate">{formatTime(time)}</span>
           </span>
           <span className="flex items-center gap-1.5 min-w-0">
             <Calendar className="w-4 h-4 text-gray-400" />
@@ -118,21 +147,40 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
           </span>
         </div>
 
-        <Link to={`/session/${id}/results`} className="w-full sm:w-auto">
-          <button
-            className="
-              flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
-              rounded-xl shadow-md
-              transition-all duration-300
-              w-full sm:w-auto
-              bg-blue-600 hover:bg-blue-700
-              hover:shadow-lg hover:scale-105 active:scale-95
-            "
-          >
-            Xem chi tiết
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </Link>
+        {/* Nút tùy theo status */}
+        {status === "completed" ? (
+          <Link to={`/session/${id}/results`} className="w-full sm:w-auto">
+            <button
+              className="
+          flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
+          rounded-xl shadow-md
+          transition-all duration-300
+          w-full sm:w-auto
+          bg-blue-600 hover:bg-blue-700
+          hover:shadow-lg hover:scale-105 active:scale-95
+        "
+            >
+              Xem chi tiết
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </Link>
+        ) : status === "paused" ? (
+          <Link to={`/session/${id}`} className="w-full sm:w-auto">
+            <button
+              className="
+          flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
+          rounded-xl shadow-md
+          transition-all duration-300
+          w-full sm:w-auto
+          bg-green-600 hover:bg-green-700
+          hover:shadow-lg hover:scale-105 active:scale-95
+        "
+            >
+              Tiếp tục làm
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </Link>
+        ) : null}
       </div>
     </div>
   );

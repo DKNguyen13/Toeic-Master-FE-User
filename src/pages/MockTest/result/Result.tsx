@@ -133,7 +133,7 @@ const Result: React.FC<ResultProps> = ({
           rounded-lg shadow-md
           transition
         ">
-        ← Quay lại
+        ← Lịch sử làm bài
       </button>
       <h2 className="text-center text-3xl font-bold text-gray-700 mb-6">
         {testTitle}

@@ -34,3 +34,11 @@ export const getUserStatistics = async () => {
     const res = await api.get('/session/user/statistics');
     return res.data.data;
 };
+
+export const pauseSession = async (sessionId) => {
+    await api.put(`/session/${sessionId}/pause`);
+};
+
+export const resumeSession = async (sessionId) => {
+    await api.put(`/session/${sessionId}/resume`);
+};

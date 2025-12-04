@@ -217,7 +217,7 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
               <div className="w-full border-t-2 border-gray-200 mx-6 lg:mx-8"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-white px-6 py-2 text-base font-semibold text-gray-600 rounded-full shadow-sm">
+              <span className="bg-white px-6 py-2 text-base font-semibold text-gray-600 rounded-full shadow-sm border border-gray-300">
                 Lịch sử làm bài
               </span>
             </div>

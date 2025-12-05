@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import avatar from '../../assets/images/avatar.png';
+import avatar from '../../assets/images/default_avatar.jpg';
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";

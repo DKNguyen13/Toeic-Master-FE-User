@@ -38,9 +38,9 @@ const QuestionList: React.FC<QuestionListProps> = ({
   return (
     <div className="w-full max-w-7xl">
       {/* Nhóm câu (Part 1,3,4,6,7) */}
-      {groups.map((group) => (
+      {groups.map((group, index) => (
         <GroupQuestion
-          key={group[0].id}
+          key={`${group[0].groupId}-${index}`}
           group={group}
           questionsInPart={questionsInPart}
           answers={answers}
@@ -51,8 +51,8 @@ const QuestionList: React.FC<QuestionListProps> = ({
 
       {/* Các câu đơn lẻ (Part 1,2,5) */}
       <div className="w-full flex flex-col gap-6">
-        {singles.map((question) => (
-          <div key={question.id} className="w-full max-w-4xl mx-auto px-4">
+        {singles.map((question, idx) => (
+          <div key={idx} className="w-full max-w-4xl mx-auto px-4">
             <QuestionItem
               isView={isView}
               question={question}

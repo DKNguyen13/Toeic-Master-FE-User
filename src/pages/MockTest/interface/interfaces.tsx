@@ -39,6 +39,7 @@ export interface Question {
   partNumber: number;           // part nào
   group: Group;
   choices: Choice[];
+  userAnswer?: AnswerState | null;
   answerState?: AnswerState;
   answerResult?: UserAnswerResult | null; // chỉ dùng khi review kết quả
 }

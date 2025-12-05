@@ -2,10 +2,11 @@ import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AnswerState, Question, Session } from "../interface/interfaces";
 import { getSession, getSessionResults, getSessionsUser, pauseSession, resumeSession, submitBulkAnswers, submitSession } from "../../../service/sessionService";
-
+import {  useSocket } from "../../../context/SocketContext";
 export const useTestSession = () => {
+  const { registerSession, sendAnswer } = useSocket();
   const navigate = useNavigate();
-  const sessionId = localStorage.getItem("toeic-session-id");
+  const { id: sessionId } = useParams();
 
   // State base 
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ export const useTestSession = () => {
     { questionId: string; selectedAnswer: string | null }[]
   >([]);
   const hasPausedRef = useRef(false); // chống gọi nhiều lần
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,12 +55,13 @@ export const useTestSession = () => {
         setCurrentQuestion(0);
 
         if (fetchedQuestions.length > 0) {
-          const initialAnswers: AnswerState[] = questions.map(q => ({
-            selectedAnswer: null,
-            timeSpent: 0,
-            isSkipped: true,
-            isFlagged: false,
+          const initialAnswers: AnswerState[] = fetchedQuestions.map(q => ({
+            selectedAnswer: q.userAnswer?.selectedAnswer ?? null,
+            timeSpent: q.userAnswer?.timeSpent ?? 0,
+            isSkipped: q.userAnswer?.isSkipped ?? true,
+            isFlagged: q.userAnswer?.isFlagged ?? false,
           }));
+
           setAnswers(initialAnswers);
         }
 
@@ -72,6 +74,13 @@ export const useTestSession = () => {
 
     fetchData();
   }, [sessionId]);
+
+  useEffect(() => {
+    if (sessionId) {
+      registerSession(sessionId);
+    }
+  }, [sessionId]);
+
 
   // ====== Phần transform câu hỏi của 1 part (memoize) ======
   const questionsInPart: Question[] = useMemo(() => {
@@ -128,22 +137,23 @@ export const useTestSession = () => {
       selectedAnswer: selectedLetter,
       isSkipped: selectedLetter ? false : true,
     };
-
     return updated;
   });
 
-    // Cập nhật unsent answers
-    setUnsentAnswers((prev) => {
-      const filtered = prev.filter((ans) => ans.questionId !== question.id);
-      return [
-        ...filtered,
-        {
-          questionId: question.id,
-          selectedAnswer: selectedLetter,
-          timeSpent: 0,  // TODO: Tính thời gian thực tế
-        },
-      ];
-    });
+    // // Cập nhật unsent answers
+    // setUnsentAnswers((prev) => {
+    //   const filtered = prev.filter((ans) => ans.questionId !== question.id);
+    //   return [
+    //     ...filtered,
+    //     {
+    //       questionId: question.id,
+    //       selectedAnswer: selectedLetter,
+    //       timeSpent: 0,  // TODO: Tính thời gian thực tế
+    //     },
+    //   ];
+    // });
+
+    sendAnswer(sessionId, question.id, selectedLetter);
   };
 
   // Điều hướng câu hỏi trong part
@@ -215,6 +225,10 @@ export const useTestSession = () => {
   const handleResumeTestSession = useCallback(async () => {
     try {
       await resumeSession(sessionId);
+      const refreshed = await getSession(sessionId);
+      if (refreshed?.session) {
+        setSession(refreshed.session);
+      }
       hasPausedRef.current = false; 
 
     } catch (err) {
@@ -230,6 +244,7 @@ export const useTestSession = () => {
     currentPart,
     setCurrentPart,
     currentQuestion,
+    setCurrentQuestion,
     questionsInPart,
     answers,
     handleAnswer,

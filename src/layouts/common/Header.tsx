@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import api, { setAccessToken } from "../../config/axios.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSocket } from "../../context/SocketContext.jsx";
+import { useSocketReady } from "../../context/useSocketReady.jsx";
 import { FaBell, FaHome, FaFileAlt, FaSearch, FaCrown, FaClipboardList } from "react-icons/fa";
 import { ClipboardList, HelpCircle, History, LogOut, UserCircle } from "lucide-react";
 
@@ -13,8 +14,8 @@ interface Notification {
   read: boolean;
   createdAt: string;
   actionUrl?: string;
-  data: {
-    senderName?: string;
+  data:  {
+    senderName?:  string;
     postTitle?: string;
     replyContent?: string;
     commentContent?: string;
@@ -37,13 +38,21 @@ const Header: React.FC = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>("/img/avatar/default_avatar.jpg");
   const [openMenu, setOpenMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [localNotifications, setLocalNotifications] = useState<Notification[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
-  const { unreadCount } = useSocket(); 
+  
+  // ✅ Sử dụng socket context
+  const { 
+    notifications:  socketNotifications, 
+    unreadCount, 
+    markAsRead,
+    clearNotifications 
+  } = useSocket();
+  const isSocketReady = useSocketReady();
 
   const updateUser = () => {
     setFullname(localStorage.getItem("fullname"));
@@ -52,20 +61,33 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    updateUser(); // Set initial user
-
+    updateUser();
     const handleUserUpdated = () => updateUser();
     window.addEventListener("userUpdated", handleUserUpdated);
-
     return () => {
       window.removeEventListener("userUpdated", handleUserUpdated);
     };
   }, []);
 
+  // ✅ Sử dụng real-time notifications từ Socket
+  useEffect(() => {
+    if (socketNotifications && socketNotifications.length > 0) {
+      // Kết hợp socket notifications với local notifications
+      // Socket notifications được thêm vào trước (mới nhất)
+      const combinedNotifications = [
+        ...socketNotifications. filter(
+          sn => !localNotifications.some(ln => ln._id === sn._id)
+        ),
+        ...localNotifications
+      ];
+      setLocalNotifications(combinedNotifications);
+    }
+  }, [socketNotifications]);
+
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event. target as Node)) {
         setOpenMenu(false);
       }
       if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
@@ -76,9 +98,9 @@ const Header: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Fetch notifications
+  // ✅ Fetch notifications từ API (để load historic notifications)
   const fetchNotifications = async (page: number = 1, reset: boolean = true) => {
-    if (!fullname) return;
+    if (! fullname) return;
     
     if (reset) {
       setLoading(true);
@@ -89,10 +111,25 @@ const Header: React.FC = () => {
     try {
       const response = await api.get(`/notifications?page=${page}&limit=10`);
       if (response.data && response.data.data) {
+        const apiNotifications = response.data.data;
+        
         if (reset) {
-          setNotifications(response.data.data);
+          // Merge socket notifications (mới) với API notifications
+          const merged = [
+            ...socketNotifications.filter(
+              sn => !apiNotifications.some(an => an._id === sn._id)
+            ),
+            ...apiNotifications
+          ];
+          setLocalNotifications(merged);
         } else {
-          setNotifications(prev => [...prev, ...response.data.data]);
+          // Load more - thêm vào cuối
+          setLocalNotifications(prev => {
+            const newNotifications = apiNotifications.filter(
+              an => !prev.some(pn => pn._id === an._id)
+            );
+            return [...prev, ...newNotifications];
+          });
         }
         setPagination(response.data.pagination);
       }
@@ -114,16 +151,21 @@ const Header: React.FC = () => {
     }
   };
 
-  // Handle notification click
+  // ✅ Handle notification click
   const handleNotificationClick = async (notification: Notification) => {
-    // Mark as read if not already read
-    if (!notification.read) {
+    // Mark as read via Socket context
+    if (! notification.read) {
       try {
+        // Gọi API để save read status
         await api.patch(`/notifications/${notification._id}/read`);
+        
         // Update local state
-        setNotifications(prev => 
-          prev.map(n => n._id === notification._id ? { ...n, read: true } : n)
+        setLocalNotifications(prev => 
+          prev.map(n => n._id === notification._id ? { ... n, read: true } : n)
         );
+        
+        // Also notify socket context (nếu có)
+        markAsRead(notification._id);
       } catch (error) {
         console.error("Failed to mark notification as read:", error);
       }
@@ -131,17 +173,18 @@ const Header: React.FC = () => {
 
     // Navigate to action URL if exists
     if (notification.actionUrl) {
-      navigate(notification.actionUrl);
+      navigate(notification. actionUrl);
     }
     
     setOpenNotifications(false);
   };
 
-  // Mark all as read
+  // ✅ Mark all as read
   const markAllAsRead = async () => {
     try {
       await api.patch("/notifications/mark-all-read");
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setLocalNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      clearNotifications(); // Clear socket notifications too
     } catch (error) {
       console.error("Failed to mark all as read:", error);
     }
@@ -151,7 +194,7 @@ const Header: React.FC = () => {
   const formatTimeAgo = (dateString: string) => {
     const now = new Date();
     const date = new Date(dateString);
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    const diffInSeconds = Math.floor((now. getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) return "Vừa xong";
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} phút trước`;
@@ -173,13 +216,15 @@ const Header: React.FC = () => {
       window.dispatchEvent(new Event("userUpdated"));
       setAvatarUrl("/img/avatar/default_avatar.jpg");
       setOpenMenu(false);
+      setLocalNotifications([]);
+      clearNotifications();
       navigate("/");
     }
   };
 
   const navLinks = [
     { to: "/", label: "Trang chủ", icon: <FaHome className="text-xl" /> },
-    { to: "/tests", label: "Thi thử", icon: <FaFileAlt className="text-xl" /> },
+    { to:  "/tests", label: "Thi thử", icon: <FaFileAlt className="text-xl" /> },
     { to: "/resource", label: "Tài nguyên", icon: <FaSearch className="text-xl" /> },
     { to: "/flashcard", label: "Flashcards", icon: <FaClipboardList className="text-xl" /> },
     { to: "/payment", label: "Premium", icon: <FaCrown className="text-xl text-yellow-500" />, premium: true },
@@ -187,7 +232,7 @@ const Header: React.FC = () => {
 
   const userMenu = [
     { label: "Thông tin cá nhân", to: "/profile", icon: <UserCircle /> },
-    { label: "Lịch sử làm bài", to: "/history", icon: <ClipboardList /> },
+    { label: "Lịch sử làm bài", to: "/history", icon:  <ClipboardList /> },
     { label: "Lịch sử mua hàng", to: "/purchase-history", icon: <History /> },
     { label: "Hỗ trợ / Liên hệ", to: "/support", icon: <HelpCircle/>  }
   ];
@@ -225,7 +270,7 @@ const Header: React.FC = () => {
         {navLinks.map((link) => (
           <Link key={link.to + "-mobile"} to={link.to}
             className={`sm:hidden transition-colors duration-200 ${
-              location.pathname === link.to ? "text-blue-600" : "text-gray-500 hover:text-blue-500"
+              location.pathname === link.to ?  "text-blue-600" : "text-gray-500 hover:text-blue-500"
             }`}>
             {link.icon}
           </Link>
@@ -239,18 +284,24 @@ const Header: React.FC = () => {
           <div className="relative" ref={notificationRef}>
             <button 
               onClick={() => {
-                setOpenNotifications(!openNotifications);
-                if (!openNotifications) {
+                setOpenNotifications(! openNotifications);
+                // ✅ Load notifications khi mở dropdown
+                if (! openNotifications && !loading) {
                   fetchNotifications(1, true);
                 }
               }}
-              className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition">
+              className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition"
+              title={`${unreadCount} thông báo chưa đọc`}>
               <FaBell className="text-xl" />
-              {/* Notification badge */}
+              {/* ✅ Notification badge - sử dụng unreadCount từ Socket */}
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
+              )}
+              {/* ✅ Socket status indicator */}
+              {isSocketReady && (
+                <span className="absolute bottom-1 right-1 w-2 h-2 bg-green-500 rounded-full"></span>
               )}
             </button>
 
@@ -260,9 +311,10 @@ const Header: React.FC = () => {
                 {/* Header */}
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-800">Thông báo</h3>
-                  {notifications.some(n => !n.read) && (
-                    <button onClick={markAllAsRead}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                  {localNotifications.some(n => ! n.read) && (
+                    <button 
+                      onClick={markAllAsRead}
+                      className="text-sm text-blue-600 hover: text-blue-700 font-medium transition">
                       Đánh dấu tất cả đã đọc
                     </button>
                   )}
@@ -274,34 +326,30 @@ const Header: React.FC = () => {
                     <div className="flex items-center justify-center py-8">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
                     </div>
-                  ) : notifications.length === 0 ? (
+                  ) : localNotifications.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-8 text-gray-500">
                       <FaBell className="text-3xl mb-2 opacity-50" />
                       <p className="text-sm">Không có thông báo mới</p>
                     </div>
                   ) : (
                     <>
-                      {notifications.map((notification) => (
+                      {localNotifications. map((notification) => (
                         <div
                           key={notification._id}
                           onClick={() => handleNotificationClick(notification)}
-                          className={`px-4 py-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors ${
-                            !notification.read ? 'bg-blue-25' : ''
-                          }`}
-                        >
+                          className={`px-4 py-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors duration-150 ${
+                            ! notification.read ?  'bg-blue-25 border-l-4 border-l-blue-600' : ''
+                          }`}>
                           <div className="flex items-start gap-3">
-                            {/* Icon */}
-                            {/* <div className="flex-shrink-0 mt-1">
-                              {notification.icon === "💬" ? (
-
-                                <div className="w-10 h-10 flex items-center justify-center">
-                                
-                                </div>
-                              ) : (
-                                <span className="text-lg">{notification.data.avatarUrl}</span>
-                              )}
-                            </div> */}
-                            <img className="w-8 h-8 rounded-full object-cover" src={notification.data?.avatarUrl || "/img/avatar/system.png"} ></img>
+                            {/* Avatar */}
+                            <img 
+                              className="w-8 h-8 rounded-full object-cover flex-shrink-0" 
+                              src={notification. data?. avatarUrl || "/img/avatar/system. png"}
+                              alt={notification.data?.senderName || "Avatar"}
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/img/avatar/default_avatar.jpg";
+                              }}
+                            />
                             
                             {/* Content */}
                             <div className="flex-1 min-w-0">
@@ -309,20 +357,20 @@ const Header: React.FC = () => {
                                 <h4 className="text-sm font-medium text-gray-800 truncate">
                                   {notification.title}
                                 </h4>
-                                {!notification.read && (
-                                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0"></div>
+                                {! notification.read && (
+                                  <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 animate-pulse"></div>
                                 )}
                               </div>
                               <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                                 {notification.message}
                               </p>
                               {notification.data?.postTitle && (
-                                <p className="text-xs text-blue-600 mt-1 font-medium">
-                                  📝 {notification.data?.postTitle}
+                                <p className="text-xs text-blue-600 mt-1 font-medium line-clamp-1">
+                                  📝 {notification.data?. postTitle}
                                 </p>
                               )}
                               <p className="text-xs text-gray-400 mt-1">
-                                {formatTimeAgo(notification.createdAt)}
+                                {formatTimeAgo(notification. createdAt)}
                               </p>
                             </div>
                           </div>
@@ -335,15 +383,14 @@ const Header: React.FC = () => {
                           <button
                             onClick={loadMoreNotifications}
                             disabled={loadingMore}
-                            className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                          >
-                            {loadingMore ? (
+                            className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium py-2 px-4 rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                            {loadingMore ?  (
                               <>
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
                                 Đang tải...
                               </>
                             ) : (
-                              `Xem thêm (${pagination.totalComments - notifications.length} còn lại)`
+                              `Xem thêm (${pagination.totalComments - localNotifications.length} còn lại)`
                             )}
                           </button>
                         </div>
@@ -360,12 +407,20 @@ const Header: React.FC = () => {
         <div className="relative" ref={dropdownRef}>
           {fullname ? (
             <div className="relative">
-              <button onClick={() => setOpenMenu(!openMenu)} className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition w-full max-w-xs">
-                <img src={avatarUrl || "/img/avatar/default_avatar.jpg"}
+              <button 
+                onClick={() => setOpenMenu(!openMenu)} 
+                className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-gray-100 transition w-full max-w-xs">
+                <img 
+                  src={avatarUrl || "/img/avatar/default_avatar.jpg"}
                   alt="Avatar"
                   className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/img/avatar/default_avatar.jpg";
+                  }}
                 />
-                <span className="font-medium text-gray-700 truncate" title={fullname}>{fullname}</span>
+                <span className="font-medium text-gray-700 truncate" title={fullname}>
+                  {fullname}
+                </span>
               </button>
 
               {/* User Dropdown */}
@@ -381,7 +436,8 @@ const Header: React.FC = () => {
                       <span className="truncate">{item.label}</span>
                     </Link>
                   ))}
-                  <button onClick={handleLogout}
+                  <button 
+                    onClick={handleLogout}
                     className="flex items-center text-sm w-full px-4 py-3 gap-2 text-gray-700 hover:bg-red-50 hover:text-red-500 transition font-medium">
                     <LogOut size={16}/>
                     Đăng xuất
@@ -390,7 +446,9 @@ const Header: React.FC = () => {
               )}
             </div>
           ) : (
-            <Link to="/login" className="bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition">
+            <Link 
+              to="/login" 
+              className="bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 px-4 py-2 rounded-full font-medium transition">
               Đăng nhập
             </Link>
           )}

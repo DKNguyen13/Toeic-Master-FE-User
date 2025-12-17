@@ -219,7 +219,7 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
             placeholder="Để lại câu trả lời của bạn..."
-            className="text-sm w-full p-3 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="text-sm w-full p-3 border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             rows={2}
           />
           <div className="flex space-x-2 mt-2">

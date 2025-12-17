@@ -67,12 +67,14 @@ const Result: React.FC<ResultProps> = ({
   isFullTest,
   answers
 }) => {
+  console.log("user answers:", answers);
   const navigate = useNavigate();
   const handleGoBack = () => {
     navigate(`/history`);
   };
   
   const fetchFeedback = async () => {
+    console.log("user answers:", answers);
     if (feedback) return;
 
     setLoadingFb(true);

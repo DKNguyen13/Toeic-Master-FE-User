@@ -23,6 +23,23 @@ ChartJS.register(
   LinearScale
 );
 
+type answers = {
+  questionId: string;
+  question: string;
+  part: number;
+  questionNumber: number;
+  choices : {
+    label: string;
+    text: string;
+  }
+  userAnswer: {
+    isFlagged: boolean;
+    isSkipped: boolean;
+    selectedAnswer: string | null;
+  };
+  correctAnswer: string;
+};
+
 type ResultProps = {
   id: string;
   testTitle: string;
@@ -34,6 +51,7 @@ type ResultProps = {
   readingScore: number;
   totalScore: number;
   isFullTest: boolean;
+  answers: answers[];
 };
 
 const Result: React.FC<ResultProps> = ({
@@ -47,6 +65,7 @@ const Result: React.FC<ResultProps> = ({
   readingScore,
   totalScore,
   isFullTest,
+  answers
 }) => {
   const navigate = useNavigate();
   const handleGoBack = () => {
@@ -58,14 +77,28 @@ const Result: React.FC<ResultProps> = ({
 
     setLoadingFb(true);
 
+    const formattedAnswers = answers.map(a => ({
+      questionId: a.questionId,
+      part: a.part,
+      questionNumber: a.questionNumber,
+      correctAnswer: a.correctAnswer,
+      selectedAnswer: a.userAnswer.selectedAnswer,
+      isSkipped: a.userAnswer.isSkipped,
+      isFlagged: a.userAnswer.isFlagged,
+    }));
+
     try {
       const res = await api.post("/analysis/result", {
-        correctAnswers,
-        wrongAnswers,
-        skippedQuestions,
-        totalQuestions,
-        listeningScore,
-        readingScore,
+        summary: {
+          correctAnswers,
+          wrongAnswers,
+          skippedQuestions,
+          totalQuestions,
+          listeningScore,
+          readingScore,
+        },
+        isFullTest,
+        answers: formattedAnswers
       });
       setFeedback(res.data.feedback);
     } catch (err) {

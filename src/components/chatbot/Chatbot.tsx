@@ -34,7 +34,7 @@ const MessageBubble = ({ message }: { message: Message }) => {
       <div
         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
           isBot
-            ? "bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg"
+            ? "bg-blue-500 shadow-lg"
             : "bg-gradient-to-br from-green-400 to-blue-500 shadow-lg"
         }`}
       >

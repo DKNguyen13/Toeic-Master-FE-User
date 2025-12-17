@@ -7,7 +7,8 @@ const ResultPage: React.FC = () => {
   const {
     loading,
     error,
-    resultData
+    resultData,
+    userAnswers
   } = useResult();
 
   if (loading) return <LoadingSkeleton/>;
@@ -26,6 +27,7 @@ const ResultPage: React.FC = () => {
       listeningScore={resultData.results.listeningScore}
       readingScore={resultData.results.readingScore}
       isFullTest= {resultData.sessionType?.toLowerCase() === 'full-test'}
+      answers={userAnswers}
     />
   );
 };

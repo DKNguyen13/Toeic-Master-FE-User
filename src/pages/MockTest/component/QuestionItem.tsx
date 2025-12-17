@@ -90,7 +90,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
   return (
     <div
       id={`question-${question.globalQuestionNumber}`}
-      className={`mb-4 pb-4 ${!hideBorder ? "border-b border-gray-200" : ""}`}
+      className={`mb-4 pb-4 scroll-mt-[80px] ${!hideBorder ? "border-b border-gray-200" : ""}`}
     >
       {/* IMAGE */}
       {!hideImage && firstImage && (

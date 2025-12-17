@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Navigation from "./component/Navigation";
 import { useTestSession } from "./hooks/useTestSession";
 import TestHeader from "./component/TestHeader";
@@ -38,6 +38,14 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
 
   useBlockNavigation(!isView, handlePauseTestSession);
 
+  const shouldScrollRef = useRef(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleNextPartWithScroll = async () => {
+    shouldScrollRef.current = true;
+    await handleNextPart();
+  };
+
   useEffect(() => {
     if (!isView && session && session.status === "paused") {
       handleResumeTestSession();
@@ -57,6 +65,33 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
       };
     }
   }, [isView]);
+
+  useEffect(() => {
+    if (!shouldScrollRef.current) return;
+
+    if (questionsInPart.length > 0 && contentRef.current) {
+      const firstQuestion = questionsInPart[0];
+      const el = document.getElementById(
+        `question-${firstQuestion.globalQuestionNumber}`
+      );
+
+      if (el) {
+        const container = contentRef.current;
+
+        const headerOffset = 300; // TestHeader + PartSelector
+        const elementTop = el.offsetTop;
+
+        container.scrollTo({
+          top: elementTop - headerOffset,
+          behavior: "smooth",
+        });
+      }
+    }
+
+    shouldScrollRef.current = false;
+  }, [currentPart, questionsInPart]);
+
+
 
   // Cảnh báo khi bấm nút quay lại
   const handleBackClick = async () => {
@@ -91,7 +126,9 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
     <div className="flex flex-col h-screen">
       <div className="flex flex-row justify-between flex-1 overflow-hidden">
         {/* Left: Main content */}
-        <div className="flex-1 flex flex-col justify-start items-center p-4 overflow-auto">
+        <div 
+          ref={contentRef}
+          className="flex-1 flex flex-col justify-start items-center p-4 overflow-auto">
           <TestHeader
             session={session}
             onGoBack={handleBackClick}
@@ -113,14 +150,12 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
           />
 
           {!isLastPart && (
-            <div className="flex justify-end mt-6">
               <button
-                onClick={handleNextPart}
+                onClick={ handleNextPartWithScroll }
                 className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
               >
                 Tiếp theo
               </button>
-            </div>
           )}
         </div>
 

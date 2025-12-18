@@ -15,8 +15,6 @@ const types: { key: string; label: string; icon: LucideIcon }[] = [
   { key: "all", label: "Tất cả", icon: Layers },
   { key: "vocabulary", label: "Từ vựng", icon: Book },
   { key: "reading", label: "Đọc hiểu", icon: BookOpen },
-  { key: "grammar", label: "Ngữ pháp", icon: Clipboard },
-  { key: "video", label: "Video bài giảng", icon: Video },
 ];
 
 const ResourcePage: React.FC = () => {

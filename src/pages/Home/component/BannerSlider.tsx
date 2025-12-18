@@ -95,7 +95,7 @@ const BannerSlider = () => {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-tr from-yellow-400/30 to-orange-500/30 rounded-full blur-3xl"></div>
                   <img
-                    src="{bannerImg}"
+                    src={bannerImg}
                     alt="TOEIC Learning"
                     className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
                   />

@@ -52,7 +52,7 @@ const Register: React.FC = () => {
     try {
       const res = await api.post("/auth/send-register-otp", { email });
       setOtpMessage({ type: "success", text: res.data.message || "OTP đã gửi" });
-      setCountdown(res.data.cooldown || 120);
+      setCountdown(res.data.cooldown || 60);
     } catch (err: any) {
       setOtpMessage({ type: "error", text: err.response?.data?.message || "Lỗi hệ thống!" });
       setCountdown(err.response?.data?.errors?.cooldown || 0);

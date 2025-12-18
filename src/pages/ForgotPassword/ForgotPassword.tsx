@@ -160,7 +160,7 @@ const ForgotPassword: React.FC = () => {
                 ) : (
                   <>
                     <Send className="w-5 h-5" />
-                    Gửi mã OTP
+                    Gửi mật khẩu mới
                   </>
                 )}
               </button>

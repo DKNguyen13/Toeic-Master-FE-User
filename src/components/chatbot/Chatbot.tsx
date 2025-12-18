@@ -126,7 +126,7 @@ const ChatInput = React.forwardRef<HTMLInputElement, {
 });
 
 // Main Chatbot
-const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "http://localhost:3001" }) => {
+const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "https://toeic-master-be.onrender.com" }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",

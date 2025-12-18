@@ -259,6 +259,8 @@ const Login: React.FC = () => {
               {/* Google Login */}
               <div className="mt-6 flex flex-col items-center justify-center">
                 <GoogleLogin
+                    width="100%"
+                    size="large"
                     onSuccess={async (credentialResponse) => {
                       try {
                         const res = await api.post("/auth/google", {

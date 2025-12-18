@@ -152,7 +152,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
         </div>
 
         {/* Google Login */}
-        <div className="w-full flex justify-center">
+        <div className="w-full flex flex-col items-center justify-center">
           <div className="w-full max-w-full">
             <GoogleLogin
               width="100%"
@@ -184,6 +184,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
               onError={() => {
                 setErrors({ general: "Đăng nhập Google thất bại" });
               }}
+              
             />
           </div>
         </div>

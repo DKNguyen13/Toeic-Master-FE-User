@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { Link, useNavigate } from "react-router-dom";
-import api, { setAccessToken } from "../../config/axios";
+import { Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import api, { setAccessToken } from "../../config/axios";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,7 +16,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
@@ -40,11 +39,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
       if (res.data.success) {
         const { user, accessToken } = res.data.data;
         setAccessToken(accessToken);
+
         localStorage.setItem("fullname", user.fullname);
         localStorage.setItem("email", user.email);
         localStorage.setItem("phone", user.phone);
         localStorage.setItem("avatarUrl", user.avatarUrl);
         localStorage.setItem("role", user.role);
+        localStorage.setItem("userId", user.id);
         onClose();
         window.location.reload();
         window.dispatchEvent(new Event("userUpdated"));
@@ -167,6 +168,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
                     localStorage.setItem("fullname", user.fullname);
                     localStorage.setItem("email", user.email);
                     localStorage.setItem("avatarUrl", user.avatarUrl);
+                    localStorage.setItem("userId", user.id);
                     window.dispatchEvent(new Event("userUpdated"));
                     onSuccess?.();
                     onClose();

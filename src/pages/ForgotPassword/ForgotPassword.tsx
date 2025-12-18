@@ -2,7 +2,7 @@ import api from "../../config/axios.js";
 import { Link } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import React, { useState, useRef, useEffect } from "react";
-import { Mail, Lock, KeyRound, ArrowRight, Sparkles, Shield, Send } from "lucide-react";
+import { Mail, Lock, KeyRound, ArrowRight, Shield, Send } from "lucide-react";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -112,7 +112,6 @@ const ForgotPassword: React.FC = () => {
             {/* Messages */}
             {message && (
               <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-blue-600" />
                 <p className="text-blue-800 font-medium">{message}</p>
               </div>
             )}

@@ -257,7 +257,7 @@ const Login: React.FC = () => {
               </div>
               
               {/* Google Login */}
-              <div className="mt-6">
+              <div className="mt-6 flex flex-col items-center justify-center">
                 <GoogleLogin
                     onSuccess={async (credentialResponse) => {
                       try {

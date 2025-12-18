@@ -156,6 +156,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
           <div className="w-full max-w-full">
             <GoogleLogin
               width="100%"
+              size="large"
               onSuccess={async (credentialResponse) => {
                 try {
                   const res = await api.post("/auth/google", {

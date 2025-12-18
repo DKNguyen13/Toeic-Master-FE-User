@@ -1,8 +1,9 @@
-import IcArrow from "../../assets/icons/IcArrow";
 import { Link } from "react-router-dom";
-import { NotepadText, CircleUserRound, NotebookPen, FlipHorizontal, ArrowRight, Sparkles, MessageCircle, CheckCircle2 } from 'lucide-react';
-import BannerSlider from "./component/BannerSlider";
 import TestList from "../MockTest/TestList";
+import IcArrow from "../../assets/icons/IcArrow";
+import BannerSlider from "./component/BannerSlider";
+import robotImg from "../../assets/images/robot_img1.png";
+import { NotepadText, CircleUserRound, NotebookPen, CheckCircle2 } from 'lucide-react';
 
 export interface Exam {
   id: number;
@@ -249,7 +250,7 @@ const Home : React.FC<HomeProps> = ({ setIsOpen })  => {
             <div className="flex justify-center lg:justify-end order-1 lg:order-2">
               <div className="relative">                
                 <img
-                  src="src\assets\images\robot_img1.png"
+                  src={robotImg}
                   alt="Chatbot AI TOEIC"
                   className="relative z-10 w-full max-w-md"
                 />             

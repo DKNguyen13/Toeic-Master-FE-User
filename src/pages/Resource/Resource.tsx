@@ -1,12 +1,13 @@
 import type { LucideIcon } from "lucide-react";
+import { showToast } from "../../utils/toast";
 import React, { useState, useEffect } from "react";
 import api, { isLoggedIn } from "../../config/axios";
+import lessonImg from "../../assets/images/lesson.png";
 import LoginModal from "../../layouts/common/LoginModal";
 import ResourceCard from "../../components/ResourceCard";
 import Pagination from "../../components/common/Pagination/Pagination";
-import { Book, BookOpen, Clipboard, Layers, Search, Star, Video } from "lucide-react";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
-import { showToast } from "../../utils/toast";
+import { Book, BookOpen, Clipboard, Layers, Search, Star, Video } from "lucide-react";
 
 const itemsPerPage = 9;
 
@@ -286,7 +287,7 @@ const ResourcePage: React.FC = () => {
                       <ResourceCard
                         key={res._id}
                         id={res._id}
-                        imageSrc={res.imageSrc || "/src/assets/images/lesson.png"}
+                        imageSrc={res.imageSrc || lessonImg}
                         title={res.title}
                         views={res.views || 0}
                         likes={res.favoriteCount || 0}

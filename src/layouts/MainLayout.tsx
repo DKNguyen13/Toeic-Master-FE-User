@@ -31,7 +31,7 @@ const MainLayout = ({ children }) => {
         <Chatbot
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          socketUrl="http://localhost:8081"
+          socketUrl="https://toeic-master-be.onrender.com"
         />
       )}
 

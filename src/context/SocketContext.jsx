@@ -21,11 +21,11 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
   
-  // ✅ NOTIFICATION STATE (không thay đổi)
+  // NOTIFICATION STATE
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   
-  // ✅ ANSWER QUEUE STATE (mới thêm)
+  // ANSWER QUEUE STATE
   const [answerQueue, setAnswerQueue] = useState([]);
 
   const userId = localStorage.getItem("userId");
@@ -40,7 +40,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const SOCKET_URL = "http://localhost:8081";
+    const SOCKET_URL = "https://toeic-master-be.onrender.com";
     console.log("Connecting to socket server:", SOCKET_URL);
 
     const newSocket = io(SOCKET_URL, {
@@ -63,7 +63,7 @@ export const SocketProvider = ({ children }) => {
       setConnected(true);
       newSocket.emit("register", userId);
       
-      // ✅ Gửi các answers trong queue khi reconnect
+      // Gửi các answers trong queue khi reconnect
       flushAnswerQueue(newSocket);
     });
 
@@ -82,7 +82,7 @@ export const SocketProvider = ({ children }) => {
     });
 
     newSocket.on("reconnect_attempt", (attemptNumber) => {
-      console.log(`🔄 Reconnection attempt ${attemptNumber}... `);
+      console.log(`Reconnection attempt ${attemptNumber}... `);
     });
 
     newSocket.on("reconnect", (attemptNumber) => {
@@ -90,7 +90,7 @@ export const SocketProvider = ({ children }) => {
       setConnected(true);
       newSocket.emit("register", userId);
       
-      // ✅ Re-register session và flush answer queue
+      // Re-register session và flush answer queue
       if (lastSessionIdRef.current) {
         registerSession(lastSessionIdRef.current);
       }
@@ -98,10 +98,10 @@ export const SocketProvider = ({ children }) => {
     });
 
     // ==================
-    // NOTIFICATION EVENTS (✅ GIỮ NGUYÊN)
+    // NOTIFICATION EVENTS
     // ==================
     newSocket.on("notification", (notification) => {
-      console.log("📬 New notification:", notification);
+      console.log("New notification:", notification);
 
       // Cập nhật danh sách notifications
       setNotifications((prev) => [notification, ...prev]);
@@ -140,12 +140,12 @@ export const SocketProvider = ({ children }) => {
   // ==================
 
   /**
-   * ✅ Gửi các answers trong queue khi socket ready
+   * Gửi các answers trong queue khi socket ready
    */
   const flushAnswerQueue = (socketInstance) => {
     if (answerQueue.length === 0) return;
 
-    console.log(`📤 Flushing ${answerQueue.length} queued answers... `);
+    console.log(`Flushing ${answerQueue.length} queued answers... `);
     answerQueue.forEach((answer) => {
       socketInstance.emit("submit_answer", answer);
     });
@@ -153,7 +153,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Hiển thị browser notification
+   * Hiển thị browser notification
    */
   const showBrowserNotification = (notification) => {
     if (! ("Notification" in window)) {
@@ -181,7 +181,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Phát âm thanh notification
+   * Phát âm thanh notification
    */
   const playNotificationSound = () => {
     const audio = new Audio("/sounds/notification.mp3");
@@ -190,7 +190,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Đánh dấu notification là đã đọc
+   * Đánh dấu notification là đã đọc
    */
   const markAsRead = (notificationId) => {
     if (socket) {
@@ -206,7 +206,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Xóa tất cả notifications
+   * Xóa tất cả notifications
    */
   const clearNotifications = () => {
     setNotifications([]);
@@ -214,7 +214,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Đăng ký session
+   * Đăng ký session
    */
   const registerSession = (sessionId) => {
     if (! socket) {
@@ -230,7 +230,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Gửi đáp án (auto-queue nếu socket chưa ready)
+   * Gửi đáp án (auto-queue nếu socket chưa ready)
    */
   const sendAnswer = (sessionId, questionId, answer) => {
     const answerData = {
@@ -249,7 +249,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    console.log("📤 Sending answer to server:", answerData);
+    console.log("Sending answer to server:", answerData);
     socket.emit("submit_answer", answerData);
   };
 

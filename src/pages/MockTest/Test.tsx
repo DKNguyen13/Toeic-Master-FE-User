@@ -91,23 +91,6 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
     shouldScrollRef.current = false;
   }, [currentPart, questionsInPart]);
 
-
-
-  // Cảnh báo khi bấm nút quay lại
-  const handleBackClick = async () => {
-    if (!isView) {
-      const confirmExit = window.confirm(
-        "Bạn có chắc muốn thoát không? Bài làm sẽ tạm dừng."
-      );
-      if (confirmExit) {
-        await handlePauseTestSession(); // pause session
-        handleGoBack(); // quay lại trang trước
-      }
-    } else {
-      handleGoBack();
-    }
-  };
-
   if (loading) {
     return <LoadingSkeleton />;
   }
@@ -131,7 +114,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
           className="flex-1 flex flex-col justify-start items-center p-4 overflow-auto">
           <TestHeader
             session={session}
-            onGoBack={handleBackClick}
+            onGoBack={handleGoBack}
             isView={isView}
           />
 

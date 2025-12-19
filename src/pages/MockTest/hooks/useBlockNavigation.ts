@@ -63,4 +63,32 @@ export function useBlockNavigation(
       (window as any).navigate = originalNavigate.current;
     };
   }, [shouldBlock, onConfirmLeave]);
+
+  useEffect(() => {
+    if (!shouldBlock) return;
+
+    // Push state giả để chặn back
+    window.history.pushState(null, "", window.location.href);
+
+    const handlePopState = async () => {
+      const confirmLeave = window.confirm(
+        "Bạn có chắc muốn thoát không? Bài thi sẽ được tạm dừng."
+      );
+
+      if (confirmLeave) {
+        onConfirmLeave?.();
+        window.removeEventListener("popstate", handlePopState);
+        window.history.go(-2);
+      } else {
+        // Không cho back
+        window.history.pushState(null, "", window.location.href);
+      }
+    };
+    //window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [shouldBlock, onConfirmLeave]);
 }

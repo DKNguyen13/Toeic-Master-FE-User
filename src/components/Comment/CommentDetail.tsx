@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import avatar from '../../assets/images/default_avatar.jpg';
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -34,13 +34,14 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
   onLike,
   onDelete
 }) => {
-  const [isReplying, setIsReplying] = React.useState(false);
-  const [replyContent, setReplyContent] = React.useState('');
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [editContent, setEditContent] = React.useState(comment.content);
-  const [showMenu, setShowMenu] = React.useState(false);
-  const [showChildren, setShowChildren] = React.useState(false); // State để hiển thị children
-  const [commentChildren, setCommentChildren] = React.useState<Comment[]>([]);
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyContent, setReplyContent] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showChildren, setShowChildren] = useState(false); // State để hiển thị children
+  const [commentChildren, setCommentChildren] = useState<Comment[]>([]);
+  const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const handleReply = async () => {
     try {
@@ -75,7 +76,6 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
       );
     }
   };
-
 
   const onDeleteChild = async (commentId: string) => {
     await deleteComment(commentId)
@@ -204,11 +204,15 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
         </span>
         <span>{(comment.noOfLikes && comment.noOfLikes > 0) ? comment.noOfLikes : ''}</span>
           </button>
-          <button 
-        onClick={() => setIsReplying(!isReplying)} 
-        className="text-gray-600 hover:text-blue-600 transition-colors"
+          <button
+            onClick={() => {
+              setIsReplying(true);
+              setReplyTo(comment.author.fullname);
+              setReplyContent(`@${comment.author.fullname} `);
+            }}
+            className="text-gray-600 hover:text-blue-600"
           >
-        Trả lời
+            Trả lời
           </button>
         </div>
       </div>

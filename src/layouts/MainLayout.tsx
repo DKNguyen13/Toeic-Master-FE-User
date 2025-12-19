@@ -1,7 +1,7 @@
 // MainLayout.tsx
 import Header from "./common/Header";
 import Footer from "./common/Footer";
-import { useState } from "react";
+import React, { useState } from "react";
 import { config } from "../config/env.config";
 import { useLocation } from "react-router-dom";
 import Chatbot from "../components/chatbot/Chatbot";
@@ -24,7 +24,7 @@ const MainLayout = ({ children }) => {
       <Header />
 
       <main className="min-h-screen">
-        {children}
+        {children && React.cloneElement(children, { setIsOpen })}
       </main>
 
       <FloatingDictionary />

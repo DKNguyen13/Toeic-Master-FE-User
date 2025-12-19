@@ -28,7 +28,7 @@ export const useViewSession = () => {
       try {
         setLoading(true);
         const data = await getSessionResults(id);
-        console.log('data result', data);
+        // console.log('data result', data);
         // Kiểm tra dữ liệu hợp lệ
         if (!data || !data.session || !Array.isArray(data.answers) || data.answers.length === 0) {
           setError("Không tìm thấy dữ liệu cho bài thi này");

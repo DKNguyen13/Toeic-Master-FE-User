@@ -37,12 +37,12 @@ export const SocketProvider = ({ children }) => {
   // ==================
   useEffect(() => {
     if (!userId) {
-      console.log("User not logged in, skipping socket connection");
+      // console.log("User not logged in, skipping socket connection");
       return;
     }
 
     const SOCKET_URL = `${config.apiBaseUrl}`;
-    console.log("Connecting to socket server:", SOCKET_URL);
+    // console.log("Connecting to socket server:", SOCKET_URL);
 
     const newSocket = io(SOCKET_URL, {
       transports: ["websocket", "polling"],
@@ -60,7 +60,7 @@ export const SocketProvider = ({ children }) => {
     // CONNECTION EVENTS
     // ==================
     newSocket.on("connect", () => {
-      console.log("✓ Connected to socket server:", newSocket.id);
+      // console.log("✓ Connected to socket server:", newSocket.id);
       setConnected(true);
       newSocket.emit("register", userId);
       
@@ -69,25 +69,25 @@ export const SocketProvider = ({ children }) => {
     });
 
     newSocket.on("connected", (data) => {
-      console. log("✓ Registered with server:", data);
+      // console. log("✓ Registered with server:", data);
     });
 
     newSocket.on("disconnect", (reason) => {
-      console. log("✗ Disconnected:", reason);
+      // console. log("✗ Disconnected:", reason);
       setConnected(false);
     });
 
     newSocket.on("connect_error", (error) => {
-      console.error("Connection error:", error);
+      // console.error("Connection error:", error);
       setConnected(false);
     });
 
     newSocket.on("reconnect_attempt", (attemptNumber) => {
-      console.log(`Reconnection attempt ${attemptNumber}... `);
+      // console.log(`Reconnection attempt ${attemptNumber}... `);
     });
 
     newSocket.on("reconnect", (attemptNumber) => {
-      console.log(`✓ Reconnected after ${attemptNumber} attempts`);
+      // console.log(`✓ Reconnected after ${attemptNumber} attempts`);
       setConnected(true);
       newSocket.emit("register", userId);
       
@@ -110,7 +110,7 @@ export const SocketProvider = ({ children }) => {
       // Tăng unread count
       if (!notification.read) {
         setUnreadCount((prev) => prev + 1);
-        console.log("Unread count:", unreadCount + 1);
+        // console.log("Unread count:", unreadCount + 1);
       }
 
       // Hiển thị browser notification
@@ -124,12 +124,12 @@ export const SocketProvider = ({ children }) => {
     // ANSWER ACK EVENTS
     // ==================
     newSocket.on("answer_ack", (data) => {
-      console.log("✓ Answer saved on server:", data);
+      // console.log("✓ Answer saved on server:", data);
     });
 
     // Cleanup
     return () => {
-      console.log("Disconnecting socket...");
+      // console.log("Disconnecting socket...");
       newSocket.close();
       setSocket(null);
       setConnected(false);
@@ -146,7 +146,7 @@ export const SocketProvider = ({ children }) => {
   const flushAnswerQueue = (socketInstance) => {
     if (answerQueue.length === 0) return;
 
-    console.log(`Flushing ${answerQueue.length} queued answers... `);
+    // console.log(`Flushing ${answerQueue.length} queued answers... `);
     answerQueue.forEach((answer) => {
       socketInstance.emit("submit_answer", answer);
     });
@@ -187,7 +187,7 @@ export const SocketProvider = ({ children }) => {
   const playNotificationSound = () => {
     const audio = new Audio("/sounds/notification.mp3");
     audio.volume = 0.3;
-    audio.play().catch((e) => console.log("Cannot play sound:", e));
+    // audio.play().catch((e) => console.log("Cannot play sound:", e));
   };
 
   /**
@@ -219,10 +219,10 @@ export const SocketProvider = ({ children }) => {
    */
   const registerSession = (sessionId) => {
     if (! socket) {
-      console.warn("⚠ Socket not connected yet");
+      // console.warn("⚠ Socket not connected yet");
       return;
     }
-    console.log("Registering to session room:", sessionId);
+    // console.log("Registering to session room:", sessionId);
     lastSessionIdRef.current = sessionId;
     socket.emit("register_session", {
       userId,
@@ -242,15 +242,15 @@ export const SocketProvider = ({ children }) => {
     };
 
     if (!socket || !connected) {
-      console.warn(
-        "⚠ Socket not connected → Queueing answer for later dispatch"
-      );
+      // console.warn(
+      //   "⚠ Socket not connected → Queueing answer for later dispatch"
+      // );
       // Queue answer để gửi khi socket ready
       setAnswerQueue((prev) => [...prev, answerData]);
       return;
     }
 
-    console.log("Sending answer to server:", answerData);
+    // console.log("Sending answer to server:", answerData);
     socket.emit("submit_answer", answerData);
   };
 

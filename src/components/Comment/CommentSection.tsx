@@ -66,7 +66,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
 
   const onEdit = async (commentId: string, content: string) => {
     const response = await editComment(commentId, content);
-    console.log(response);
+    // console.log(response);
     setCommentsList((prevComments) => 
       prevComments.map((comment) => 
         comment._id === commentId ? response : comment
@@ -85,7 +85,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
       setCommentsList([response, ...comments]);
       setTotalComments(totalComments + 1);
       setComment('');
-      console.log('Comment posted successfully:', response);
+      // console.log('Comment posted successfully:', response);
       //toast.success("Comment posted successfully!");
     }
     catch (error: any){

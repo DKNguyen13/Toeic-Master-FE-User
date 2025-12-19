@@ -85,7 +85,7 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
 
   const onEditChild = async (commentId: string, content: string) => {
       const response = await editComment(commentId, content);
-      console.log(response);
+      // console.log(response);
       setCommentChildren((prevComments) => 
         prevComments.map((comment) => 
           comment._id === commentId ? response : comment
@@ -194,7 +194,7 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
         <div className="flex items-center space-x-2 text-sm">
           <button 
         onClick={() => {
-          console.log("like comment", comment._id);
+          // console.log("like comment", comment._id);
           onLike?.(comment._id)
         }} 
         className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors"

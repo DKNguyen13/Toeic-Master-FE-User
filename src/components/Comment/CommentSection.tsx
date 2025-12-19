@@ -18,7 +18,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
   const [comment, setComment] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showLoginModal, setShowLoginModal] = useState(false);
-
+  
   // Fetch comments when component mounts or testId changes
   useEffect(() => {
     const fetchComments = async () => {
@@ -81,6 +81,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
         return;
       }
 
+      if (!comment.trim()) {
+        showToast("Vui lòng nhập nội dung bình luận", "warn", { autoClose: 500 });
+        return;
+      }
+
       const response = await createComment(testId, comment);
       setCommentsList([response, ...comments]);
       setTotalComments(totalComments + 1);
@@ -113,8 +118,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
           onChange={(e) => setComment(e.target.value)} value={comment}
         />
         <div className="flex justify-end mt-3">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={handleComment}>
+          <button className="px-4 py-2 rounded-lg transition-colors
+            bg-blue-600 text-white
+            hover:bg-blue-700
+            disabled:bg-gray-300
+            disabled:text-gray-500
+            disabled:cursor-not-allowed
+            disabled:hover:bg-gray-300"
+          onClick={handleComment} disabled={!comment.trim()}>
             Gửi bình luận
           </button>
         </div>

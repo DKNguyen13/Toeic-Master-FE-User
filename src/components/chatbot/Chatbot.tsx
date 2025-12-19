@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
 import socketService from "../../service/socket";
+import { config } from "../../config/env.config";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, MessageCircle, X, Minimize2, Sparkles, Bot, User } from "lucide-react";
 
 // Types
@@ -126,7 +127,7 @@ const ChatInput = React.forwardRef<HTMLInputElement, {
 });
 
 // Main Chatbot
-const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = "https://toeic-master-be.onrender.com" }) => {
+const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = `${config.apiBaseUrl}` }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",

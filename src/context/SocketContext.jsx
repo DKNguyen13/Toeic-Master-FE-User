@@ -6,6 +6,7 @@ import {
   useRef,
 } from "react";
 import { io } from "socket.io-client";
+import { config } from "../config/env.config";
 
 const SocketContext = createContext(null);
 
@@ -40,7 +41,7 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    const SOCKET_URL = "https://toeic-master-be.onrender.com";
+    const SOCKET_URL = `${config.apiBaseUrl}`;
     console.log("Connecting to socket server:", SOCKET_URL);
 
     const newSocket = io(SOCKET_URL, {

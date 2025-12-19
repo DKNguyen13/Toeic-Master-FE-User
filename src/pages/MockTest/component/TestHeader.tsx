@@ -12,6 +12,9 @@ const TestHeader: React.FC<TestHeaderProps> = ({
   onGoBack,
   isView,
 }) => {
+  const LISTENING_PARTS = [1, 2, 3, 4];
+  const hasListeningPart = session?.testConfig?.selectedParts?.some(
+  (part: number) => LISTENING_PARTS.includes(part));
   return (
     <div className="w-full flex items-center justify-between mb-5">
       {/* Return button */}
@@ -27,8 +30,7 @@ const TestHeader: React.FC<TestHeaderProps> = ({
       </div>
 
       {/* Audio player */}
-      {/* session?.sessionType === "full-test" &&  */}
-      {session?.audio && (
+      {hasListeningPart && session?.audio && (
         <div className="flex-1 flex justify-center">
           <audio
             controls

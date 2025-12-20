@@ -1,10 +1,12 @@
 // MainLayout.tsx
-import React, { useState } from "react";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
+import React, { useState } from "react";
+import { config } from "../config/env.config";
+import { useLocation } from "react-router-dom";
 import Chatbot from "../components/chatbot/Chatbot";
 import FloatingDictionary from "../components/common/ActionMenu/FloatingActionMenu";
-import { useLocation } from "react-router-dom";
+
 const MainLayout = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -22,7 +24,7 @@ const MainLayout = ({ children }) => {
       <Header />
 
       <main className="min-h-screen">
-        {children}
+        {children && React.cloneElement(children, { setIsOpen })}
       </main>
 
       <FloatingDictionary />
@@ -31,7 +33,7 @@ const MainLayout = ({ children }) => {
         <Chatbot
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          socketUrl="http://localhost:8081"
+          socketUrl={`${config.apiBaseUrl}`}
         />
       )}
 

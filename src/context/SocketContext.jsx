@@ -6,6 +6,7 @@ import {
   useRef,
 } from "react";
 import { io } from "socket.io-client";
+import { config } from "../config/env.config";
 
 const SocketContext = createContext(null);
 
@@ -21,11 +22,11 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
   
-  // ✅ NOTIFICATION STATE (không thay đổi)
+  // NOTIFICATION STATE
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   
-  // ✅ ANSWER QUEUE STATE (mới thêm)
+  // ANSWER QUEUE STATE
   const [answerQueue, setAnswerQueue] = useState([]);
 
   const userId = localStorage.getItem("userId");
@@ -36,12 +37,12 @@ export const SocketProvider = ({ children }) => {
   // ==================
   useEffect(() => {
     if (!userId) {
-      console.log("User not logged in, skipping socket connection");
+      // console.log("User not logged in, skipping socket connection");
       return;
     }
 
-    const SOCKET_URL = "http://localhost:8081";
-    console.log("Connecting to socket server:", SOCKET_URL);
+    const SOCKET_URL = `${config.apiBaseUrl}`;
+    // console.log("Connecting to socket server:", SOCKET_URL);
 
     const newSocket = io(SOCKET_URL, {
       transports: ["websocket", "polling"],
@@ -59,38 +60,38 @@ export const SocketProvider = ({ children }) => {
     // CONNECTION EVENTS
     // ==================
     newSocket.on("connect", () => {
-      console.log("✓ Connected to socket server:", newSocket.id);
+      // console.log("✓ Connected to socket server:", newSocket.id);
       setConnected(true);
       newSocket.emit("register", userId);
       
-      // ✅ Gửi các answers trong queue khi reconnect
+      // Gửi các answers trong queue khi reconnect
       flushAnswerQueue(newSocket);
     });
 
     newSocket.on("connected", (data) => {
-      console. log("✓ Registered with server:", data);
+      // console. log("✓ Registered with server:", data);
     });
 
     newSocket.on("disconnect", (reason) => {
-      console. log("✗ Disconnected:", reason);
+      // console. log("✗ Disconnected:", reason);
       setConnected(false);
     });
 
     newSocket.on("connect_error", (error) => {
-      console.error("Connection error:", error);
+      // console.error("Connection error:", error);
       setConnected(false);
     });
 
     newSocket.on("reconnect_attempt", (attemptNumber) => {
-      console.log(`🔄 Reconnection attempt ${attemptNumber}... `);
+      // console.log(`Reconnection attempt ${attemptNumber}... `);
     });
 
     newSocket.on("reconnect", (attemptNumber) => {
-      console.log(`✓ Reconnected after ${attemptNumber} attempts`);
+      // console.log(`✓ Reconnected after ${attemptNumber} attempts`);
       setConnected(true);
       newSocket.emit("register", userId);
       
-      // ✅ Re-register session và flush answer queue
+      // Re-register session và flush answer queue
       if (lastSessionIdRef.current) {
         registerSession(lastSessionIdRef.current);
       }
@@ -98,10 +99,10 @@ export const SocketProvider = ({ children }) => {
     });
 
     // ==================
-    // NOTIFICATION EVENTS (✅ GIỮ NGUYÊN)
+    // NOTIFICATION EVENTS
     // ==================
     newSocket.on("notification", (notification) => {
-      console.log("📬 New notification:", notification);
+      console.log("New notification:", notification);
 
       // Cập nhật danh sách notifications
       setNotifications((prev) => [notification, ...prev]);
@@ -109,7 +110,7 @@ export const SocketProvider = ({ children }) => {
       // Tăng unread count
       if (!notification.read) {
         setUnreadCount((prev) => prev + 1);
-        console.log("Unread count:", unreadCount + 1);
+        // console.log("Unread count:", unreadCount + 1);
       }
 
       // Hiển thị browser notification
@@ -123,12 +124,12 @@ export const SocketProvider = ({ children }) => {
     // ANSWER ACK EVENTS
     // ==================
     newSocket.on("answer_ack", (data) => {
-      console.log("✓ Answer saved on server:", data);
+      // console.log("✓ Answer saved on server:", data);
     });
 
     // Cleanup
     return () => {
-      console.log("Disconnecting socket...");
+      // console.log("Disconnecting socket...");
       newSocket.close();
       setSocket(null);
       setConnected(false);
@@ -140,12 +141,12 @@ export const SocketProvider = ({ children }) => {
   // ==================
 
   /**
-   * ✅ Gửi các answers trong queue khi socket ready
+   * Gửi các answers trong queue khi socket ready
    */
   const flushAnswerQueue = (socketInstance) => {
     if (answerQueue.length === 0) return;
 
-    console.log(`📤 Flushing ${answerQueue.length} queued answers... `);
+    // console.log(`Flushing ${answerQueue.length} queued answers... `);
     answerQueue.forEach((answer) => {
       socketInstance.emit("submit_answer", answer);
     });
@@ -153,7 +154,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Hiển thị browser notification
+   * Hiển thị browser notification
    */
   const showBrowserNotification = (notification) => {
     if (! ("Notification" in window)) {
@@ -181,16 +182,16 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Phát âm thanh notification
+   * Phát âm thanh notification
    */
   const playNotificationSound = () => {
     const audio = new Audio("/sounds/notification.mp3");
     audio.volume = 0.3;
-    audio.play().catch((e) => console.log("Cannot play sound:", e));
+    // audio.play().catch((e) => console.log("Cannot play sound:", e));
   };
 
   /**
-   * ✅ Đánh dấu notification là đã đọc
+   * Đánh dấu notification là đã đọc
    */
   const markAsRead = (notificationId) => {
     if (socket) {
@@ -206,7 +207,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Xóa tất cả notifications
+   * Xóa tất cả notifications
    */
   const clearNotifications = () => {
     setNotifications([]);
@@ -214,14 +215,14 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Đăng ký session
+   * Đăng ký session
    */
   const registerSession = (sessionId) => {
     if (! socket) {
-      console.warn("⚠ Socket not connected yet");
+      // console.warn("⚠ Socket not connected yet");
       return;
     }
-    console.log("Registering to session room:", sessionId);
+    // console.log("Registering to session room:", sessionId);
     lastSessionIdRef.current = sessionId;
     socket.emit("register_session", {
       userId,
@@ -230,7 +231,7 @@ export const SocketProvider = ({ children }) => {
   };
 
   /**
-   * ✅ Gửi đáp án (auto-queue nếu socket chưa ready)
+   * Gửi đáp án (auto-queue nếu socket chưa ready)
    */
   const sendAnswer = (sessionId, questionId, answer) => {
     const answerData = {
@@ -241,15 +242,15 @@ export const SocketProvider = ({ children }) => {
     };
 
     if (!socket || !connected) {
-      console.warn(
-        "⚠ Socket not connected → Queueing answer for later dispatch"
-      );
+      // console.warn(
+      //   "⚠ Socket not connected → Queueing answer for later dispatch"
+      // );
       // Queue answer để gửi khi socket ready
       setAnswerQueue((prev) => [...prev, answerData]);
       return;
     }
 
-    console.log("📤 Sending answer to server:", answerData);
+    // console.log("Sending answer to server:", answerData);
     socket.emit("submit_answer", answerData);
   };
 

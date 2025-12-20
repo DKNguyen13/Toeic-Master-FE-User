@@ -164,7 +164,7 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
               <ArrowRight className="w-4 h-4" />
             </button>
           </Link>
-        ) : status === "paused" ? (
+        ) : status === "paused" || status === "in-progress" ? (
           <Link to={`/session/${id}`} className="w-full sm:w-auto">
             <button
               className="

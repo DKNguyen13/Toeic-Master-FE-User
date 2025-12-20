@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
-import { CheckCircle, Sparkles, TrendingUp, Award, BookOpen, Users, Target } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import bannerImg from "../../../assets/images/banner-img.png";
+import discountBanner from "../../../assets/images/discount-banner.png";
+import featuresBanner from "../../../assets/images/features-banner.png";
+import {  Sparkles, TrendingUp, Award, BookOpen, Users, Target } from 'lucide-react';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -92,7 +95,7 @@ const BannerSlider = () => {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-tr from-yellow-400/30 to-orange-500/30 rounded-full blur-3xl"></div>
                   <img
-                    src="src/assets/images/banner-img.png"
+                    src={bannerImg}
                     alt="TOEIC Learning"
                     className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
                   />
@@ -167,7 +170,7 @@ const BannerSlider = () => {
                 <div className="relative">
                   <div className="absolute inset-0 bg-white/30 rounded-full blur-3xl animate-pulse"></div>
                   <img
-                    src="src/assets/images/discount-banner.png"
+                    src={discountBanner}
                     alt="Special Offer"
                     className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-110 transition-transform duration-500"
                   />
@@ -242,7 +245,7 @@ const BannerSlider = () => {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-tr from-green-400/30 to-teal-500/30 rounded-full blur-3xl"></div>
                   <img
-                    src="src/assets/images/features-banner.png"
+                    src={featuresBanner}
                     alt="Study Features"
                     className="relative w-full max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-500"
                   />

@@ -79,7 +79,7 @@ const UpdateProfile: React.FC = () => {
         const user = res.data.data;
         localStorage.setItem("fullname", user.fullname);
         localStorage.setItem("dob", user.dob || "");
-        if (user.avatarUrl) localStorage.setItem("avatarUrl", user.avatarUrl);
+        if (user.avatar) localStorage.setItem("avatarUrl", user.avatar);
 
         const event = new Event("user-updated");
         window.dispatchEvent(event);

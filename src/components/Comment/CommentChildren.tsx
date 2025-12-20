@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { deleteComment, getChildrenComment } from '../../service/commentService';
-import CommentDetail from './CommentDetail'; // Import component CommentDetail
+import CommentDetail from './CommentDetail';
 import { Comment } from '../Comment/types'
-
-
 interface CommentChildrenProps {
   parentCommentId: string;
   commentChildren: Comment[];
@@ -12,8 +10,7 @@ interface CommentChildrenProps {
   onEdit?: (commentId: string, content: string) => void;
   onDelete?: (commentId: string) => void;
 }
-
-const CommentChildren: React.FC<CommentChildrenProps> = ({ 
+const CommentChildren: React.FC<CommentChildrenProps> = ({
   parentCommentId,
   commentChildren,
   onLike,
@@ -22,7 +19,7 @@ const CommentChildren: React.FC<CommentChildrenProps> = ({
   onDelete
 }) => {
   const [loading, setLoading] = useState(false);
-  
+ 
   if (loading) {
     return (
       <div className="flex justify-center py-4">
@@ -30,13 +27,14 @@ const CommentChildren: React.FC<CommentChildrenProps> = ({
       </div>
     );
   }
-
   return (
     <div className="ml-8 mt-4 space-y-3 pl-4">
       {commentChildren.map((comment) => (
         <CommentDetail
           isChild={true}
+          key={comment._id}
           comment={comment}
+          onLike={onLike}
           onReply={onReply}
           onEdit={onEdit}
           onDelete={onDelete}
@@ -45,5 +43,4 @@ const CommentChildren: React.FC<CommentChildrenProps> = ({
     </div>
   );
 };
-
 export default CommentChildren;

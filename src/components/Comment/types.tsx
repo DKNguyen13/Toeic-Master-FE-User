@@ -4,7 +4,8 @@ export interface Comment {
   content: string;
   createdAt: string;
   noOfLikes?: number;
-  isOwner: number;
+  isOwner: boolean;
   noOfChildren: number;
   isLike?: boolean;
+  replyTo?: string;
 }

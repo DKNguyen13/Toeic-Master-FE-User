@@ -31,5 +31,5 @@ export const getAllTestForAdmin = async (page, limit) => {
 // Delete test
 export const modifyTest = async(slug) => {
   const response =  await api.patch(`/test/${slug}`);
-  console.log('delete test',response);
+  // console.log('delete test',response);
 }

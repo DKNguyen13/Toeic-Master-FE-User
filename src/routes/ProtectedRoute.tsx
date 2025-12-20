@@ -15,7 +15,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   const location = useLocation();
 
   useEffect(() => {
-    let isMounted = true; // Ngăn memory leak
+    let isMounted = true;
 
     const fetchRole = async () => {
       const token = sessionStorage.getItem("accessToken");

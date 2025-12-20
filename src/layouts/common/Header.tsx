@@ -45,7 +45,7 @@ const Header: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
   
-  // ✅ Sử dụng socket context
+  // Sử dụng socket context
   const { 
     notifications:  socketNotifications, 
     unreadCount, 
@@ -69,7 +69,7 @@ const Header: React.FC = () => {
     };
   }, []);
 
-  // ✅ Sử dụng real-time notifications từ Socket
+  // Sử dụng real-time notifications từ Socket
   useEffect(() => {
     if (socketNotifications && socketNotifications.length > 0) {
       // Kết hợp socket notifications với local notifications
@@ -98,7 +98,7 @@ const Header: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ Fetch notifications từ API (để load historic notifications)
+  // Fetch notifications từ API (để load historic notifications)
   const fetchNotifications = async (page: number = 1, reset: boolean = true) => {
     if (! fullname) return;
     
@@ -151,7 +151,7 @@ const Header: React.FC = () => {
     }
   };
 
-  // ✅ Handle notification click
+  // Handle notification click
   const handleNotificationClick = async (notification: Notification) => {
     // Mark as read via Socket context
     if (! notification.read) {
@@ -179,7 +179,7 @@ const Header: React.FC = () => {
     setOpenNotifications(false);
   };
 
-  // ✅ Mark all as read
+  // Mark all as read
   const markAllAsRead = async () => {
     try {
       await api.patch("/notifications/mark-all-read");
@@ -285,7 +285,7 @@ const Header: React.FC = () => {
             <button 
               onClick={() => {
                 setOpenNotifications(! openNotifications);
-                // ✅ Load notifications khi mở dropdown
+                // Load notifications khi mở dropdown
                 if (! openNotifications && !loading) {
                   fetchNotifications(1, true);
                 }
@@ -293,13 +293,13 @@ const Header: React.FC = () => {
               className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-full transition"
               title={`${unreadCount} thông báo chưa đọc`}>
               <FaBell className="text-xl" />
-              {/* ✅ Notification badge - sử dụng unreadCount từ Socket */}
+              {/* Notification badge - sử dụng unreadCount từ Socket */}
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold animate-pulse">
                   {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}
-              {/* ✅ Socket status indicator */}
+              {/* Socket status indicator */}
               {isSocketReady && (
                 <span className="absolute bottom-1 right-1 w-2 h-2 bg-green-500 rounded-full"></span>
               )}

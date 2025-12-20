@@ -1,6 +1,7 @@
 import DOMPurify from "dompurify";
-import { Eye, Heart } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Eye, Flag, Heart } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import api, { isLoggedIn } from "../../config/axios";
 import EmptyState from "../../components/EmptyState";
@@ -12,10 +13,13 @@ const LessonDetailPage: React.FC = () => {
   const [lesson, setLesson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showLogin, setShowLoginModal] = useState(!isLoggedIn());
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // State favorite
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteCount, setFavoriteCount] = useState(0);
+  
+  const navigate = useNavigate();
 
   // Fetch lesson detail
   useEffect(() => {
@@ -60,6 +64,20 @@ const LessonDetailPage: React.FC = () => {
     fetchLesson();
   }, [id]);
 
+  const handleReport = () => {
+    if (!isLoggedIn()) {
+      setShowLoginModal(true);
+    } else {
+      setShowReportModal(true);
+    }
+  };
+
+  const confirmReport = () => {
+    const titleReport = "Báo cáo lỗi: " + lesson.title.toLocaleLowerCase();
+    navigate("/support", { state: { title: titleReport } });
+    setShowReportModal(false);
+  };
+
   // Toggle favorite
   const handleToggleFavorite = async () => {
     if (!lesson) return;
@@ -98,10 +116,35 @@ const LessonDetailPage: React.FC = () => {
             <span>{favoriteCount} yêu thích</span>
           </div>
 
+          {/* Report */}
+          <div className={`flex items-center gap-2 cursor-pointer select-none`} onClick={handleReport}>
+            <Flag className="text-yellow-600" />
+            <span>Báo cáo</span>
+          </div>
+
           {/* Type */}
           <span className="px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 font-medium text-sm border border-blue-100 shadow-sm">
             {lesson.type}
           </span>
+        </div>
+      )}
+
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-lg">
+            <h2 className="text-xl text-center font-bold mb-4">Xác nhận báo cáo</h2>
+            <p className="mb-6 text-gray-700">
+              Bạn có chắc muốn báo cáo bài học này? Vui lòng cho chúng tôi biết sự cố của bạn. Đội ngũ hỗ trợ sẽ xem xét và phản hồi sớm nhất!
+            </p>
+            <div className="flex justify-end gap-3">
+              <button className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" onClick={() => setShowReportModal(false)}>
+                Hủy
+              </button>
+              <button className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600" onClick={confirmReport}>
+                Xác nhận
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

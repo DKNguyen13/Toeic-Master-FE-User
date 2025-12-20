@@ -5,11 +5,8 @@ const PaymentPage: React.FC = () => {
 	// State điều khiển popup
 	const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-	// Hàm xử lý khi nhấn "Xác nhận thanh toán"
 	const handlePayment = (event: React.FormEvent) => {
 		event.preventDefault();
-		// ...Ở đây bạn có thể xử lý logic thanh toán, gọi API, v.v...
-		// Sau khi thành công, mở popup
 		setShowSuccessPopup(true);
 	};
 

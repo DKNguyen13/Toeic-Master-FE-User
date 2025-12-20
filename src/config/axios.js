@@ -1,7 +1,8 @@
 import axios from "axios";
+import { config } from "./env.config";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: `${config.apiBaseUrl}/api`,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
@@ -56,7 +57,7 @@ api.interceptors.response.use(
 
       try {
         const res = await api.post("/auth/refresh-token");
-        const newAccessToken = res.data.data?.accessToken;
+        const newAccessToken = res.data.data?.newAccessToken;
         setAccessToken(newAccessToken);
         processQueue(null, newAccessToken);
 
@@ -65,6 +66,7 @@ api.interceptors.response.use(
       } catch (err) {
         processQueue(err, null);
         setAccessToken(null);
+        localStorage.clear();
         sessionStorage.clear();
         return Promise.reject({ ...err, redirectToLogin: true });
       } finally {
@@ -77,3 +79,5 @@ api.interceptors.response.use(
 );
 
 export default api;
+
+export const isLoggedIn = () => !!sessionStorage.getItem("accessToken");

@@ -1,10 +1,18 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { config } from './config/env.config.js';
+import { ToastProvider } from './utils/toast.tsx';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
-createRoot(document.getElementById('root')).render(
+const clientId = `${config.googleClientId}`;
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <GoogleOAuthProvider clientId={clientId}>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </GoogleOAuthProvider>
+  </StrictMode>
+);

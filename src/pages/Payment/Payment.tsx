@@ -1,147 +1,268 @@
-import React from "react";
-import { IoPlayForward } from "react-icons/io5";
-import { GiBrain } from "react-icons/gi";
-import { Link } from "react-router-dom";
-import { FaComments } from "react-icons/fa";
+import api, { isLoggedIn } from "../../config/axios.js";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LoginModal from "../../layouts/common/LoginModal";
+import {  Crown,  Check,  Star, AlertCircle, X } from "lucide-react";
+import EmptyState from "../../components/EmptyState.js";
+
+interface Package {
+  _id: string;
+  name: string;
+  durationMonths: number;
+  originalPrice: number;
+  discountedPrice: number;
+  description?: string;
+  type: "basic" | "advanced" | "premium";
+}
 
 const PaymentPage: React.FC = () => {
-	return (
-		<div className="min-h-screen flex flex-col items-center pt-5">
-			{/* Content */}
-			<div className="max-w-4xl w-full mt-10 bg-white shadow-lg rounded-lg p-6">
-				<div className="text-center justify-start pb-10">
-					<span className="text-[#1c1c1c] text-[40px] font-bold font-josefin-sans">
-						Trải nghiệm học tập không giới hạn cùng gói{" "}
-					</span>
-					<span className="text-[#3364e1] text-[40px] font-bold font-josefin-sans">
-						Premium
-					</span>
-				</div>
+  const [packages, setPackages] = useState<Package[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<Package | null>(null);
 
-				{/* Payment Options */}
-				<div className="grid grid-cols-3 gap-6 mb-6 pb-6">
-					{/* 12 months plan */}
-					<div className="p-6 bg-blue-50 border border-blue-500 rounded-lg text-center shadow-md">
-						<div className="mb-4">
-							<h3 className="text-xl font-semibold text-blue-600">
-								12 tháng
-							</h3>
-							<p className="text-lg text-gray-700 line-through">
-								299.000đ/tháng
-							</p>
-							<p className="text-xl font-semibold text-blue-600">
-								249.000đ/tháng
-							</p>
-						</div>
-						<Link
-							to="/payment/paymentform"
-							className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300 w-full"
-						>
-							Tiết kiệm 50%
-						</Link>
-					</div>
-					{/* 6 months plan */}
-					<div className="p-6 bg-gray-100 border border-gray-400 rounded-lg text-center">
-						<div className="mb-4">
-							<h3 className="text-xl font-semibold text-blue-600">
-								6 tháng
-							</h3>
-							<p className="text-lg text-gray-700 line-through">
-								299.000đ/tháng
-							</p>
-							<p className="text-xl font-semibold text-blue-600">
-								249.000đ/tháng
-							</p>
-						</div>
-						<Link
-							to="/payment/paymentform"
-							className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300 w-full"
-						>
-							Tiết kiệm 50%
-						</Link>
-					</div>
-					{/* 1 month plan */}
-					<div className="p-6 bg-gray-100 border border-gray-400 rounded-lg text-center">
-						<div className="mb-4">
-							<h3 className="text-xl font-semibold text-blue-600">
-								1 tháng
-							</h3>
-							<p className="text-lg text-gray-700 line-through">
-								299.000đ/tháng
-							</p>
-							<p className="text-xl font-semibold text-blue-600">
-								249.000đ/tháng
-							</p>
-						</div>
-						<Link
-							to="/payment/paymentform"
-							className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300 w-full"
-						>
-							Tiết kiệm 50%
-						</Link>
-					</div>
-				</div>
+  useEffect(() => {
+    const fetchPackages = async () => {
+      try {
+        const res = await api.get("/vip");
+        setPackages(res.data.data);
+      } catch (err) {
+        console.error("Error fetching packages", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPackages();
+  }, []);
 
-				{/* Description Section */}
-				<div className=" p-6 rounded-lg shadow-md max-w-md mx-auto">
-					<h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
-						Học tập hiệu quả hơn
-					</h3>
+  const handleBuyClick = (pkg: Package) => {
+    if (!isLoggedIn()) {
+      setShowLoginModal(true);
+      return;
+    }
+    setSelectedPkg(pkg);
+    setShowConfirmModal(true);
+  };
 
-					<div className="space-y-4">
-						{/* Mục 1 */}
-						<div className="flex items-start space-x-4">
-							<IoPlayForward className="text-green-500 text-2xl" />
-							<div>
-								<p className="font-medium text-gray-800">
-									Truy cập toàn bộ bài học
-								</p>
-								<p className="text-sm text-gray-600">
-									Học mọi lúc, mọi nơi với kho bài học đầy đủ.
-								</p>
-							</div>
-						</div>
+  const handleConfirmBuy = async () => {
+    if (!selectedPkg) return;
+    setShowConfirmModal(false);
+    try {
+      const res = await api.post("/payment/create", { packageId: selectedPkg._id });
+      if (res.data.paymentUrl) {
+        window.location.href = res.data.paymentUrl;
+      }
+    } catch (err: any) {
+      console.error("Payment error", err);
+      const message =
+        err.response?.data?.message || "Lỗi khi tạo đơn thanh toán";
+      setPopupMessage(message);
+    }
+  };
 
-						{/* Mục 2 */}
-						<div className="flex items-start space-x-4">
-							<GiBrain className="text-pink-500 text-2xl" />
-							<div>
-								<p className="font-medium text-gray-800">
-									Công cụ luyện tập toàn diện
-								</p>
-								<p className="text-sm text-gray-600">
-									Luyện tập hiệu quả với các bài tập được cá nhân hóa.
-								</p>
-							</div>
-						</div>
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    if (code === "00") {
+      navigate("/payment/success");
+    } else if (code) {
+      navigate("/payment/fail");
+    }
+  }, [navigate]);
 
-						{/* Mục 3 */}
-						<div className="flex items-start space-x-4">
-							<FaComments className="text-blue-500 text-2xl" />
-							<div>
-								<p className="font-medium text-gray-800">
-									Nhận phản hồi nhanh chóng & chính xác
-								</p>
-								<p className="text-sm text-gray-600">
-									Học hiệu quả và cải thiện kỹ năng nhanh chóng.
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+  const getDiscountPercent = (original: number, discounted: number) => {
+    if (original <= discounted) return null;
+    return Math.round(((original - discounted) / original) * 100);
+  };
 
-				{/* Sign-up Button */}
-				<div className="text-center pt-10 pb-10">
-					<Link
-						to="/payment/paymentform"
-						className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300"
-					>
-						Đăng ký
-					</Link>
-				</div>
-			</div>
-		</div>
-	);
+  const isPopular = (months: number) => months === 2;
+
+  return (
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-2 rounded-full mb-4 shadow-lg">
+              <Crown size={18} fill="white" />
+              <span className="font-semibold text-sm">Nâng cấp Premium</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Trải nghiệm học tập{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                không giới hạn
+              </span>
+            </h1>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Chọn gói phù hợp với mục tiêu học tập của bạn
+            </p>
+          </div>
+
+          {/* Pricing Cards */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+              <p className="text-gray-600 mt-4">Đang tải gói dịch vụ...</p>
+            </div>
+          ) : packages.length === 0 ? (
+            <EmptyState message="Hiện chưa có gói dịch vụ nào. Vui lòng quay lại sau!" />
+          ): (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+              {packages.map((pkg) => {
+                const discountPercent = getDiscountPercent(
+                  pkg.originalPrice,
+                  pkg.discountedPrice
+                );
+                const popular = isPopular(pkg.durationMonths);
+
+                return (
+                  <div
+                    key={pkg._id}
+                    className={`relative bg-white rounded-2xl transition-all duration-300 ${
+                      popular
+                        ? "shadow-2xl scale-105 border-2 border-blue-500"
+                        : "shadow-lg hover:shadow-xl hover:scale-105 border border-gray-200"
+                    }`}
+                  >
+                    {/* Popular Badge */}
+                    {popular && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1 shadow-lg">
+                          <Star size={14} fill="white" />
+                          Phổ biến nhất
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="p-8">
+                      {/* Name */}
+                      <h2 className="text-center text-3xl font-bold text-gray-900 mb-4">{pkg.name}</h2>
+                      {/* Duration */}
+                      <div className="text-center mb-6">
+                        <div className="flex items-center justify-center gap-2">
+                        <div className="h-px w-8 bg-gradient-to-r from-transparent to-blue-400"></div>
+                        <span className="text-lg font-semibold text-blue-600 mb-4">
+                          {pkg.durationMonths} tháng
+                        </span>
+                        <div className="h-px w-8 bg-gradient-to-l from-transparent to-blue-400"></div>
+                      </div>
+                        {pkg.description && (
+                          <p className="text-sm text-gray-600">
+                            {pkg.description.split(".")[0].trim()}.
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="text-center mb-6 pb-6 border-b border-gray-200">
+                        {discountPercent && (
+                          <div className="inline-block bg-green-100 text-green-700 text-sm font-bold px-3 py-1 rounded-full mb-3">
+                            Tiết kiệm {discountPercent}%
+                          </div>
+                        )}
+
+                        <div className="flex items-baseline justify-center gap-1">
+                          <span className="text-4xl font-bold text-gray-900">
+                            {pkg.discountedPrice.toLocaleString()}
+                          </span>
+                          <span className="text-gray-600">đ/tháng</span>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 mb-3">
+                          <span className="text-gray-400 line-through text-lg">
+                            {pkg.originalPrice.toLocaleString()}đ
+                          </span>
+                        </div>
+                      {/* CTA Button */}
+                      <button onClick={() => handleBuyClick(pkg)}
+                        className={`w-full py-3.5 rounded-xl font-semibold transition-all duration-300 ${
+                          popular
+                            ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
+                            : "bg-gray-900 text-white hover:bg-gray-800 shadow-md hover:shadow-lg"
+                        }`}>Đăng ký ngay</button>
+                      </div>
+
+                      {/* Features */}
+                      <div className="space-y-3 mb-8">
+                        {pkg.description &&
+                          pkg.description
+                            .split(".")
+                            .map((line) => line.trim()) // bỏ khoảng trắng đầu/cuối
+                            .filter((line) => line.length > 0) // loại bỏ dòng rỗng
+                            .map((line, idx) => (
+                              <div key={idx} className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                                  <Check className="text-blue-600" size={14} strokeWidth={3} />
+                                </div>
+                                <span className="text-gray-700 text-sm">{line}</span>
+                              </div>
+                            ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {showConfirmModal && selectedPkg && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+            <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+              <h3 className="text-lg text-center font-semibold mb-4">Xác nhận mua gói</h3>
+              <p className="text-gray-700 mb-6">
+                Bạn có chắc muốn mua gói <strong>{selectedPkg.name}</strong> với giá{" "}
+                <strong>{selectedPkg.discountedPrice.toLocaleString()}đ/tháng</strong>?
+              </p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setShowConfirmModal(false)}
+                  className="px-4 py-2 rounded-lg border hover:bg-gray-100">
+                  Hủy
+                </button>
+                <button onClick={handleConfirmBuy}
+                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                  Xác nhận
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error Popup */}
+        {popupMessage && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50 p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="text-red-600" size={20} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1">Thông báo</h3>
+                  <p className="text-gray-600 text-sm">{popupMessage}</p>
+                </div>
+                <button onClick={() => setPopupMessage(null)}
+                  className="flex-shrink-0 text-gray-400 hover:text-gray-600">
+                  <X size={20} />
+                </button>
+              </div>
+              <button onClick={() => setPopupMessage(null)}
+                className="w-full py-2.5 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-800 transition-colors">
+                Đóng
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => window.location.reload()}
+      />
+    </>
+  );
 };
 
 export default PaymentPage;

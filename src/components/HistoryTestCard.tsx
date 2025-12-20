@@ -1,64 +1,186 @@
-// HistoryTestCard.tsx
 import React from "react";
-import { FaRegClock } from "react-icons/fa";
+import {
+  Clock,
+  Calendar,
+  ArrowRight,
+  BookOpen,
+  CheckCircle,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface HistoryTestCardProps {
-  id: number;
-  imageSrc: string; // Đường dẫn ảnh minh họa
-  title: string; // Tên bài test
-  score: string; // Điểm (vd "25/100")
-  time: string; // Thời lượng (vd "2h20'")
+  id: string;
+  title: string;
+  totalScore?: number;
+  result: number;
+  totalQuestions: number;
+  accuracy?: number;
+  time: number;
+  createdAt: string;
+  sessionType: "practice" | "full-test" | string;
+  status: string;
 }
 
 const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
   id,
-  imageSrc,
   title,
-  score,
+  totalScore,
+  result,
+  totalQuestions,
+  accuracy,
   time,
+  createdAt,
+  sessionType,
+  status,
 }) => {
+  const formattedDate = new Date(createdAt).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  const typeLabel =
+    sessionType === "practice"
+      ? "Luyện tập"
+      : sessionType === "full-test"
+      ? "Full Test"
+      : "Khác";
+
+  const isFullTest = sessionType === "full-test";
+
+  const formatTime = (sec: number) => {
+    if (!sec || sec < 0) return "—";
+
+    const hours = Math.floor(sec / 3600);
+    const minutes = Math.floor((sec % 3600) / 60);
+    const seconds = sec % 60;
+
+    if (hours > 0) {
+      return `${hours}h ${minutes.toString().padStart(2, "0")}m ${seconds
+        .toString()
+        .padStart(2, "0")}s`;
+    }
+
+    return `${minutes}m ${seconds.toString().padStart(2, "0")}s`;
+  };
+
   return (
     <div
       className="
-        bg-white border border-gray-200 
-        shadow-sm rounded-lg p-4 
-        flex items-center gap-4
-        transition-transform duration-300 
-        hover:shadow-lg hover:-translate-y-1
+        relative overflow-hidden
+        bg-white border border-gray-100
+        rounded-2xl p-5
+        shadow-md hover:shadow-2xl
+        transition-all duration-300 ease-out
+        hover:-translate-y-2
+        group
+        flex flex-col gap-4
       "
     >
-      {/* Ảnh minh họa */}
-      <div className="w-32 h-20 flex-shrink-0 overflow-hidden rounded-md">
-        <img src={imageSrc} alt="Test" className="w-full h-full object-cover" />
+      {/* Gradient Top Bar */}
+      <div
+        className={`
+          absolute top-0 left-0 w-full h-1.5 opacity-0 group-hover:opacity-100
+          transition-opacity duration-300
+        `}
+      />
+
+      {/* Header: Title + Badge */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
+        <h3 className="text-lg font-bold text-gray-900 line-clamp-2 group-hover:text-gray-800 transition-colors break-words">
+          {title}
+        </h3>
+
+        <span
+          className={`
+            text-xs font-bold px-3 py-1.5 rounded-full shadow-sm
+            ring-1 ring-inset transition-all duration-200
+            flex items-center justify-center gap-1.5
+            ${
+              isFullTest
+                ? "bg-gradient-to-r from-orange-50 to-pink-50 text-orange-700 ring-orange-200"
+                : "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 ring-emerald-200"
+            }
+          `}
+        >
+          {isFullTest ? (
+            <BookOpen className="w-3 h-3" />
+          ) : (
+            <CheckCircle className="w-3 h-3" />
+          )}
+          {typeLabel}
+        </span>
       </div>
 
-      {/* Thông tin bài test */}
-      <div className="flex-1">
-        <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
+      {/* Kết quả & Độ chính xác */}
+      <div className="flex flex-wrap gap-4 text-sm">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-gray-600">Kết quả:</span>
+          <span className="font-bold text-gray-600 truncate">
+            {result}/{totalQuestions}
+          </span>
+          {isFullTest && totalScore !== undefined && (
+            <span className="ml-2 font-bold text-gray-600 truncate">
+              ({totalScore} điểm)
+            </span>
+          )}
+        </div>
 
-        <p className="text-gray-600 text-sm mb-2">
-          Điểm: <span className="text-blue-600 font-bold">{score}</span>
-        </p>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="text-gray-600">Độ chính xác:</span>
+          <span className={`font-bold truncate text-gray-600`}>
+            {accuracy ? `${accuracy}%` : "—"}
+          </span>
+        </div>
+      </div>
 
-        {/* Thời lượng + nút bên phải */}
-        <div className="flex items-center justify-between text-sm mb-2">
-          <div className="text-gray-500 flex items-center gap-1">
-            <FaRegClock />
-            <span>{time}</span>
-          </div>
-          <Link to={`/mock-test/view/${id}`}>
+      {/* Thời gian & Nút */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 text-sm text-gray-500">
+        <div className="flex flex-wrap gap-4">
+          <span className="flex items-center gap-1.5 min-w-0">
+            <Clock className="w-4 h-4 text-gray-400" />
+            <span className="font-medium truncate">{formatTime(time)}</span>
+          </span>
+          <span className="flex items-center gap-1.5 min-w-0">
+            <Calendar className="w-4 h-4 text-gray-400" />
+            <span className="font-medium truncate">{formattedDate}</span>
+          </span>
+        </div>
+
+        {/* Nút tùy theo status */}
+        {status === "completed" ? (
+          <Link to={`/session/${id}/results`} className="w-full sm:w-auto">
             <button
               className="
-              bg-blue-600 text-white px-4 py-2 text-sm 
-              rounded 
-              hover:bg-blue-700 transition-colors duration-300
-            "
+          flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
+          rounded-xl shadow-md
+          transition-all duration-300
+          w-full sm:w-auto
+          bg-blue-600 hover:bg-blue-700
+          hover:shadow-lg hover:scale-105 active:scale-95
+        "
             >
               Xem chi tiết
+              <ArrowRight className="w-4 h-4" />
             </button>
           </Link>
-        </div>
+        ) : status === "paused" || status === "in-progress" ? (
+          <Link to={`/session/${id}`} className="w-full sm:w-auto">
+            <button
+              className="
+          flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
+          rounded-xl shadow-md
+          transition-all duration-300
+          w-full sm:w-auto
+          bg-green-600 hover:bg-green-700
+          hover:shadow-lg hover:scale-105 active:scale-95
+        "
+            >
+              Tiếp tục làm
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </Link>
+        ) : null}
       </div>
     </div>
   );

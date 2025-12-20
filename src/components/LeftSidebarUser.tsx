@@ -1,92 +1,98 @@
 import React from "react";
+import { showToast } from "../utils/toast.js";
 import { Link, useNavigate } from "react-router-dom";
-import { FaHistory, FaCog, FaSignOutAlt } from "react-icons/fa";
 import api, { setAccessToken } from "../config/axios.js";
+import { LogOut, UserCircle, ClipboardList, History, HelpCircle, Crown } from "lucide-react";
 
 interface LeftSidebarUserProps {
   customHeight?: string;
-  fullname?: string;
-  avatarUrl?: string;
-  country?: string;
 }
 
-interface MenuItem {
-  label: string;
-  icon: React.ReactNode;
-  to?: string;
-  textColor?: string;
-  action?: () => void;
-}
-
-const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({
-  customHeight = "h-screen w-64 min-w-44",
-}) => {
+const LeftSidebarUser: React.FC<LeftSidebarUserProps> = ({ customHeight }) => {
   const navigate = useNavigate();
-  const fullname = localStorage.getItem("fullname") || "Guest User";
-  const avatarUrl = localStorage.getItem("avatarUrl") || "/img/avatar/default_avatar.jpg";
+  const [fullname, setFullname] = React.useState(
+    localStorage.getItem("fullname") || "Guest User"
+  );
+  const [avatarUrl, setAvatarUrl] = React.useState(
+    localStorage.getItem("avatarUrl") || "/img/avatar/default_avatar.jpg"
+  );
 
-  // Logout handler
   const handleLogout = async () => {
     try {
       await api.post("/auth/logout");
-       localStorage.clear();    
+      localStorage.clear();
+      showToast("Đăng xuất thành công!", "success", { autoClose: 1000 });
     } catch (err) {
       console.error("Logout server failed:", err);
+      showToast("Đăng xuất thất bại. Vui lòng thử lại.", "error", { autoClose: 1000 });
     } finally {
       setAccessToken(null);
-      navigate("/login", { replace: true });
+      setFullname("Guest User");
+      setAvatarUrl("/img/avatar/default_avatar.jpg");
+      navigate("/", { replace: true });
     }
   };
 
-  const menuItems: MenuItem[] = [
-    { label: "Lịch sử làm bài", icon: <FaHistory />, to: "/history" },
-    { label: "Cài đặt", icon: <FaCog />, to: "/settings" },
-    { label: "Đăng xuất", icon: <FaSignOutAlt />, textColor: "text-red-500", action: handleLogout },
+    const menuItems = [
+    { to: "/profile", icon: UserCircle, label: "Thông tin cá nhân" },
+    { to: "/history", icon: ClipboardList, label: "Lịch sử làm bài" },
+    { to: "/purchase-history", icon: History, label: "Lịch sử mua hàng"},
+    { to: "/payment", icon: Crown, label: "VIP/Premium" },
+    { to: "/support", icon: HelpCircle, label: "Hỗ trợ / Liên hệ" },
   ];
 
   return (
-    <aside className={`bg-gray-100 flex flex-col p-4 ${customHeight}`}>
-      {/* Thông tin người dùng */}
-      <div className="flex items-center mb-6">
-        <img
-          src={avatarUrl}
-          alt="Avatar"
-          className="w-10 h-10 rounded-full mr-3 object-cover"
-        />
-        <div>
-          <h2 className="text-lg font-semibold">{fullname}</h2>
-          <p className="text-sm text-gray-500 flex items-center">
-            <span className="mr-1">Xin chào!</span>
-          </p>
+    <aside className={`bg-white border-r border-gray-200 flex flex-col ${
+        customHeight || "h-screen"
+      } w-64 min-w-[200px] transition-all duration-300`}
+    >
+      {/* Header - User Info */}
+      <div className="p-5 border-b border-gray-300">
+        <div className="flex items-center space-x-3">
+          <div className="relative">
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100"
+            />
+            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-semibold text-gray-900 break-words">
+              Hi, {fullname}
+            </h2>
+            <div className="flex items-center mt-1 text-sm text-blue-600 font-medium">
+              <UserCircle className="w-3 h-3 mr-1" />
+              User
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Menu */}
-      <nav className="flex-1">
-        <ul>
-          {menuItems.map((item) => (
-            <li key={item.label} className="mb-2">
-              {item.action ? (
-                <button
-                  onClick={item.action}
-                  className={`flex items-center w-full p-2 rounded hover:bg-blue-100 ${item.textColor || "text-gray-700"}`}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.label}
-                </button>
-              ) : (
-                <Link
-                  to={item.to || "#"}
-                  className={`flex items-center p-2 rounded hover:bg-blue-100 ${item.textColor || "text-gray-700"}`}
-                >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.label}
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-700 rounded-lg transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 group">
+              <Icon className="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors" />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
+
+      {/* Logout Button */}
+      <div className="p-4 border-t border-gray-300">
+        <button onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg transition-all duration-200 hover:bg-red-50 group">
+          <LogOut className="w-5 h-5 text-red-500 group-hover:text-red-600 transition-colors" />
+          <span>Đăng xuất</span>
+        </button>
+      </div>
     </aside>
   );
 };

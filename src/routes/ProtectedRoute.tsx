@@ -2,6 +2,7 @@ import React, { useEffect, useState, ReactNode } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import api, { setAccessToken } from "../config/axios";
 import NotFound from "../pages/NotFound/NotFound";
+import LoadingSkeleton from "../components/common/LoadingSpinner/LoadingSkeleton";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -41,7 +42,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
     };
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingSkeleton />;
 
   if (!role) return <Navigate to="/login" state={{ from: location }} replace />;
 

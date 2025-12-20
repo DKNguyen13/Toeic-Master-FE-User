@@ -1,322 +1,158 @@
-import React, { useState } from "react";
-import { toeicTest } from "../../data/toeicMockData";
+import React, { useEffect, useRef } from "react";
 import Navigation from "./component/Navigation";
-import { useNavigate } from "react-router-dom";
-import IcBreadcrumbGbk from "../../assets/icons/IcBreadcrumbGbk";
+import { useTestSession } from "./hooks/useTestSession";
+import TestHeader from "./component/TestHeader";
+import PartSelector from "./component/PartSelector";
+import QuestionList from "./component/QuestionList";
+import { useViewSession } from "./hooks/useViewTestSession";
+import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
+import { useBlockNavigation } from "./hooks/useBlockNavigation";
+
 interface TestProps {
-  isView: boolean;
+  isView: boolean; // true: review detail result
 }
-export const Test: React.FC<TestProps> = ({ isView = false }) => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  if (isView) console.log("viewing");
 
-  const [answers, setAnswers] = useState(
-    new Array(toeicTest.questions).fill(null)
-  );
-  const navigate = useNavigate();
-  const handleGoBack = () => {
-    navigate(-1);
+export const Test: React.FC<TestProps> = ({ isView }) => {
+  //Chọn hook theo mode
+  const hookData = isView ? useViewSession() : useTestSession();
+  const {
+    session,
+    parts,
+    currentPart,
+    setCurrentPart,
+    currentQuestion,
+    setCurrentQuestion,
+    questionsInPart,
+    handleNavigateQuestion,
+    handleGoBack,
+    loading,
+    error,
+    handleAnswer,
+    handleNextPart,
+    handleSubmitSession,
+    answers,
+    handlePauseTestSession,
+    handleResumeTestSession,
+  } = hookData as ReturnType<typeof useTestSession> &
+    ReturnType<typeof useViewSession>;
+
+  useBlockNavigation(!isView, handlePauseTestSession);
+
+  const shouldScrollRef = useRef(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handleNextPartWithScroll = async () => {
+    shouldScrollRef.current = true;
+    await handleNextPart();
   };
-  const handleAnswer = (questionIndex: number, answerIndex: number) => {
-    const updatedAnswers = [...answers];
-    updatedAnswers[questionIndex] = answerIndex;
-    setAnswers(updatedAnswers);
-    setCurrentQuestion(questionIndex); // Update current question when answering
-  };
-  const handleNavigate = (questionIndex: number) => {
-    setCurrentQuestion(questionIndex);
-    const element = document.getElementById(`question-${questionIndex + 1}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+
+  useEffect(() => {
+    if (!isView && session && session.status === "paused") {
+      handleResumeTestSession();
     }
-  };
-  let questionCounter = 1;
+  }, [session, isView]);
 
-  const getQuestionProps = () => {
-    const id = `question-${questionCounter}`;
-    const number = questionCounter;
-    questionCounter++;
-    return { id, number };
-  };
+  useEffect(() => {
+    if (!isView) {
+      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+        event.preventDefault();
+      };
 
-  const renderListeningPart1 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 1: Listening</h3>
-        {part.map((item: any, index: number) => {
-          const { id, number } = getQuestionProps();
-          return (
-            <div key={index} className="mb-4" id={id}>
-              <p className="font-semibold">Question {number}</p>
-              {item.image && (
-                <img src={item.image} alt="question" className="w-full mb-2" />
-              )}
-              {item.options.map((option: string, optionIndex: number) => (
-                <button
-                  key={optionIndex}
-                  onClick={() => handleAnswer(number - 1, optionIndex)}
-                  className={`border p-2 rounded-md w-full text-left mb-2 ${
-                    answers[number - 1] === optionIndex
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          );
-        })}
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+    }
+  }, [isView]);
+
+  useEffect(() => {
+    if (!shouldScrollRef.current) return;
+
+    if (questionsInPart.length > 0 && contentRef.current) {
+      const firstQuestion = questionsInPart[0];
+      const el = document.getElementById(
+        `question-${firstQuestion.globalQuestionNumber}`
+      );
+
+      if (el) {
+        const container = contentRef.current;
+
+        const headerOffset = 300; // TestHeader + PartSelector
+        const elementTop = el.offsetTop;
+
+        container.scrollTo({
+          top: elementTop - headerOffset,
+          behavior: "smooth",
+        });
+      }
+    }
+
+    shouldScrollRef.current = false;
+  }, [currentPart, questionsInPart]);
+
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center mt-12">
+        <div className="text-red-500">Error: {error}</div>
       </div>
-    ) : null;
-  };
+    );
+  }
 
-  const renderListeningPart2 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 2: Listening</h3>
-        {part.map((item: any, index: number) => {
-          const { id, number } = getQuestionProps();
-          return (
-            <div key={index} className="mb-4" id={id}>
-              <p className="font-semibold">Question {number}</p>
-              <p>{item.question}</p>
-              {item.options.map((option: string, optionIndex: number) => (
-                <button
-                  key={optionIndex}
-                  onClick={() => handleAnswer(number - 1, optionIndex)}
-                  className={`border p-2 rounded-md w-full text-left mb-2 ${
-                    answers[number - 1] === optionIndex
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          );
-        })}
-      </div>
-    ) : null;
-  };
-
-  const renderListeningPart3 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 3: Listening</h3>
-        {part.map((item: any, index: number) => (
-          <div key={index} className="mb-4">
-            {item.questions.map((question: any, questionIndex: number) => {
-              const { id, number } = getQuestionProps();
-              return (
-                <div key={questionIndex} id={id}>
-                  <p className="font-semibold">Question {number}</p>
-                  <p>{question.question}</p>
-                  {question.options.map(
-                    (option: string, optionIndex: number) => (
-                      <button
-                        key={optionIndex}
-                        onClick={() => handleAnswer(number - 1, optionIndex)}
-                        className={`border p-2 rounded-md w-full text-left mb-2 ${
-                          answers[number - 1] === optionIndex
-                            ? "bg-blue-500 text-white"
-                            : "hover:bg-gray-200"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    )
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    ) : null;
-  };
-
-  const renderListeningPart4 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 4: Listening</h3>
-        {part.map((item: any, index: number) => (
-          <div key={index} className="mb-4">
-            {item.questions.map((question: any, questionIndex: number) => {
-              const { id, number } = getQuestionProps();
-              return (
-                <div key={questionIndex} id={id}>
-                  <p className="font-semibold">Question {number}</p>
-                  <p>{question.question}</p>
-                  {question.options.map(
-                    (option: string, optionIndex: number) => (
-                      <button
-                        key={optionIndex}
-                        onClick={() => handleAnswer(number - 1, optionIndex)}
-                        className={`border p-2 rounded-md w-full text-left mb-2 ${
-                          answers[number - 1] === optionIndex
-                            ? "bg-blue-500 text-white"
-                            : "hover:bg-gray-200"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    )
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    ) : null;
-  };
-
-  const renderReadingPart5 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 5: Reading</h3>
-        {part.map((item: any, index: number) => {
-          const { id, number } = getQuestionProps();
-          return (
-            <div key={index} className="mb-4" id={id}>
-              <p className="font-semibold">Question {number}</p>
-              <p>{item.sentence}</p>
-              {item.options.map((option: string, optionIndex: number) => (
-                <button
-                  key={optionIndex}
-                  onClick={() => handleAnswer(number - 1, optionIndex)}
-                  className={`border p-2 rounded-md w-full text-left mb-2 ${
-                    answers[number - 1] === optionIndex
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-200"
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          );
-        })}
-      </div>
-    ) : null;
-  };
-
-  const renderReadingPart6 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 6: Reading</h3>
-        {part.map((item: any, index: number) => (
-          <div key={index} className="mb-4">
-            <p>{item.passage}</p>
-            {item.blanks.map((blank: any, blankIndex: number) => {
-              const { id, number } = getQuestionProps();
-              return (
-                <div key={blankIndex} id={id}>
-                  <p className="font-semibold">Question {number}</p>
-                  <p>Fill in the blank:</p>
-                  {blank.options.map((option: string, optionIndex: number) => (
-                    <button
-                      key={optionIndex}
-                      onClick={() => handleAnswer(number - 1, optionIndex)}
-                      className={`border p-2 rounded-md w-full text-left mb-2 ${
-                        answers[number - 1] === optionIndex
-                          ? "bg-blue-500 text-white"
-                          : "hover:bg-gray-200"
-                      }`}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    ) : null;
-  };
-
-  const renderReadingPart7 = (part: any) => {
-    return part && part.length > 0 ? (
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Part 7: Reading</h3>
-        {part.map((item: any, index: number) => (
-          <div key={index} className="mb-4">
-            <p>
-              {item.passage.title}: {item.passage.content}
-            </p>
-            {item.questions.map((question: any, questionIndex: number) => {
-              const { id, number } = getQuestionProps();
-              return (
-                <div key={questionIndex} id={id}>
-                  <p className="font-semibold">Question {number}</p>
-                  <p>{question.question}</p>
-                  {question.options.map(
-                    (option: string, optionIndex: number) => (
-                      <button
-                        key={optionIndex}
-                        onClick={() => handleAnswer(number - 1, optionIndex)}
-                        className={`border p-2 rounded-md w-full text-left mb-2 ${
-                          answers[number - 1] === optionIndex
-                            ? "bg-blue-500 text-white"
-                            : "hover:bg-gray-200"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    )
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    ) : null;
-  };
+  const isLastPart = parts.indexOf(currentPart) === parts.length - 1;
 
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-row justify-between flex-1 overflow-hidden">
-        <div className="flex-1 flex flex-col justify-start items-center p-4 overflow-auto">
-          <div
-            className="text-lg w-full text-main font-normal flex gap-3 text-start mb-5 cursor-pointer items-center"
-            onClick={handleGoBack}
-          >
-            <IcBreadcrumbGbk />
-            <span>{"Return"}</span>
-          </div>
+        {/* Left: Main content */}
+        <div 
+          ref={contentRef}
+          className="flex-1 flex flex-col justify-start items-center p-4 overflow-auto">
+          <TestHeader
+            session={session}
+            onGoBack={handleGoBack}
+            isView={isView}
+          />
 
-          <div className="w-full max-w-2xl bg-gray-100 top-0 z-10 rounded-full my-10">
-            <audio
-              controls
-              className="w-full max-w-4xl mx-auto block"
-              src={toeicTest.audio}
-            >
-              Your browser does not support the audio element.
-            </audio>
-          </div>
+          <PartSelector
+            parts={parts}
+            currentPart={currentPart}
+            setCurrentPart={setCurrentPart}
+            setCurrentQuestion={setCurrentQuestion}
+          />
 
-          <div className="w-full max-w-4xl">
-            {renderListeningPart1(toeicTest.listening.part1)}
-            {renderListeningPart2(toeicTest.listening.part2)}
-            {renderListeningPart3(toeicTest.listening.part3)}
-            {renderListeningPart4(toeicTest.listening.part4)}
-            {renderReadingPart5(toeicTest.reading.part5)}
-            {renderReadingPart6(toeicTest.reading.part6)}
-            {renderReadingPart7(toeicTest.reading.part7)}
-          </div>
+          <QuestionList
+            questionsInPart={questionsInPart}
+            answers={answers}
+            handleAnswer={!isView ? handleAnswer : undefined}
+            isView={isView}
+          />
+
+          {!isLastPart && (
+              <button
+                onClick={ handleNextPartWithScroll }
+                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+              >
+                Tiếp theo
+              </button>
+          )}
         </div>
 
-        <div className=" p-4 bg-white h-full w-fit overflow-y-scroll">
+        {/* Right: Navigation */}
+        <div className="p-4 bg-white h-full w-fit overflow-y-scroll">
           <Navigation
             isView={isView}
-            toeicTest={toeicTest}
+            time={session?.timeRemaining ?? 0}
+            questions={questionsInPart}
+            currentPart={currentPart}
             currentQuestion={currentQuestion}
             answers={answers}
-            onNavigate={handleNavigate}
+            onNavigate={handleNavigateQuestion}
+            onSubmit={!isView ? handleSubmitSession : undefined}
           />
         </div>
       </div>

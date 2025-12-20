@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../config/axios";
+import { useLocation } from "react-router-dom";
 import { FaEnvelope, FaPaperPlane } from "react-icons/fa";
 import LeftSidebarUser from "../../components/LeftSidebarUser";
 import { Phone, CheckCircle, PhoneCall, ExternalLink } from "lucide-react";
 
 const Support: React.FC = () => {
+  const location = useLocation();
+  const prefill = (location.state as any) || {};
   const [formData, setFormData] = useState({
     name: "",
     title: "",
@@ -13,6 +16,16 @@ const Support: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (prefill.title) {
+      setFormData({
+        name: "",
+        title: prefill.title || "",
+        content: ""
+      });
+    }
+  }, [prefill]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

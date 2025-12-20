@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import avatar from '../../assets/images/default_avatar.jpg';
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
-import CommentChildren from './CommentChildren';
-import { Comment } from '../Comment/types'
+import dayjs from "dayjs";
 import { FcLike } from "react-icons/fc";
+import { Comment } from '../Comment/types'
 import { FaRegHeart } from "react-icons/fa";
+import { showToast } from '../../utils/toast';
+import CommentChildren from './CommentChildren';
+import React, { useEffect, useState } from 'react';
+import relativeTime from "dayjs/plugin/relativeTime";
+import avatar from '../../assets/images/default_avatar.jpg';
 import { createReplyComment, deleteComment, editComment, getChildrenComment } from '../../service/commentService';
-import { toast } from 'react-toastify';
 
 interface CommentDetailProps {
   comment: Comment;
@@ -18,10 +18,8 @@ interface CommentDetailProps {
   onEdit?: (commentId: string, content: string) => void;
   onDelete?: (commentId: string) => void;
 }
-
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
-
 function timeAgo(dateString: string) {
   return dayjs(dateString).fromNow();
 }
@@ -44,35 +42,49 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
   const [replyTo, setReplyTo] = useState<string | null>(null);
 
   const handleReply = async () => {
+    const trimmed = replyContent.trim();
+    const prefix = `@${comment.author.fullname}`;
+
+    if (trimmed === prefix || trimmed === `${prefix} `) {
+      showToast("Vui lòng nhập nội dung bình luận", "warn", { autoClose: 500 })
+      return;
+    }
+
+    if(!replyContent.trim()) {
+      showToast("Vui lòng nhập nội dung bình luận", "warn", { autoClose: 500 })
+      return;
+    }
+
     try {
       const response = await createReplyComment(comment._id, replyContent);
       setCommentChildren([response, ...commentChildren]);
       comment.noOfChildren += 1;
       setReplyContent('');
       setIsReplying(false);
-      toast.success("Trả lời đã được đăng!");
+      showToast("Trả lời đã được đăng!", "success", { autoClose: 500 });
     } catch (error: any) {
       console.error("Error posting reply:", error);
       setReplyContent('');
       if (error.response && error.response.data?.message) {
-        toast.error(error.response.data.message);
+        showToast(error.response.data.message, "error", { autoClose: 500 });
       } else {
-        toast.error("Có lỗi xảy ra! Vui lòng thử lại.");
+        showToast("Có lỗi xảy ra! Vui lòng thử lại.", "error", { autoClose: 500 });
       }
     }
   };
 
   const handleEdit = async () => {
     if (!editContent.trim() || !onEdit) return;
-
     try {
       const response = await onEdit(comment._id, editContent);
       setIsEditing(false);
-      toast.success("Cập nhật bình luận thành công!");
+      showToast("Cập nhật bình luận thành công!", "success", { autoClose: 500 });
     } catch (error: any) {
       console.error("Error editing comment:", error);
-      toast.error(
-        error.response?.data?.message || "Có lỗi xảy ra! Không thể cập nhật bình luận."
+      showToast(
+        error.response?.data?.message || "Có lỗi xảy ra! Không thể cập nhật bình luận.",
+        "error",
+        { autoClose: 500 }
       );
     }
   };
@@ -81,37 +93,53 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
     await deleteComment(commentId)
     setCommentChildren((prevComments) => prevComments.filter((comment) => comment._id !== commentId)
     );
+    comment.noOfChildren -= 1;
   }
 
   const onEditChild = async (commentId: string, content: string) => {
-      const response = await editComment(commentId, content);
-      // console.log(response);
-      setCommentChildren((prevComments) => 
-        prevComments.map((comment) => 
-          comment._id === commentId ? response : comment
-        )
-      );
-    };
+    const response = await editComment(commentId, content);
+    setCommentChildren((prevComments) =>
+      prevComments.map((comment) =>
+      comment._id === commentId ? response : comment
+    ));
+  };
 
   useEffect(() => {
     const fetchChildrenComments = async () => {
       if (showChildren){
-        // Fetch children comments when showChildren is true
         const response = await getChildrenComment(comment._id);
         setCommentChildren(response.data);
       }
     }
     fetchChildrenComments();
   }, [showChildren])
-
   const divStyle = isChild ? "bg-white p-3 mb-3 ": "bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm";
+
+  const renderContent = (content: string, replyTo?: string | null) => {
+    if (!replyTo) {
+      return <span className="text-gray-800">{content}</span>;
+    }
+
+    const prefix = `@${replyTo} `;
+    if (content.startsWith(prefix)) {
+      const rest = content.substring(prefix.length);
+      return (
+        <>
+          <span className="text-blue-600 font-medium">{prefix}</span>
+          <span className="text-gray-800">{rest}</span>
+        </>
+      );
+    }
+
+    return <span className="text-gray-800">{content}</span>;
+  };
 
   return (
     <div className={divStyle}>
       <div className="flex justify-between">
         {/* user information */}
         <div className="flex items-center space-x-2">
-          <img 
+          <img
             src={comment.author.avatarUrl || avatar}
             alt={avatar}
             className="w-8 h-8 rounded-full object-cover"
@@ -121,11 +149,12 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
             {timeAgo(comment.createdAt)}
           </span>
         </div>
+        
         {/* menu action */}
         <div className='ml-auto'>
           {comment.isOwner && (
             <div className="relative">
-          <button 
+          <button
             onClick={() => setShowMenu(!showMenu)}
             className="text-gray-600 hover:text-gray-800 transition-colors p-1"
           >
@@ -133,10 +162,10 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
               <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
             </svg>
           </button>
-          
+         
           {showMenu && (
             <div className="absolute right-0 top-full bg-white border border-gray-200 rounded-md shadow-lg z-10 min-w-[80px]">
-              <button 
+              <button
               onClick={() => {
                 setIsEditing(true);
                 setShowMenu(false);
@@ -145,7 +174,7 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
                 >
               Sửa
               </button>
-              <button 
+              <button
               onClick={() => {
                 onDelete?.(comment._id);
                 setShowMenu(false);
@@ -160,25 +189,24 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
           )}
         </div>
       </div>
-
       <div className="mb-3">
         {isEditing ? (
           <div className="space-y-3 mt-2">
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={2}
             />
             <div className="flex space-x-2">
-              <button 
-                onClick={handleEdit} 
+              <button
+                onClick={handleEdit}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 Lưu
               </button>
-              <button 
-                onClick={() => setIsEditing(false)} 
+              <button
+                onClick={() => setIsEditing(false)}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"
               >
                 Huỷ
@@ -186,17 +214,18 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
             </div>
           </div>
         ) : (
-          <p className="text-gray-800 leading-relaxed">{comment.content}</p>
+          <p className="leading-relaxed">
+            {renderContent(comment.content, comment.replyTo)}
+          </p>
         )}
       </div>
-
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 text-sm">
-          <button 
+          <button
         onClick={() => {
           // console.log("like comment", comment._id);
           onLike?.(comment._id)
-        }} 
+        }}
         className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 transition-colors"
           >
         <span>
@@ -216,7 +245,6 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
           </button>
         </div>
       </div>
-
       {isReplying && (
         <div className="mt-4 bg-gray-50 p-3 rounded-md">
           <textarea
@@ -227,14 +255,14 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
             rows={2}
           />
           <div className="flex space-x-2 mt-2">
-            <button 
-              onClick={handleReply} 
+            <button
+              onClick={handleReply}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
             >
               Trả lời
             </button>
-            <button 
-              onClick={() => setIsReplying(false)} 
+            <button
+              onClick={() => setIsReplying(false)}
               className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors text-sm"
             >
               Huỷ
@@ -242,10 +270,9 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
           </div>
         </div>
       )}
-
       {comment.noOfChildren > 0 && (
         <div className="mt-4 space-y-3">
-          <button 
+          <button
             onClick={() => setShowChildren(!showChildren)}
             className="text-blue-600 hover:text-blue-800 transition-colors text-sm font-medium"
           >
@@ -262,10 +289,9 @@ const CommentDetail: React.FC<CommentDetailProps> = ({
             />
           )}
         </div>
-        
+       
       )}
     </div>
   );
 };
-
 export default CommentDetail;

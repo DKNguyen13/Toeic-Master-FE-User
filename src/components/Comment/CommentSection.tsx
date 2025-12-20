@@ -49,6 +49,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
       )
     );
   };
+  
   const onDelete = async (commentId: string) => {
     await deleteComment(commentId)
     setCommentsList((prevComments) => prevComments.filter((comment) => comment._id !== commentId)

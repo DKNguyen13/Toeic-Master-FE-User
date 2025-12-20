@@ -12,17 +12,20 @@ export const getCommentByTestId = async (testId, page, limit) => {
   }
 }
 
-export const getChildrenComment = async (commentId, page, limit) => {
-  try{
+export const getChildrenComment = async (commentId, params) => {
+  try {
     const response = await api.get(`/comments/${commentId}/replies`, {
-      params: { page, limit },
+      params: {
+        page: (params && params.page) || 1,
+        limit: (params && params.limit) || 5,
+      },
     });
     return response.data;
-  }
-  catch (error){
+  } catch (error) {
     throw error;
   }
-}
+};
+
 
 export const reactComment = async (commentId) => {
   try{

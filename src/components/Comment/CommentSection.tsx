@@ -11,36 +11,28 @@ interface CommentSectionProps {
   testId: string;
   isLoggedIn?: boolean;
 }
-
 const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
   const [comments, setCommentsList] = useState<Comment[]>([]);
   const [totalComments, setTotalComments] = useState<number>(0);
   const [comment, setComment] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [showLoginModal, setShowLoginModal] = useState(false);
-
+ 
   // Fetch comments when component mounts or testId changes
   useEffect(() => {
     const fetchComments = async () => {
       if (!testId) return;
-      
+     
       try {
-        // setCommentsLoading(true);
-        // setCommentsError(null);
         const commentsData = await getCommentByTestId(testId, currentPage);
         setCommentsList(commentsData.data || []);
         setTotalComments(commentsData.pagination.totalComments || 0);
       } catch (error) {
         console.error('Error fetching comments:', error);
-        // setCommentsError('Failed to load comments');
-      } finally {
-        // setCommentsLoading(false);
-      }
+      } 
     };
-
     fetchComments();
   }, [testId, currentPage]);
-
   const onLike = async (commentId: string) => {
     await reactComment(commentId)
     setCommentsList((prevComments) =>
@@ -57,36 +49,35 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
       )
     );
   };
-
+  
   const onDelete = async (commentId: string) => {
     await deleteComment(commentId)
     setCommentsList((prevComments) => prevComments.filter((comment) => comment._id !== commentId)
     );
+    setTotalComments(totalComments - 1);
   };
-
   const onEdit = async (commentId: string, content: string) => {
     const response = await editComment(commentId, content);
-    // console.log(response);
-    setCommentsList((prevComments) => 
-      prevComments.map((comment) => 
+    setCommentsList((prevComments) =>
+      prevComments.map((comment) =>
         comment._id === commentId ? response : comment
       )
     );
   };
-
   const handleComment = async () => {
     try{
       if (!isLoggedIn) {
         setShowLoginModal(true);
         return;
       }
-
+      if (!comment.trim()) {
+        showToast("Vui lòng nhập nội dung bình luận", "warn", { autoClose: 500 });
+        return;
+      }
       const response = await createComment(testId, comment);
       setCommentsList([response, ...comments]);
       setTotalComments(totalComments + 1);
       setComment('');
-      // console.log('Comment posted successfully:', response);
-      //toast.success("Comment posted successfully!");
     }
     catch (error: any){
       console.error('Error posting comment:', error);
@@ -98,7 +89,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
       }
     }
   }
-  
+ 
   return (
     <>
     <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
@@ -113,8 +104,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
           onChange={(e) => setComment(e.target.value)} value={comment}
         />
         <div className="flex justify-end mt-3">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          onClick={handleComment}>
+          <button className="px-4 py-2 rounded-lg transition-colors
+            bg-blue-600 text-white
+            hover:bg-blue-700
+            disabled:bg-gray-300
+            disabled:text-gray-500
+            disabled:cursor-not-allowed
+            disabled:hover:bg-gray-300"
+          onClick={handleComment} disabled={!comment.trim()}>
             Gửi bình luận
           </button>
         </div>
@@ -126,18 +123,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
           </p>
         ) : (
           comments.map((comment) => (
-            <CommentDetail 
-              isChild={false} 
-              key={comment._id} 
-              comment={comment} 
-              onLike={onLike} 
+            <CommentDetail
+              isChild={false}
+              key={comment._id}
+              comment={comment}
+              onLike={onLike}
               onDelete={onDelete}
               onEdit={onEdit}
             />
           ))
         )}
       </div>
-
       {totalComments > 10 && (
         <div className="flex justify-center mt-6 pt-4 border-t border-gray-200">
           <nav className="flex items-center space-x-2">
@@ -146,7 +142,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}>
               ← Trước
             </button>
-            
+           
             {Array.from({ length: Math.ceil(totalComments / 10) }, (_, i) => i + 1).map(page => (
               <button
                 key={page}
@@ -159,7 +155,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
                 {page}
               </button>
             ))}
-            
+           
             <button className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={currentPage === Math.ceil(totalComments / 10)}
               onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalComments / 10), prev + 1))}>
@@ -169,7 +165,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
         </div>
       )}
     </div>
-
     <LoginModal
       isOpen={showLoginModal}
       onClose={() => setShowLoginModal(false)}
@@ -177,5 +172,4 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
   </>
   );
 };
-
 export default CommentSection;

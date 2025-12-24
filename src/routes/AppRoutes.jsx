@@ -12,7 +12,6 @@ import Profile from "../pages/Profile/Profile";
 import UpdateProfile from "../pages/Profile/UpdateProfile/UpdateProfile";
 import Payment from "../pages/Payment/Payment";
 import PurchaseHistory from "../pages/Payment/PurchaseHistory";
-import PaymentForm from "../pages/Payment/PaymentForm/PaymentForm";
 import Resource from "../pages/Resource/Resource";
 import ListeningFillBlank from "../pages/Resource/ListeningFillBlank";
 import History from "../pages/History/History";
@@ -190,14 +189,6 @@ const routes = [
     element: (
       <MainLayout>
         <Payment />
-      </MainLayout>
-    ),
-  },
-  {
-    path: "/payment/paymentform",
-    element: (
-      <MainLayout>
-        <PaymentForm />
       </MainLayout>
     ),
   },

@@ -15,7 +15,7 @@ import { useSocketReady } from "../../../context/useSocketReady"; // THÊM IMPOR
 
 export const useTestSession = () => {
   const { registerSession, sendAnswer } = useSocket();
-  const isSocketReady = useSocketReady(); // ✅ THÊM DÒNG NÀY
+  const isSocketReady = useSocketReady();
   const navigate = useNavigate();
   const { id: sessionId } = useParams();
 
@@ -115,7 +115,7 @@ export const useTestSession = () => {
 
   const indexToLetter = ["A", "B", "C", "D"];
 
-  // ✅ SỬA LẠI:  handleAnswer với kiểm tra isSocketReady
+  // handleAnswer với kiểm tra isSocketReady
   const handleAnswer = (indexInPart:  number, answerIndex: number) => {
     const questionsInPart = questions. filter(
       (q) => q.partNumber === currentPart
@@ -150,7 +150,7 @@ export const useTestSession = () => {
       return updated;
     });
 
-    // ✅ CHỈ GỬI ĐÁP ÁN KHI SOCKET READY (hoặc sẽ được queue nếu chưa ready)
+    // CHỈ GỬI ĐÁP ÁN KHI SOCKET READY (hoặc sẽ được queue nếu chưa ready)
     if (isSocketReady) {
       sendAnswer(sessionId!, question.id, selectedLetter);
     } else {
@@ -256,7 +256,7 @@ export const useTestSession = () => {
     error,
     handlePauseTestSession,
     handleResumeTestSession,
-    isSocketReady, // ✅ EXPORT cái này để component biết socket đã sẵn sàng chưa
+    isSocketReady, // EXPORT cái này để component biết socket đã sẵn sàng chưa
   };
 };
 

@@ -5,6 +5,7 @@ import {
   Question,
   UserAnswerResult,
 } from "../interface/interfaces";
+import HighlightSelectableText from "./HighlightSelectableText";
 
 interface QuestionItemProps {
   isView: boolean;
@@ -108,7 +109,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
         </div>
         {!shouldHideContent && question.question && (
           <div className="flex-1 pt-1">
-            <p className="text-gray-800">{question.question}</p>
+            <HighlightSelectableText text={question.question} />
           </div>
         )}
       </div>

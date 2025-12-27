@@ -1,6 +1,6 @@
 import api from "../../../config/axios";
 import React, { useEffect, useState } from "react";
-import { X, BookOpen, CaseUpper } from "lucide-react";
+import { X } from "lucide-react";
 
 interface FlashcardSet {
   _id: string;
@@ -156,11 +156,9 @@ const FlashcardModal: React.FC<Props> = ({
 
             {/* Conditional Input */}
             {setMode === "existing" ? (
-              <select
-                className="w-full border border-slate-300 rounded-lg text-black px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+              <select className="w-full border border-slate-300 rounded-lg text-black px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 value={selectedSet}
-                onChange={(e) => setSelectedSet(e.target.value)}
-              >
+                onChange={(e) => setSelectedSet(e.target.value)}>
                 <option value="">-- Chọn một set --</option>
                 {sets.map((s) => (
                   <option key={s._id} value={s._id}>
@@ -170,14 +168,12 @@ const FlashcardModal: React.FC<Props> = ({
               </select>
             ) : (
               <div>
-                <input
-                  placeholder="Nhập tên set mới..."
+                <input placeholder="Nhập tên set mới..."
                   className="w-full border border-slate-300 rounded-lg text-black px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   value={newSetName}
                   maxLength={25}
                   onChange={(e) => setNewSetName(e.target.value)}
                 />
-                <CaseUpper className="w-4 h-4 text-blue-500 inline-block mr-2" />
                 <span className="text-xs text-gray-500">
                   {newSetName.length}/25 ký tự
                 </span>
@@ -207,7 +203,6 @@ const FlashcardModal: React.FC<Props> = ({
                 onChange={(e) => setWord(e.target.value)}
                 placeholder="Nhập từ hoặc cụm từ..."
               />
-              <CaseUpper className="w-4 h-4 text-blue-500 inline-block mr-2" />
               <span className="text-xs text-gray-500">
                 {word.length}/100 ký tự
               </span>
@@ -224,7 +219,6 @@ const FlashcardModal: React.FC<Props> = ({
                 onChange={(e) => setMeaning(e.target.value)}
                 placeholder="Nhập nghĩa..."
               />
-              <CaseUpper className="w-4 h-4 text-blue-500 inline-block mr-2" />
               <span className="text-xs text-gray-500">
                 {meaning.length}/100 ký tự
               </span>
@@ -242,7 +236,6 @@ const FlashcardModal: React.FC<Props> = ({
                 placeholder="Thêm câu ví dụ (tùy chọn)..."
                 rows={2}
               />
-              <CaseUpper className="w-4 h-4 text-blue-500 inline-block mr-2" />
               <span className="text-xs text-gray-500">
                 {example.length}/200 ký tự
               </span>
@@ -260,7 +253,6 @@ const FlashcardModal: React.FC<Props> = ({
                 placeholder="Thêm ghi chú (tùy chọn)..."
                 rows={2}
               />
-              <CaseUpper className="w-4 h-4 text-blue-500 inline-block mr-2" />
               <span className="text-xs text-gray-500">
                 {note.length}/200 ký tự
               </span>

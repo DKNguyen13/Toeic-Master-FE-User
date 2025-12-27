@@ -34,39 +34,36 @@ const FlashcardForm: React.FC<FlashcardFormProps> = ({ onAdd }) => {
   return (
     <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-4">
       <div className="flex flex-col sm:flex-row gap-2">
-        <input
-          name="word"
+        <input name="word"
           placeholder="Từ vựng"
           value={form.word}
           onChange={handleChange}
+          maxLength={100}
           className="border p-2 flex-1 rounded-md"
         />
-        <input
-          name="meaning"
+        <input name="meaning"
           placeholder="Nghĩa"
           value={form.meaning}
           onChange={handleChange}
+          maxLength={100}
           className="border p-2 flex-1 rounded-md"
         />
       </div>
-      <input
-        name="example"
+      <input name="example"
         placeholder="Ví dụ (optional)"
         value={form.example}
         onChange={handleChange}
+        maxLength={200}
         className="border p-2 w-full rounded-md mt-2"
       />
-      <input
-        name="note"
+      <input name="note"
         placeholder="Ghi chú (optional)"
         value={form.note}
         onChange={handleChange}
+        maxLength={200}
         className="border p-2 w-full rounded-md mt-2"
       />
-      <button
-        type="submit"
-        className="mt-3 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-      >
+      <button type="submit" className="mt-3 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
         ➕ Thêm Flashcard
       </button>
     </form>

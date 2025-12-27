@@ -125,11 +125,12 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
           className={`border p-2 rounded-md w-full text-left mb-2 transition-colors duration-150 ${getButtonStyle(
             option,
             optionIndex
-          )}`}
-        >
-          {shouldHideContent
-            ? `${option.label}`
-            : `${option.label}. ${option.text}`}
+          )}`}>
+          {shouldHideContent ? (
+            <span>{option.label}</span>
+          ) : (
+            <HighlightSelectableText text={`${option.label}. ${option.text}`} />
+          )}
         </button>
       ))}
 

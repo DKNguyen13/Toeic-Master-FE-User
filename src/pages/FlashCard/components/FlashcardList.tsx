@@ -206,14 +206,13 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           </div>
         </div>
         
-        {/* Modal xác nhận xóa flashcard */}
+        {/* Modal cofirm delete flashcard */}
         {deleteCardId && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fadeIn">
               <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Xác nhận xóa</h2>
               <p className="text-gray-600 mb-6">
-                Bạn có chắc muốn xóa flashcard:
-                <span className="font-semibold"> {flashcards.find(f => f._id === deleteCardId)?.word}</span>? <br />
+                Bạn có chắc muốn xóa flashcard?
                 Hành động này không thể hoàn tác.
               </p>
               <div className="flex justify-end gap-3">

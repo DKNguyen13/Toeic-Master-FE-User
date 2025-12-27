@@ -399,6 +399,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     placeholder="Nhập từ vựng..." 
                     value={form.word}
                     onChange={(e) => setForm({ ...form, word: e.target.value })}
+                    maxLength={100}
                     className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
                       error.includes("Từ") ? "border-red-500" : "border-gray-200"
                     }`} 
@@ -411,6 +412,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     name="meaning" 
                     placeholder="Nhập nghĩa..." 
                     value={form.meaning}
+                    maxLength={100}
                     onChange={(e) => setForm({ ...form, meaning: e.target.value })}
                     className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
                       error.includes("nghĩa") ? "border-red-500" : "border-gray-200"
@@ -424,6 +426,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     name="example" 
                     placeholder="Nhập ví dụ..." 
                     value={form.example}
+                    maxLength={200}
                     onChange={(e) => setForm({ ...form, example: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200" 
                   />
@@ -435,6 +438,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     name="note" 
                     placeholder="Nhập ghi chú..." 
                     value={form.note}
+                    maxLength={200}
                     onChange={(e) => setForm({ ...form, note: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200" 
                   />

@@ -25,7 +25,7 @@ const FlashcardModal: React.FC<Props> = ({
   const [newSetName, setNewSetName] = useState("");
   const [setMode, setSetMode] = useState<"existing" | "new">("existing");
 
-  const [word, setWord] = useState(defaultText);
+  const [word, setWord] = useState(defaultText.slice(0, 100));
   const [meaning, setMeaning] = useState("");
   const [example, setExample] = useState("");
   const [note, setNote] = useState("");
@@ -161,6 +161,7 @@ const FlashcardModal: React.FC<Props> = ({
                 placeholder="Nhập tên set mới..."
                 className="w-full border border-slate-300 rounded-lg text-black px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={newSetName}
+                maxLength={25}
                 onChange={(e) => setNewSetName(e.target.value)}
               />
             )}
@@ -183,6 +184,7 @@ const FlashcardModal: React.FC<Props> = ({
               </label>
               <input className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={word}
+                maxLength={100}
                 onChange={(e) => setWord(e.target.value)}
                 placeholder="Nhập từ hoặc cụm từ..."
               />
@@ -194,6 +196,7 @@ const FlashcardModal: React.FC<Props> = ({
               </label>
               <input className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={meaning}
+                maxLength={100}
                 onChange={(e) => setMeaning(e.target.value)}
                 placeholder="Nhập nghĩa..."
               />
@@ -203,6 +206,7 @@ const FlashcardModal: React.FC<Props> = ({
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Ví dụ</label>
               <textarea className="w-full border border-slate-300 text-black rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                 value={example}
+                maxLength={200}
                 onChange={(e) => setExample(e.target.value)}
                 placeholder="Thêm câu ví dụ (tùy chọn)..."
                 rows={2}
@@ -214,6 +218,7 @@ const FlashcardModal: React.FC<Props> = ({
               <textarea
                 className="w-full border border-slate-300 text-black rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                 value={note}
+                maxLength={200}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Thêm ghi chú (tùy chọn)..."
                 rows={2}

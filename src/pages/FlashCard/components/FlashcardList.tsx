@@ -217,16 +217,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 Hành động này không thể hoàn tác.
               </p>
               <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setDeleteCardId(null)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                >
+                <button onClick={() => setDeleteCardId(null)}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
                   Hủy
                 </button>
-                <button
-                  onClick={confirmDeleteCard}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                >
+                <button onClick={confirmDeleteCard}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
                   Xóa
                 </button>
               </div>
@@ -404,6 +400,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                       error.includes("Từ") ? "border-red-500" : "border-gray-200"
                     }`} 
                   />
+                  <span className="text-xs text-gray-500">
+                    {form.word.length}/100 ký tự
+                  </span>
                 </div>
                 
                 <div>
@@ -418,6 +417,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                       error.includes("nghĩa") ? "border-red-500" : "border-gray-200"
                     }`} 
                   />
+                  <span className="text-xs text-gray-500">
+                    {form.meaning.length}/100 ký tự
+                  </span>
                 </div>
                 
                 <div>
@@ -430,6 +432,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     onChange={(e) => setForm({ ...form, example: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200" 
                   />
+                  <span className="text-xs text-gray-500">
+                    {form.example.length}/200 ký tự
+                  </span>
                 </div>
                 
                 <div>
@@ -442,6 +447,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     onChange={(e) => setForm({ ...form, note: e.target.value })}
                     className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200" 
                   />
+                  <span className="text-xs text-gray-500">
+                    {form.note.length}/200 ký tự
+                  </span>
                 </div>
               </div>
               

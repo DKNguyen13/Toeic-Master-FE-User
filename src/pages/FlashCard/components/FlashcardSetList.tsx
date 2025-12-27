@@ -277,6 +277,9 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 />
+                <span className="text-xs text-gray-500">
+                  {form.name.length}/25 ký tự
+                </span>
                 <p className="text-red-500 text-sm mt-2">
                   {error.includes("Nâng cấp VIP") ? (
                     <>
@@ -305,8 +308,11 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                     setForm({ ...form, description: e.target.value })
                   }
                   className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                  rows={3}
+                  rows={2}
                 />
+                <span className="text-xs text-gray-500">
+                  {form.description.length}/25 ký tự
+                </span>
               </div>
             </div>
             <div className="flex gap-4 mt-8">

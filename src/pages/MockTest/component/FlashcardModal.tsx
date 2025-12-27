@@ -60,7 +60,7 @@ const FlashcardModal: React.FC<Props> = ({
       }
 
       if (!setId) {
-        setError("Bạn phải chọn hoặc tạo một flashcard set");
+        setError("Vui lòng chọn bộ flashcard trước khi thêm từ vựng. Nếu không có hãy tạo bộ mới!");
         setLoading(false);
         return;
       }
@@ -135,23 +135,20 @@ const FlashcardModal: React.FC<Props> = ({
                   setSetMode("new");
                   setSelectedSet("");
                 }}
-                className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                className={`flex-1 px-4 py-2 text-sm text-black font-medium rounded-lg transition-all ${
                   setMode === "new"
                     ? "bg-blue-600 text-white shadow-sm"
                     : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
+                }`}>
                 Tạo set mới
               </button>
             </div>
 
             {/* Conditional Input */}
             {setMode === "existing" ? (
-              <select
-                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+              <select className="w-full border border-slate-300 rounded-lg text-black px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 value={selectedSet}
-                onChange={(e) => setSelectedSet(e.target.value)}
-              >
+                onChange={(e) => setSelectedSet(e.target.value)}>
                 <option value="">-- Chọn một set --</option>
                 {sets.map(s => (
                   <option key={s._id} value={s._id}>
@@ -162,7 +159,7 @@ const FlashcardModal: React.FC<Props> = ({
             ) : (
               <input
                 placeholder="Nhập tên set mới..."
-                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full border border-slate-300 rounded-lg text-black px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={newSetName}
                 onChange={(e) => setNewSetName(e.target.value)}
               />
@@ -184,8 +181,7 @@ const FlashcardModal: React.FC<Props> = ({
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Từ / Cụm từ <span className="text-red-500">*</span>
               </label>
-              <input
-                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              <input className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={word}
                 onChange={(e) => setWord(e.target.value)}
                 placeholder="Nhập từ hoặc cụm từ..."
@@ -196,8 +192,7 @@ const FlashcardModal: React.FC<Props> = ({
               <label className="block text-sm font-medium text-slate-700 mb-1.5">
                 Nghĩa <span className="text-red-500">*</span>
               </label>
-              <input
-                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              <input className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none text-black focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 value={meaning}
                 onChange={(e) => setMeaning(e.target.value)}
                 placeholder="Nhập nghĩa..."
@@ -205,11 +200,8 @@ const FlashcardModal: React.FC<Props> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Ví dụ
-              </label>
-              <textarea
-                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ví dụ</label>
+              <textarea className="w-full border border-slate-300 text-black rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                 value={example}
                 onChange={(e) => setExample(e.target.value)}
                 placeholder="Thêm câu ví dụ (tùy chọn)..."
@@ -218,11 +210,9 @@ const FlashcardModal: React.FC<Props> = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Ghi chú
-              </label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ghi chú</label>
               <textarea
-                className="w-full border border-slate-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                className="w-full border border-slate-300 text-black rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Thêm ghi chú (tùy chọn)..."

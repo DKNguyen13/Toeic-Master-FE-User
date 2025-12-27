@@ -223,9 +223,11 @@ const routes = [
   {
     path: "/practice/listen-fill",
     element: (
-      <MainLayout>
-        <ListeningFillBlank />
-      </MainLayout>
+      <ProtectedRoute allowedRoles={["admin", "user"]}>
+        <MainLayout>
+          <ListeningFillBlank />
+        </MainLayout>
+      </ProtectedRoute>
     ),
   },
   {

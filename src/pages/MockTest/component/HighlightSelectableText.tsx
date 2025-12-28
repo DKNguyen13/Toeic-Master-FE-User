@@ -143,13 +143,34 @@ const HighlightSelectableText: React.FC<Props> = ({ text }) => {
         />
       )}
       {showUpgrade && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="bg-white p-5 rounded-xl w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-2">Nâng cấp tài khoản</h3>
-            <p className="text-sm text-gray-600 mb-4">{upgradeMsg}</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-slate-200">
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
+              <h3 className="text-lg font-semibold text-slate-800">
+                Yêu cầu nâng cấp tài khoản
+              </h3>
+              <button onClick={() => setShowUpgrade(false)}
+                className="text-slate-400 hover:text-slate-600">✕</button>
+            </div>
 
-            <div className="flex justify-end gap-2">
-              <button className="px-4 py-2 border rounded" onClick={() => setShowUpgrade(false)}>Đóng</button>
+            {/* Content */}
+            <div className="px-5 py-4">
+              <p className="text-sm text-slate-600 leading-relaxed">
+                {upgradeMsg}
+              </p>
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-4 border-t border-slate-200 bg-slate-50 flex justify-end gap-2 rounded-b-2xl">
+              <button onClick={() => setShowUpgrade(false)}
+                className="px-4 py-2 text-sm font-medium rounded-lg
+                          border border-slate-300
+                          bg-white text-slate-700
+                          hover:bg-slate-100
+                          transition">
+                Đóng
+              </button>
             </div>
           </div>
         </div>

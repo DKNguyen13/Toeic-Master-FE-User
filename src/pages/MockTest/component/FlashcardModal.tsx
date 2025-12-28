@@ -81,7 +81,7 @@ const FlashcardModal: React.FC<Props> = ({
       onClose();
     } catch (err: any) {
       if (err.response?.status === 403) {
-        onNeedUpgrade(err.response.data.message);
+        onNeedUpgrade(err.response.data.message + " Vui lòng hoàn thành hoặc tạm dừng bài kiểm tra trước khi nâng cấp.");
         return;
       }
       setError(err.response?.data?.message || "Không thể tạo flashcard");

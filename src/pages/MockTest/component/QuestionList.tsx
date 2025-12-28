@@ -6,8 +6,8 @@ import { AnswerState, Question } from "../interface/interfaces";
 interface QuestionListProps {
   isView: boolean;
   questionsInPart: Question[];
-  answers: AnswerState[];
-  handleAnswer?: (questionIndex: number, optionIndex: number) => void;
+  answers: Record<string, AnswerState>;
+  handleAnswer?: (questionId: string, optionIndex: number) => void;
 }
 
 const groupQuestions = (questions: Question[]) => {

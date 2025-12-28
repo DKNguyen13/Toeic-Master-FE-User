@@ -27,7 +27,7 @@ export const useTestSession = () => {
   const [currentPart, setCurrentPart] = useState<number>(1);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [parts, setParts] = useState<number[]>([]);
-  const [answers, setAnswers] = useState<AnswerState[]>([]);
+  const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
   const [unsentAnswers, setUnsentAnswers] = useState<
     { questionId: string; selectedAnswer: string | null }[]
   >([]);
@@ -39,19 +39,19 @@ export const useTestSession = () => {
         setLoading(true);
         setError(null);
 
-        if (! sessionId) {
+        if (!sessionId) {
           setError("Không tìm thấy bài thi.");
           return;
         }
 
         const sessionData = await getSession(sessionId);
-        if (!sessionData?. session) {
+        if (!sessionData?.session) {
           setError("Bài thi không tồn tại hoặc đã bị xóa.");
           return;
         }
 
         setSession(sessionData.session);
-        const fetchedQuestions = (sessionData.questions ??  []) as Question[];
+        const fetchedQuestions = (sessionData.questions ?? []) as Question[];
 
         if (fetchedQuestions.length === 0) {
           setError("Không có câu hỏi nào trong bài thi này.");
@@ -60,18 +60,34 @@ export const useTestSession = () => {
 
         setQuestions(fetchedQuestions);
 
-        const allParts = sessionData?. session?. testConfig?.selectedParts;
+        console.group("📦 FETCH SESSION DATA");
+        console.log("Total fetchedQuestions:", fetchedQuestions.length);
+
+        fetchedQuestions.forEach((q, idx) => {
+          console.log(
+            `Index ${idx} | globalQ: ${q.globalQuestionNumber} | part: ${q.partNumber} | userAnswer:`,
+            q.userAnswer
+          );
+        });
+
+        console.groupEnd();
+
+        const allParts = sessionData?.session?.testConfig?.selectedParts;
         setParts(allParts);
         setCurrentPart(allParts[0] || 1);
         setCurrentQuestion(0);
 
         if (fetchedQuestions.length > 0) {
-          const initialAnswers:  AnswerState[] = fetchedQuestions.map((q) => ({
-            selectedAnswer: q.userAnswer?. selectedAnswer ??  null,
-            timeSpent:  q.userAnswer?.timeSpent ?? 0,
-            isSkipped: q.userAnswer?.isSkipped ??  true,
-            isFlagged: q.userAnswer?.isFlagged ?? false,
-          }));
+          const initialAnswers: Record<string, AnswerState> = {};
+
+          fetchedQuestions.forEach((q) => {
+            initialAnswers[q.id] = {
+              selectedAnswer: q.userAnswer?.selectedAnswer ?? null,
+              timeSpent: q.userAnswer?.timeSpent ?? 0,
+              isSkipped: q.userAnswer?.isSkipped ?? true,
+              isFlagged: q.userAnswer?.isFlagged ?? false,
+            };
+          });
 
           setAnswers(initialAnswers);
         }
@@ -92,20 +108,20 @@ export const useTestSession = () => {
   }, [sessionId, registerSession]);
 
   // ====== Phần transform câu hỏi của 1 part (memoize) ======
-  const questionsInPart:  Question[] = useMemo(() => {
+  const questionsInPart: Question[] = useMemo(() => {
     return questions
       .filter((q) => q.partNumber === currentPart)
       .map((q) => {
-        const isSimple = [1, 2]. includes(q.partNumber);
-        const images = Array.isArray(q.group?. image) ? q.group.image : [];
+        const isSimple = [1, 2].includes(q.partNumber);
+        const images = Array.isArray(q.group?.image) ? q.group.image : [];
         return {
-          ... q,
+          ...q,
           question: isSimple ? null : q.question,
           group: {
             ...q.group,
             image: images,
           },
-          choices: q.choices. map((c) => ({
+          choices: q.choices.map((c) => ({
             ...c,
             text: isSimple ? c.label : `${c.text}`,
           })),
@@ -116,39 +132,27 @@ export const useTestSession = () => {
   const indexToLetter = ["A", "B", "C", "D"];
 
   // handleAnswer với kiểm tra isSocketReady
-  const handleAnswer = (indexInPart:  number, answerIndex: number) => {
-    const questionsInPart = questions. filter(
+  const handleAnswer = (questionId: string, answerIndex: number) => {
+    const questionsInPart = questions.filter(
       (q) => q.partNumber === currentPart
     );
-    const question = questionsInPart[indexInPart];
+    const question = questions.find((q) => q.id === questionId);
 
-    if (! question) {
-      console.error("Question not found at index:", indexInPart);
+    if (!question) {
+      console.error("Question not found:", questionId);
       return;
     }
 
     const selectedLetter = indexToLetter[answerIndex] as "A" | "B" | "C" | "D";
 
-    setAnswers((prev) => {
-      const updated = [...prev];
-      // nếu câu chưa có dữ liệu trong answers → tạo mặc định là skip
-      if (! updated[question.globalQuestionNumber - 1]) {
-        updated[question.globalQuestionNumber - 1] = {
-          selectedAnswer: null,
-          timeSpent: 0,
-          isSkipped: true,
-          isFlagged: false,
-        };
-      }
-
-      // cập nhật đáp án + isSkipped
-      updated[question. globalQuestionNumber - 1] = {
-        ...updated[question.globalQuestionNumber - 1],
+    setAnswers((prev) => ({
+      ...prev,
+      [question.id]: {
+        ...prev[question.id],
         selectedAnswer: selectedLetter,
-        isSkipped:  selectedLetter ?  false : true,
-      };
-      return updated;
-    });
+        isSkipped: false,
+      },
+    }));
 
     // CHỈ GỬI ĐÁP ÁN KHI SOCKET READY (hoặc sẽ được queue nếu chưa ready)
     if (isSocketReady) {
@@ -164,7 +168,9 @@ export const useTestSession = () => {
 
   // Điều hướng câu hỏi trong part
   const handleNavigateQuestion = (indexInPart: number) => {
-    const questionsInPart = questions.filter((q) => q.partNumber === currentPart);
+    const questionsInPart = questions.filter(
+      (q) => q.partNumber === currentPart
+    );
     setCurrentQuestion(indexInPart);
     const element = document.getElementById(
       `question-${questionsInPart[indexInPart].globalQuestionNumber}`
@@ -181,7 +187,7 @@ export const useTestSession = () => {
         setCurrentPart(parts[nextPartIndex]);
         setCurrentQuestion(0);
       }
-    } catch (err:  any) {
+    } catch (err: any) {
       setError(err.message || "Lỗi khi chuyển phần tiếp theo");
     } finally {
       setLoading(false);
@@ -227,7 +233,7 @@ export const useTestSession = () => {
     try {
       await resumeSession(sessionId);
       const refreshed = await getSession(sessionId);
-      if (refreshed?. session) {
+      if (refreshed?.session) {
         setSession(refreshed.session);
       }
       hasPausedRef.current = false;
@@ -281,7 +287,7 @@ export const useResult = () => {
         if (answers) {
           setUserAnswers(answers);
         }
-      } catch (err:  any) {
+      } catch (err: any) {
         setError(err.message || "Không thể tải kết quả");
       } finally {
         setLoading(false);
@@ -315,7 +321,7 @@ export const useSessionsUser = (initialPage = 1, limit = 10) => {
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<any[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
-    current:  initialPage,
+    current: initialPage,
     pages: 1,
     total: 0,
   });
@@ -329,11 +335,11 @@ export const useSessionsUser = (initialPage = 1, limit = 10) => {
         setError(null);
 
         const res = await getSessionsUser(page, limit);
-        if (! res) {
+        if (!res) {
           setError("Chưa có dữ liệu làm bài thi");
           return;
         }
-        if (res?. sessions) {
+        if (res?.sessions) {
           setSessions(res.sessions);
         }
         if (res?.pagination) {

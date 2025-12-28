@@ -66,7 +66,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ testId }) => {
   };
   const handleComment = async () => {
     try{
-      if (!isLoggedIn) {
+      if (!isLoggedIn()) {
         setShowLoginModal(true);
         return;
       }

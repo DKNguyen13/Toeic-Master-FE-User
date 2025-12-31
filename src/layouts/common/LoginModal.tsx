@@ -46,6 +46,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSuccess }) =
         localStorage.setItem("avatarUrl", user.avatarUrl);
         localStorage.setItem("role", user.role);
         localStorage.setItem("userId", user.id);
+        localStorage.setItem("dob", user.dob || "");
         onClose();
         window.location.reload();
         window.dispatchEvent(new Event("userUpdated"));

@@ -12,7 +12,6 @@ import Profile from "../pages/Profile/Profile";
 import UpdateProfile from "../pages/Profile/UpdateProfile/UpdateProfile";
 import Payment from "../pages/Payment/Payment";
 import PurchaseHistory from "../pages/Payment/PurchaseHistory";
-import PaymentForm from "../pages/Payment/PaymentForm/PaymentForm";
 import Resource from "../pages/Resource/Resource";
 import ListeningFillBlank from "../pages/Resource/ListeningFillBlank";
 import History from "../pages/History/History";
@@ -194,14 +193,6 @@ const routes = [
     ),
   },
   {
-    path: "/payment/paymentform",
-    element: (
-      <MainLayout>
-        <PaymentForm />
-      </MainLayout>
-    ),
-  },
-  {
     path: "/payment/success",
     element: (
     <ProtectedRoute allowedRoles={["admin", "user"]}>
@@ -232,9 +223,11 @@ const routes = [
   {
     path: "/practice/listen-fill",
     element: (
-      <MainLayout>
-        <ListeningFillBlank />
-      </MainLayout>
+      <ProtectedRoute allowedRoles={["admin", "user"]}>
+        <MainLayout>
+          <ListeningFillBlank />
+        </MainLayout>
+      </ProtectedRoute>
     ),
   },
   {

@@ -5,13 +5,14 @@ import {
   Question,
   UserAnswerResult,
 } from "../interface/interfaces";
+import HighlightSelectableText from "./HighlightSelectableText";
 
 interface QuestionItemProps {
   isView: boolean;
   question: Question;
   questionIndex: number;
-  answers?: AnswerState[];
-  handleAnswer?: (questionIndex: number, optionIndex: number) => void;
+  answers?: Record<string, AnswerState>;
+  handleAnswer?: (questionId: string, optionIndex: number) => void;
   hideImage?: boolean;
   hideBorder?: boolean;
 }
@@ -20,21 +21,27 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
   isView,
   question,
   questionIndex,
-  answers,
+  answers = {},
   handleAnswer,
   hideImage = false, // mặc định false
-  hideBorder
+  hideBorder,
 }) => {
+  console.log(
+    "RENDER QUESTION",
+    question.id,
+    "selected:",
+    answers?.[question.id]?.selectedAnswer
+  );
+
   const indexToLetter = ["A", "B", "C", "D"];
   const partNumber = question.partNumber ?? 0;
 
   const [isExplanationOpen, setIsExplanationOpen] = useState(false);
 
   // Biến cho chế độ làm bài
-  const selectedAnswer =
-    !isView && answers?.[question.globalQuestionNumber - 1]?.selectedAnswer
-      ? answers[question.globalQuestionNumber - 1].selectedAnswer
-      : null;
+  const selectedAnswer = !isView
+    ? answers?.[question.id]?.selectedAnswer ?? null
+    : null;
 
   // Biến dùng khi review kết quả
   const answerResult: UserAnswerResult | undefined | null =
@@ -90,7 +97,9 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
   return (
     <div
       id={`question-${question.globalQuestionNumber}`}
-      className={`mb-4 pb-4 scroll-mt-[80px] ${!hideBorder ? "border-b border-gray-200" : ""}`}
+      className={`mb-4 pb-4 scroll-mt-[80px] ${
+        !hideBorder ? "border-b border-gray-200" : ""
+      }`}
     >
       {/* IMAGE */}
       {!hideImage && firstImage && (
@@ -108,7 +117,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
         </div>
         {!shouldHideContent && question.question && (
           <div className="flex-1 pt-1">
-            <p className="text-gray-800">{question.question}</p>
+            <HighlightSelectableText text={question.question} />
           </div>
         )}
       </div>
@@ -118,17 +127,18 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
         <button
           key={option._id}
           onClick={() => {
-            if (!isView && handleAnswer)
-              handleAnswer(questionIndex, optionIndex);
+            if (!isView && handleAnswer) handleAnswer(question.id, optionIndex);
           }}
           className={`border p-2 rounded-md w-full text-left mb-2 transition-colors duration-150 ${getButtonStyle(
             option,
             optionIndex
           )}`}
         >
-          {shouldHideContent
-            ? `${option.label}`
-            : `${option.label}. ${option.text}`}
+          {shouldHideContent ? (
+            <span>{option.label}</span>
+          ) : (
+            <HighlightSelectableText text={`${option.label}. ${option.text}`} />
+          )}
         </button>
       ))}
 

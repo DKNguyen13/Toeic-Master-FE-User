@@ -6,7 +6,7 @@ interface NavigationProps {
   questions: Question[];
   currentPart: number;
   currentQuestion: number;
-  answers?: AnswerState[];
+  answers?: Record<string, AnswerState>;
   onNavigate: (indexInPart: number) => void;
   onSubmit?: () => void;
   time?: number;
@@ -77,10 +77,10 @@ const Navigation: React.FC<NavigationProps> = ({
   // Hiển thị nút câu hỏi
   const renderQuestionButtons = () =>
     questionsInPart.map((q, idx) => {
-      const answerState = answers?.[q.globalQuestionNumber - 1];
+      const answerState = answers?.[q.id];
 
-      let buttonClass = "border rounded-md text-center text-base w-7 h-7 flex items-center justify-center transition-all duration-200";
-
+      let buttonClass =
+        "border rounded-md text-center text-base w-7 h-7 flex items-center justify-center transition-all duration-200";
 
       if (isView) {
         // Chế độ xem kết quả
@@ -98,15 +98,16 @@ const Navigation: React.FC<NavigationProps> = ({
         // Chế độ làm bài
         const answered = answerState?.selectedAnswer != null;
         buttonClass += answered
-            ? " bg-blue-500 text-white"
-            : " bg-transparent hover:bg-blue-100 text-gray-800";
+          ? " bg-blue-500 text-white"
+          : " bg-transparent hover:bg-blue-100 text-gray-800";
       }
 
       return (
         <button
           key={idx}
           onClick={() => onNavigate(idx)}
-          className={buttonClass}>
+          className={buttonClass}
+        >
           {q.globalQuestionNumber}
         </button>
       );
@@ -129,8 +130,10 @@ const Navigation: React.FC<NavigationProps> = ({
         {/* Chế độ fullscreen */}
         {!isView && (
           <div className="mb-4 flex justify-center">
-            <button onClick={toggleFullScreen}
-              className="text-sm text-blue-500 hover:underline">
+            <button
+              onClick={toggleFullScreen}
+              className="text-sm text-blue-500 hover:underline"
+            >
               {isFullScreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
             </button>
           </div>
@@ -148,7 +151,8 @@ const Navigation: React.FC<NavigationProps> = ({
               onClick={() => {
                 if (onSubmit) onSubmit();
               }}
-              className="bg-blue-500 text-white p-2 rounded-md w-full hover:bg-blue-600">
+              className="bg-blue-500 text-white p-2 rounded-md w-full hover:bg-blue-600"
+            >
               Nộp bài
             </button>
           </div>

@@ -125,8 +125,7 @@ const PaymentPage: React.FC = () => {
                       popular
                         ? "shadow-2xl scale-105 border-2 border-blue-500"
                         : "shadow-lg hover:shadow-xl hover:scale-105 border border-gray-200"
-                    }`}
-                  >
+                    }`}>
                     {/* Popular Badge */}
                     {popular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -209,21 +208,43 @@ const PaymentPage: React.FC = () => {
         </div>
 
         {showConfirmModal && selectedPkg && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-            <div className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl">
-              <h3 className="text-lg text-center font-semibold mb-4">Xác nhận mua gói</h3>
-              <p className="text-gray-700 mb-6">
-                Bạn có chắc muốn mua gói <strong>{selectedPkg.name}</strong> với giá{" "}
-                <strong>{selectedPkg.discountedPrice.toLocaleString()}đ/tháng</strong>?
-              </p>
-              <div className="flex justify-end gap-3">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+            <div className="w-full rounded-2xl max-w-md bg-white shadow-2xl">
+              {/* Header */}
+              <div className="border-b border-gray-200 px-6 py-5">
+                <h3 className="text-center text-xl font-semibold text-gray-900">
+                  Xác nhận mua gói
+                </h3>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 py-6">
+                <p className="text-center text-base text-gray-700 leading-relaxed">
+                  Bạn có chắc chắn muốn mua gói{" "}
+                  <span className="font-bold text-lg text-gray-900">{selectedPkg.name}</span> với giá
+                </p>
+
+                <p className="mt-4 text-center text-2xl font-bold text-gray-600">
+                  {selectedPkg.discountedPrice.toLocaleString()}đ
+                  <span className="text-base font-normal text-gray-600">/tháng</span>
+                </p>
+
+                <div className="mt-4 rounded-lg bg-gray-50 px-4 py-3">
+                  <p className="text-sm text-gray-600 text-center">
+                    <span className="font-medium">Lưu ý:</span> Gói sẽ được kích hoạt ngay sau thanh toán thành công và không áp dụng chính sách hoàn tiền.
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex gap-3 border-t border-gray-200 bg-gray-50 rounded-2xl px-6 py-4">
                 <button onClick={() => setShowConfirmModal(false)}
-                  className="px-4 py-2 rounded-lg border hover:bg-gray-100">
+                  className="flex-1 rounded-xl border border-gray-300 px-3 py-2 font-medium text-gray-700 transition hover:bg-gray-100">
                   Hủy
                 </button>
                 <button onClick={handleConfirmBuy}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                  Xác nhận
+                  className="flex-1 rounded-xl bg-blue-600 px-3 py-2 font-medium text-white transition hover:bg-blue-700">
+                  Xác nhận mua
                 </button>
               </div>
             </div>

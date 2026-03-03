@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
 import { Book } from "lucide-react";
+import FlashcardMatchGame from "./FlashcardMatrix";
 
 export interface Flashcard {
   _id?: string;
@@ -180,9 +181,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               <label htmlFor="mode" className="text-sm font-semibold text-gray-700">
                 Chế độ học:
               </label>
-              <select 
+              <select
                 id="mode"
-                value={mode} 
+                value={mode}
                 onChange={(e) => setMode(e.target.value)}
                 className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                 <option value="Xem toàn bộ thẻ">📖 Xem toàn bộ thẻ</option>
@@ -190,12 +191,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <option value="Trắc nghiệm">🎯 Trắc nghiệm</option>
               </select>
             </div>
-            
+
             {mode === "Trắc nghiệm" && flashcards.length >= 4 && (
               <div className="flex items-center gap-2">
                 <label className="text-sm font-semibold text-gray-700">Hướng dịch:</label>
-                <select 
-                  value={quizDirection} 
+                <select
+                  value={quizDirection}
                   onChange={(e) => setQuizDirection(e.target.value as any)}
                   className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                   <option value="en2vi">Anh → Việt</option>
@@ -205,7 +206,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
             )}
           </div>
         </div>
-        
+
         {/* Modal cofirm delete flashcard */}
         {deleteCardId && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
@@ -241,11 +242,11 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     </h2>
                     <p className="text-gray-600">Chọn đáp án đúng</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {quizOptions.map((opt, index) => (
-                      <button 
-                        key={opt} 
+                      <button
+                        key={opt}
                         onClick={() => handleOptionClick(opt)}
                         disabled={!!selectedOption}
                         className={`p-4 rounded-2xl border-2 text-left font-medium transition-all duration-300 transform ${
@@ -267,7 +268,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                       </button>
                     ))}
                   </div>
-                  
+
                   {selectedOption && (
                     <div className="text-center">
                       <button onClick={handleNextQuiz} 
@@ -276,7 +277,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                       </button>
                     </div>
                   )}
-                  
+
                   <div className="mt-6 text-center">
                     <div className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-4 py-2">
                       <span className="text-2xl mr-2">🏆</span>
@@ -303,31 +304,31 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 onDelete={editable ? () => setDeleteCardId(flashcards[randomIndex]._id!) : undefined}
               />
             </div>
-            
+
             <div className="flex items-center gap-4">
-              <button 
-                onClick={prevCard} 
-                disabled={flashcards.length <= 1} 
+              <button
+                onClick={prevCard}
+                disabled={flashcards.length <= 1}
                 className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
-                  flashcards.length > 1 
-                    ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105' 
+                  flashcards.length > 1
+                    ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100'
                 }`}>
                 ← Trước
               </button>
-              
+
               <div className="px-4 py-2 bg-blue-100 rounded-full">
                 <span className="text-sm font-semibold text-blue-800">
                   {randomIndex + 1} / {flashcards.length}
                 </span>
               </div>
-              
-              <button 
-                onClick={nextCard} 
-                disabled={flashcards.length <= 1} 
+
+              <button
+                onClick={nextCard}
+                disabled={flashcards.length <= 1}
                 className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
-                  flashcards.length > 1 
-                    ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105' 
+                  flashcards.length > 1
+                    ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100'
                 }`}
               >
@@ -335,10 +336,30 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               </button>
             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        ) : mode === 'Tìm cặp' ? (
+            flashcards.length > 0 ? (
+              <div className='bg-white rounded-2xl shadow-sm border border-gray-200 p-6'>
+                <FlashcardMatchGame
+                  flashcards={flashcards}
+                />
+              </div>
+            ) : (
+              <div className='text-center py-16'>
+                <div className='inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4'>
+                  <span className='text-3xl'>🧩</span>
+                </div>
+                <p className='text-xl font-semibold text-gray-700 mb-2'>
+                  Chưa có flashcard!
+                </p>
+                <p className='text-gray-500'>
+                  Hãy thêm flashcard để chơi chế độ tìm cặp
+                </p>
+              </div>
+            )
+          ) : (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
             {editable && (
-              <div 
+              <div
                 onClick={() => setShowModal(true)}
                 className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
@@ -348,7 +369,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <p className="text-sm text-blue-400 mt-1 text-center">Nhấn để tạo mới</p>
               </div>
             )}
-            
+
             {flashcards.length > 0 ? (
               flashcards.map((card) => (
                 <FlashcardItem
@@ -389,7 +410,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Từ vựng: <span className="text-red-500">*</span></label>
-                  <input 
+                  <input
                     name="word" 
                     placeholder="Nhập từ vựng..." 
                     value={form.word}
@@ -397,16 +418,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     maxLength={100}
                     className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
                       error.includes("Từ") ? "border-red-500" : "border-gray-200"
-                    }`} 
+                    }`}
                   />
                   <span className="text-xs text-gray-500">
                     {form.word.length}/100 ký tự
                   </span>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Nghĩa: <span className="text-red-500">*</span></label>
-                  <input 
+                  <input
                     name="meaning" 
                     placeholder="Nhập nghĩa..." 
                     value={form.meaning}
@@ -414,16 +435,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     onChange={(e) => setForm({ ...form, meaning: e.target.value })}
                     className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
                       error.includes("nghĩa") ? "border-red-500" : "border-gray-200"
-                    }`} 
+                    }`}
                   />
                   <span className="text-xs text-gray-500">
                     {form.meaning.length}/100 ký tự
                   </span>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Ví dụ:</label>
-                  <input 
+                  <input
                     name="example" 
                     placeholder="Nhập ví dụ..." 
                     value={form.example}
@@ -435,10 +456,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                     {form.example.length}/200 ký tự
                   </span>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Ghi chú:</label>
-                  <input 
+                  <input
                     name="note" 
                     placeholder="Nhập ghi chú..." 
                     value={form.note}
@@ -451,7 +472,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                   </span>
                 </div>
               </div>
-              
+
               <div className="flex gap-4 mt-8">
                 <button onClick={handleAdd}
                   className="flex-1 px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200">

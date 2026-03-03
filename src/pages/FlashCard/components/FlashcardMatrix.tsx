@@ -89,11 +89,12 @@ interface Props {
   columns?: number
 }
 
-const FlashcardMatchGame: React.FC<Props> = ({ flashcards, columns = 4 }) => {
+const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
   const [roundIndex, setRoundIndex] = useState(0)
   const [cards, setCards] = useState<GameCard[]>([])
   const [selected, setSelected] = useState<GameCard[]>([])
   const [isRoundDone, setIsRoundDone] = useState(false)
+  const [gameKey, setGameKey] = useState(0)
 
   /* ===== chia round ===== */
   const rounds = useMemo(
@@ -132,7 +133,8 @@ const FlashcardMatchGame: React.FC<Props> = ({ flashcards, columns = 4 }) => {
 
     setCards(interleaveCards(base, columns))
     setSelected([])
-  }, [currentRound, columns])
+    setIsRoundDone(false)
+  }, [currentRound, columns, gameKey])
 
   /* ===== click ===== */
   const handleClick = (card: GameCard) => {
@@ -217,8 +219,13 @@ const FlashcardMatchGame: React.FC<Props> = ({ flashcards, columns = 4 }) => {
         </h3>
 
         <button
-          onClick={() => setRoundIndex(0)}
-          className='px-4 py-2 text-sm rounded-xl bg-gray-100 hover:bg-gray-200'
+          onClick={() => {
+            setRoundIndex(0)
+            setSelected([])
+            setIsRoundDone(false)
+            setGameKey((k) => k + 1) // build lại cards
+          }}
+          className="px-4 py-2 text-sm rounded-xl bg-gray-100 hover:bg-gray-200"
         >
           🔄 Chơi lại
         </button>
@@ -270,4 +277,4 @@ const FlashcardMatchGame: React.FC<Props> = ({ flashcards, columns = 4 }) => {
   )
 }
 
-export default FlashcardMatchGame
+export default FlashcardMatrix

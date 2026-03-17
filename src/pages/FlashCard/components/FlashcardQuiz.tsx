@@ -92,10 +92,8 @@ const FlashcardQuiz: React.FC<QuizModeProps> = ({
           {/* Next Button */}
           {selectedOption && (
             <div className="text-center">
-              <button
-                onClick={onNext}
-                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:scale-105 transition-all duration-200 shadow-lg"
-              >
+              <button onClick={onNext}
+                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:scale-105 transition-all duration-200 shadow-lg">
                 Câu tiếp theo →
               </button>
             </div>

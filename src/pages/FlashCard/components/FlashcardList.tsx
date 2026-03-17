@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import FlashcardMatrix from "./FlashcardMatrix";
 import FlashcardQuiz from "./FlashcardQuiz";
 import { Book } from "lucide-react";
+import FlashcardRandomMode from "./FlashcardRandomMode";
 
 export interface Flashcard {
   _id?: string;
@@ -255,51 +256,14 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
             onSelectOption={handleOptionClick}
             onNext={handleNextQuiz}
           />
-        ) : mode === "Ngẫu nhiên" && flashcards.length > 0 ? (
-          <div className="flex flex-col items-center">
-            <div className="w-full max-w-md mb-6">
-              <FlashcardItem
-                flashcard={flashcards[randomIndex]}
-                onDelete={
-                  editable
-                    ? () => setDeleteCardId(flashcards[randomIndex]._id!)
-                    : undefined
-                }
-              />
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={prevCard}
-                disabled={flashcards.length <= 1}
-                className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
-                  flashcards.length > 1
-                    ? "bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100"
-                }`}
-              >
-                ← Trước
-              </button>
-
-              <div className="px-4 py-2 bg-blue-100 rounded-full">
-                <span className="text-sm font-semibold text-blue-800">
-                  {randomIndex + 1} / {flashcards.length}
-                </span>
-              </div>
-
-              <button
-                onClick={nextCard}
-                disabled={flashcards.length <= 1}
-                className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
-                  flashcards.length > 1
-                    ? "bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100"
-                }`}
-              >
-                Tiếp →
-              </button>
-            </div>
-          </div>
+        ) : mode === "Ngẫu nhiên" ? (
+          <FlashcardRandomMode
+            flashcards={flashcards}
+            editable={editable}
+            onDelete={(id) => setDeleteCardId(id)}
+            onUpdateFlashcards={setFlashcards}
+            setId={setId}
+          />
         ) : mode === "Tìm cặp" ? (
           flashcards.length > 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-300 p-6">

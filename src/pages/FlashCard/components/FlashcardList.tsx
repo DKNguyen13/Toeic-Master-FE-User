@@ -8,6 +8,7 @@ import FlashcardMatrix from "./FlashcardMatrix";
 import FlashcardQuiz from "./FlashcardQuiz";
 import { Book } from "lucide-react";
 import FlashcardRandomMode from "./FlashcardRandomMode";
+import FlashcardDictation from "./FlashcardDictation";
 
 export interface Flashcard {
   _id?: string;
@@ -194,6 +195,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <option value="Ngẫu nhiên">🔀 Ngẫu nhiên</option>
                 <option value="Trắc nghiệm">🎯 Trắc nghiệm</option>
                 <option value="Tìm cặp">🔗 Tìm cặp</option>
+                <option value="Nghe chép">🎧 Nghe chép chính tả</option>
               </select>
             </div>
 
@@ -282,6 +284,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               </p>
             </div>
           )
+        ): mode === "Nghe chép" ? (
+          <FlashcardDictation flashcards={flashcards} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {editable && (

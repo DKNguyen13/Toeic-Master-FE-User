@@ -4,8 +4,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLocation } from "react-router-dom";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
-import { Book } from "lucide-react";
 import FlashcardMatrix from "./FlashcardMatrix";
+import FlashcardQuiz from "./FlashcardQuiz";
+import { Book } from "lucide-react";
 
 export interface Flashcard {
   _id?: string;
@@ -175,7 +176,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
         </div>
 
         {/* Mode Controls */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-400 p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <div className="flex items-center gap-2">
               <label htmlFor="mode"
@@ -203,7 +204,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <select
                   value={quizDirection}
                   onChange={(e) => setQuizDirection(e.target.value as any)}
-                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
+                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300"
+                >
                   <option value="en2vi">Anh → Việt</option>
                   <option value="vi2en">Việt → Anh</option>
                 </select>
@@ -243,83 +245,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
 
         {/* Content Area */}
         {mode === "Trắc nghiệm" ? (
-          canQuiz ? (
-            <div className="flex justify-center">
-              <div className="w-full max-w-2xl">
-                <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                      {quizDirection === "en2vi"
-                        ? correctCard?.word
-                        : correctCard?.meaning}
-                    </h2>
-                    <p className="text-gray-600">Chọn đáp án đúng</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {quizOptions.map((opt, index) => (
-                      <button
-                        key={opt}
-                        onClick={() => handleOptionClick(opt)}
-                        disabled={!!selectedOption}
-                        className={`p-4 rounded-2xl border-2 text-left font-medium transition-all duration-300 transform ${
-                          selectedOption
-                            ? opt ===
-                              (quizDirection === "en2vi"
-                                ? correctCard?.meaning
-                                : correctCard?.word)
-                              ? "bg-green-100 border-green-400 text-green-800 scale-105"
-                              : opt === selectedOption
-                                ? "bg-red-100 border-red-400 text-red-800"
-                                : "bg-gray-50 border-gray-200 text-gray-500"
-                            : "bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-105 cursor-pointer"
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold mr-3">
-                            {String.fromCharCode(65 + index)}
-                          </span>
-                          {opt}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-
-                  {selectedOption && (
-                    <div className="text-center">
-                      <button
-                        onClick={handleNextQuiz}
-                        className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg"
-                      >
-                        Câu tiếp theo →
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="mt-6 text-center">
-                    <div className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-4 py-2">
-                      <span className="text-2xl mr-2">🏆</span>
-                      <span className="font-bold text-gray-800">
-                        Điểm: {score}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
-                <span className="text-3xl">😕</span>
-              </div>
-              <p className="text-xl font-semibold text-gray-700 mb-2">
-                Chưa đủ flashcards!
-              </p>
-              <p className="text-gray-500">
-                Cần ít nhất 4 flashcards để chơi trắc nghiệm
-              </p>
-            </div>
-          )
+          <FlashcardQuiz
+            canQuiz={canQuiz}
+            quizDirection={quizDirection}
+            correctCard={correctCard}
+            quizOptions={quizOptions}
+            selectedOption={selectedOption}
+            score={score}
+            onSelectOption={handleOptionClick}
+            onNext={handleNextQuiz}
+          />
         ) : mode === "Ngẫu nhiên" && flashcards.length > 0 ? (
           <div className="flex flex-col items-center">
             <div className="w-full max-w-md mb-6">
@@ -367,7 +302,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           </div>
         ) : mode === "Tìm cặp" ? (
           flashcards.length > 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-400 p-6">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
               <FlashcardMatrix flashcards={flashcards} />
             </div>
           ) : (

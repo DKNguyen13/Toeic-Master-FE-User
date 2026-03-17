@@ -175,13 +175,11 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
         </div>
 
         {/* Mode Controls */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-400 p-6 mb-8">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <div className="flex items-center gap-2">
-              <label
-                htmlFor="mode"
-                className="text-sm font-semibold text-gray-700"
-              >
+              <label htmlFor="mode"
+                className="text-sm font-semibold text-gray-700">
                 Chế độ học:
               </label>
               <select
@@ -205,8 +203,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <select
                   value={quizDirection}
                   onChange={(e) => setQuizDirection(e.target.value as any)}
-                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300"
-                >
+                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                   <option value="en2vi">Anh → Việt</option>
                   <option value="vi2en">Việt → Anh</option>
                 </select>
@@ -370,7 +367,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           </div>
         ) : mode === "Tìm cặp" ? (
           flashcards.length > 0 ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-400 p-6">
               <FlashcardMatrix flashcards={flashcards} />
             </div>
           ) : (

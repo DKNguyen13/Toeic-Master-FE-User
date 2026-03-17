@@ -96,6 +96,13 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
   const [isRoundDone, setIsRoundDone] = useState(false)
   const [gameKey, setGameKey] = useState(0)
 
+  const speak = (text: string) => {
+    const utter = new SpeechSynthesisUtterance(text)
+    utter.lang = 'en-US'
+    utter.rate = 0.9
+    speechSynthesis.speak(utter)
+  }
+
   /* ===== chia round ===== */
   const rounds = useMemo(
     () =>
@@ -153,6 +160,9 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
     const isMatch = a.id === b.id && a.type !== b.type
 
     if (isMatch) {
+      const wordCard = a.type === 'word' ? a : b
+      speak(wordCard.content)
+
       // ĐÚNG
       setCards((prev) => prev.map((c) => (c.id === a.id ? { ...c,status: 'correct' } : c)))
 
@@ -231,10 +241,8 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
         </button>
       </div>
 
-      <div
-        className='grid gap-3'
-        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
-      >
+      <div className='grid gap-3'
+        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {cards.map((card) => {
           if (card.isMatched) {
             return (
@@ -259,7 +267,7 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
                     ? 'text-orange-500 font-semibold'
                     : 'text-blue-600'
                 }
-                ${isSelected ? 'border-blue-500' : 'border-gray-200'}
+                ${isSelected ? 'border-blue-500' : 'border-gray-300'}
                 ${
                   card.status === 'correct'
                     ? 'bg-green-200 border-green-500 animate-pulse'

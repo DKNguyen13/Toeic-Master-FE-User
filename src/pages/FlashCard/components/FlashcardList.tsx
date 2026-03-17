@@ -9,6 +9,7 @@ import FlashcardQuiz from "./FlashcardQuiz";
 import { Book } from "lucide-react";
 import FlashcardRandomMode from "./FlashcardRandomMode";
 import FlashcardDictation from "./FlashcardDictation";
+import FlashcardModal from "./FlashcardModal";
 
 export interface Flashcard {
   _id?: string;
@@ -185,12 +186,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 className="text-sm font-semibold text-gray-700">
                 Chế độ học:
               </label>
-              <select
-                id="mode"
+              <select id="mode"
                 value={mode}
                 onChange={(e) => setMode(e.target.value)}
-                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300"
-              >
+                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                 <option value="Xem toàn bộ thẻ">📖 Xem toàn bộ thẻ</option>
                 <option value="Ngẫu nhiên">🔀 Ngẫu nhiên</option>
                 <option value="Trắc nghiệm">🎯 Trắc nghiệm</option>
@@ -204,11 +203,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 <label className="text-sm font-semibold text-gray-700">
                   Hướng dịch:
                 </label>
-                <select
-                  value={quizDirection}
+                <select value={quizDirection}
                   onChange={(e) => setQuizDirection(e.target.value as any)}
-                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300"
-                >
+                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                   <option value="en2vi">Anh → Việt</option>
                   <option value="vi2en">Việt → Anh</option>
                 </select>
@@ -225,20 +222,13 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 Xác nhận xóa
               </h2>
               <p className="text-gray-600 mb-6">
-                Bạn có chắc muốn xóa flashcard? Hành động này không thể hoàn
-                tác.
+                Bạn có chắc muốn xóa flashcard? Hành động này không thể hoàn tác.
               </p>
               <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setDeleteCardId(null)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                >
+                <button onClick={() => setDeleteCardId(null)} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
                   Hủy
                 </button>
-                <button
-                  onClick={confirmDeleteCard}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                >
+                <button onClick={confirmDeleteCard} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
                   Xóa
                 </button>
               </div>
@@ -289,10 +279,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {editable && (
-              <div
-                onClick={() => setShowModal(true)}
-                className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105"
-              >
+              <div onClick={() => setShowModal(true)}
+                className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
                   <span className="text-3xl text-blue-500 font-bold">+</span>
                 </div>
@@ -334,125 +322,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           </div>
         )}
 
-        {/* Modal */}
         {editable && showModal && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={closeModal}
-          >
-            <div
-              className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all duration-300 scale-100"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Tạo Flashcard Mới
-                </h2>
-                <p className="text-gray-500 mt-2">
-                  Thêm vào các từ mới vào bộ từng vựng của bạn
-                </p>
-                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Từ vựng: <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    name="word"
-                    placeholder="Nhập từ vựng..."
-                    value={form.word}
-                    onChange={(e) => setForm({ ...form, word: e.target.value })}
-                    maxLength={100}
-                    className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
-                      error.includes("Từ")
-                        ? "border-red-500"
-                        : "border-gray-200"
-                    }`}
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.word.length}/100 ký tự
-                  </span>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Nghĩa: <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    name="meaning"
-                    placeholder="Nhập nghĩa..."
-                    value={form.meaning}
-                    maxLength={100}
-                    onChange={(e) =>
-                      setForm({ ...form, meaning: e.target.value })
-                    }
-                    className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
-                      error.includes("nghĩa")
-                        ? "border-red-500"
-                        : "border-gray-200"
-                    }`}
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.meaning.length}/100 ký tự
-                  </span>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Ví dụ:
-                  </label>
-                  <input
-                    name="example"
-                    placeholder="Nhập ví dụ..."
-                    value={form.example}
-                    maxLength={200}
-                    onChange={(e) =>
-                      setForm({ ...form, example: e.target.value })
-                    }
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200"
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.example.length}/200 ký tự
-                  </span>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Ghi chú:
-                  </label>
-                  <input
-                    name="note"
-                    placeholder="Nhập ghi chú..."
-                    value={form.note}
-                    maxLength={200}
-                    onChange={(e) => setForm({ ...form, note: e.target.value })}
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200"
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.note.length}/200 ký tự
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex gap-4 mt-8">
-                <button
-                  onClick={handleAdd}
-                  className="flex-1 px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200"
-                >
-                  Tạo mới
-                </button>
-                <button
-                  onClick={closeModal}
-                  className="flex-1 px-6 py-3 text-base font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
-                >
-                  Hủy
-                </button>
-              </div>
-            </div>
-          </div>
+          <FlashcardModal
+            form={form}
+            error={error}
+            onChange={(field, value) => setForm({ ...form, [field]: value })}
+            onAdd={handleAdd}
+            onClose={closeModal}
+          />
         )}
+
       </div>
     </div>
   )

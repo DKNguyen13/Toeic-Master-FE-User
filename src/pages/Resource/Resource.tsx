@@ -5,6 +5,7 @@ import api, { isLoggedIn } from "../../config/axios";
 import lessonImg from "../../assets/images/lesson.png";
 import LoginModal from "../../layouts/common/LoginModal";
 import ResourceCard from "../../components/ResourceCard";
+import UpgradeModal from "../../components/common/UpgradeModal";
 import Pagination from "../../components/common/Pagination/Pagination";
 import LoadingSkeleton from "../../components/common/LoadingSpinner/LoadingSkeleton";
 import { Book, BookOpen, Clipboard, Layers, Search, Star, Video } from "lucide-react";
@@ -307,26 +308,10 @@ const ResourcePage: React.FC = () => {
         </div>
       </div>
       
-      {showUpgradeModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowUpgradeModal(false)}>
-          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
-            <h3 className="text-xl text-center font-bold mb-4">Nâng cấp tài khoản</h3>
-            <p className="mb-6">
-              Bạn cần nâng cấp lên gói Premium để mở khóa tính năng này và tận hưởng đầy đủ ưu đãi!
-            </p>
-            <div className="flex justify-end gap-4">
-              <button onClick={() => setShowUpgradeModal(false)}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
-                Hủy
-              </button>
-              <button onClick={() => window.location.href = "/payment"}
-                className="px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600">
-                Nâng cấp ngay
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      />
 
       {showLogin && (
         <LoginModal

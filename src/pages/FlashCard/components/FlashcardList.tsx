@@ -12,6 +12,7 @@ import FlashcardDictation from "./FlashcardDictation";
 import FlashcardRandomMode from "./FlashcardRandomMode";
 import { MODE_CONFIG, ModeKey } from "../types/FlashcardModes";
 import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
+import UpgradeModal from "../../../components/common/UpgradeModal";
 
 export interface Flashcard {
   _id?: string;
@@ -45,6 +46,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [userTier, setUserTier] = useState<"basic" | "advanced" | "premium">("basic");
   const type = propType || location.state?.type || "myList";
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
   const editable = type === "myList";
 
   const checkPremium = async () => {
@@ -67,6 +70,11 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
 
     if (!m?.requiredTier) return false;
     return tierOrder[userTier] < tierOrder[m.requiredTier];
+  };
+
+  const getRequiredTier = (key: ModeKey) => {
+    const mode = MODE_CONFIG.find(m => m.key === key);
+    return mode?.requiredTier;
   };
 
   const closeModal = () => {
@@ -212,7 +220,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                   const selected = e.target.value as ModeKey;
 
                   if (isLockedMode(selected)) {
-                    showToast("Bạn cần nâng cấp Premium!", "info");
+                    setUpgradeMode(selected);
+                    setShowUpgradeModal(true);
                     return;
                   }
 
@@ -220,9 +229,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 }}
                 className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm">
                 {MODE_CONFIG.map((m) => (
-                  <option key={m.key}
-                    value={m.key}
-                    disabled={isLockedMode(m.key)}>
+                  <option key={m.key} value={m.key}>
                     {m.icon} {m.label} {isLockedMode(m.key) && " 🔒"}
                   </option>
                 ))}
@@ -345,6 +352,17 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           open={!!deleteCardId}
           onCancel={() => setDeleteCardId(null)}
           onConfirm={confirmDeleteCard}
+        />
+        
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          title="Nâng cấp tài khoản"
+          description={
+            getRequiredTier(upgradeMode!) === "advanced"
+              ? "Bạn cần gói Advanced để sử dụng tính năng này."
+              : "Bạn cần gói Premium để sử dụng tính năng này."
+          }
         />
       </div>
     </div>

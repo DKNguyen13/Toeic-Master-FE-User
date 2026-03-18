@@ -10,6 +10,7 @@ import { Book } from "lucide-react";
 import FlashcardRandomMode from "./FlashcardRandomMode";
 import FlashcardDictation from "./FlashcardDictation";
 import FlashcardModal from "./FlashcardModal";
+import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
 
 export interface Flashcard {
   _id?: string;
@@ -214,47 +215,25 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           </div>
         </div>
 
-        {/* Modal cofirm delete flashcard */}
-        {deleteCardId && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fadeIn">
-              <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">
-                Xác nhận xóa
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Bạn có chắc muốn xóa flashcard? Hành động này không thể hoàn tác.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button onClick={() => setDeleteCardId(null)} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                  Hủy
-                </button>
-                <button onClick={confirmDeleteCard} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                  Xóa
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Content Area */}
         {mode === "Trắc nghiệm" ? (
           <FlashcardQuiz
-            canQuiz={canQuiz}
-            quizDirection={quizDirection}
-            correctCard={correctCard}
-            quizOptions={quizOptions}
-            selectedOption={selectedOption}
-            score={score}
-            onSelectOption={handleOptionClick}
-            onNext={handleNextQuiz}
+          canQuiz={canQuiz}
+          quizDirection={quizDirection}
+          correctCard={correctCard}
+          quizOptions={quizOptions}
+          selectedOption={selectedOption}
+          score={score}
+          onSelectOption={handleOptionClick}
+          onNext={handleNextQuiz}
           />
         ) : mode === "Ngẫu nhiên" ? (
           <FlashcardRandomMode
-            flashcards={flashcards}
-            editable={editable}
-            onDelete={(id) => setDeleteCardId(id)}
-            onUpdateFlashcards={setFlashcards}
-            setId={setId}
+          flashcards={flashcards}
+          editable={editable}
+          onDelete={(id) => setDeleteCardId(id)}
+          onUpdateFlashcards={setFlashcards}
+          setId={setId}
           />
         ) : mode === "Tìm cặp" ? (
           flashcards.length > 0 ? (
@@ -280,7 +259,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {editable && (
               <div onClick={() => setShowModal(true)}
-                className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
+              className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
                   <span className="text-3xl text-blue-500 font-bold">+</span>
                 </div>
@@ -294,11 +273,11 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
             {flashcards.length > 0 ? (
               flashcards.map((card) => (
                 <FlashcardItem
-                  key={card._id}
-                  flashcard={card}
-                  onDelete={
-                    editable ? (id: string) => setDeleteCardId(id) : undefined
-                  }
+                key={card._id}
+                flashcard={card}
+                onDelete={
+                  editable ? (id: string) => setDeleteCardId(id) : undefined
+                }
                 />
               ))
             ) : (
@@ -324,14 +303,19 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
 
         {editable && showModal && (
           <FlashcardModal
-            form={form}
-            error={error}
-            onChange={(field, value) => setForm({ ...form, [field]: value })}
-            onAdd={handleAdd}
-            onClose={closeModal}
+          form={form}
+          error={error}
+          onChange={(field, value) => setForm({ ...form, [field]: value })}
+          onAdd={handleAdd}
+          onClose={closeModal}
           />
         )}
 
+        <ConfirmDeleteFlashcardModal
+          open={!!deleteCardId}
+          onCancel={() => setDeleteCardId(null)}
+          onConfirm={confirmDeleteCard}
+        />
       </div>
     </div>
   )

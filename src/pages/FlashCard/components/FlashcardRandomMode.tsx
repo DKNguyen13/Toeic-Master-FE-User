@@ -163,14 +163,28 @@ const FlashcardRandomMode: React.FC<Props> = ({
     }, 100);
   };
 
+  if (flashcards.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
+          <span className="text-3xl">😕</span>
+        </div>
+        <p className="text-xl font-semibold text-gray-700 mb-2">
+          Bạn chưa có flashcards!
+        </p>
+        <p className="text-gray-500">
+          Hãy tạo flashcard để trải nghiệm chức năng này
+        </p>
+      </div>
+    );
+  }
+
   if (activeCards.length === 0) {
     return (
       <div className="text-center py-16 text-gray-600">
         <p className="text-2xl font-semibold mb-4">Hoàn thành rồi! 🎉</p>
         <p className="mb-6">Bạn đã học hết các thẻ trong bộ này.</p>
-        <button onClick={resetProgress}
-          className="px-8 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition shadow-lg">Học lại từ đầu
-        </button>
+        <button onClick={resetProgress} className="px-8 py-4 bg-blue-500 text-white rounded-xl hover:bg-blue-600">Học lại từ đầu</button>
       </div>
     );
   }

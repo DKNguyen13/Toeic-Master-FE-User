@@ -16,8 +16,8 @@ export interface ModeConfig {
 
 export const MODE_CONFIG: ModeConfig[] = [
   { key: "ALL", label: "Xem toàn bộ thẻ", icon: "📖" },
-  { key: "QUIZ", label: "Trắc nghiệm", icon: "🎯" },
-  { key: "RANDOM", label: "Ngẫu nhiên", icon: "🔀", requiredTier: "advanced" },
+  { key: "RANDOM", label: "Ngẫu nhiên", icon: "🔀"},
+  { key: "QUIZ", label: "Trắc nghiệm", icon: "🎯", requiredTier: "advanced" },
   { key: "MATCH", label: "Tìm cặp", icon: "🔗", requiredTier: "premium" },
   { key: "DICTATION", label: "Nghe chép chính tả", icon: "🎧", requiredTier: "premium" },
 ];

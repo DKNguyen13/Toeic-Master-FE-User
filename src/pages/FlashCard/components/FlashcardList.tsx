@@ -1,15 +1,16 @@
+import { Book } from "lucide-react";
 import api from "../../../config/axios";
 import FlashcardItem from "./FlashcardItem";
-import "react-toastify/dist/ReactToastify.css";
+import FlashcardQuiz from "./FlashcardQuiz";
+import FlashcardModal from "./FlashcardModal";
 import { useLocation } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import FlashcardMatrix from "./FlashcardMatrix";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
-import FlashcardMatrix from "./FlashcardMatrix";
-import FlashcardQuiz from "./FlashcardQuiz";
-import { Book } from "lucide-react";
-import FlashcardRandomMode from "./FlashcardRandomMode";
 import FlashcardDictation from "./FlashcardDictation";
-import FlashcardModal from "./FlashcardModal";
+import FlashcardRandomMode from "./FlashcardRandomMode";
+import { MODE_CONFIG, ModeKey } from "../types/FlashcardModes";
 import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
 
 export interface Flashcard {
@@ -31,7 +32,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ word: "", meaning: "", example: "", note: "" });
-  const [mode, setMode] = useState("Xem toàn bộ thẻ");
+  const [mode, setMode] = useState<ModeKey>("ALL");
   const [randomIndex, setRandomIndex] = useState(0);
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizOptions, setQuizOptions] = useState<string[]>([]);
@@ -42,9 +43,31 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [correctCard, setCorrectCard] = useState<Flashcard | null>(null);
   const [error, setError] = useState("");
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-
+  const [userTier, setUserTier] = useState<"basic" | "advanced" | "premium">("basic");
   const type = propType || location.state?.type || "myList";
   const editable = type === "myList";
+
+  const checkPremium = async () => {
+    try {
+      const res = await api.get("/auth/me");
+      setUserTier(res.data.data.tier);
+    } catch {
+      setUserTier("basic");
+    }
+  };
+
+  const tierOrder = {
+    basic: 0,
+    advanced: 1,
+    premium: 2,
+  };
+
+  const isLockedMode = (key: ModeKey) => {
+    const m = MODE_CONFIG.find((x) => x.key === key);
+
+    if (!m?.requiredTier) return false;
+    return tierOrder[userTier] < tierOrder[m.requiredTier];
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -95,14 +118,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
     } finally {
       setDeleteCardId(null);
     }
-  };
-
-  const nextCard = () => {
-    setRandomIndex((prev) => (prev + 1) % flashcards.length);
-  };
-
-  const prevCard = () => {
-    setRandomIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length);
   };
 
   const generateQuiz = () => {
@@ -156,8 +171,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   }, [setId]);
 
   useEffect(() => {
-    if (mode === "Ngẫu nhiên") setRandomIndex(0);
-    if (mode === "Trắc nghiệm") generateQuiz();
+    checkPremium();
+  }, []);
+
+  useEffect(() => {
+    if (mode === "RANDOM") setRandomIndex(0);
+    if (mode === "QUIZ") generateQuiz();
   }, [mode, flashcards, quizDirection]);
 
   if (loading) {
@@ -187,19 +206,30 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 className="text-sm font-semibold text-gray-700">
                 Chế độ học:
               </label>
-              <select id="mode"
+              <select
                 value={mode}
-                onChange={(e) => setMode(e.target.value)}
-                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
-                <option value="Xem toàn bộ thẻ">📖 Xem toàn bộ thẻ</option>
-                <option value="Ngẫu nhiên">🔀 Ngẫu nhiên</option>
-                <option value="Trắc nghiệm">🎯 Trắc nghiệm</option>
-                <option value="Tìm cặp">🔗 Tìm cặp</option>
-                <option value="Nghe chép">🎧 Nghe chép chính tả</option>
+                onChange={(e) => {
+                  const selected = e.target.value as ModeKey;
+
+                  if (isLockedMode(selected)) {
+                    showToast("Bạn cần nâng cấp Premium!", "info");
+                    return;
+                  }
+
+                  setMode(selected);
+                }}
+                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm">
+                {MODE_CONFIG.map((m) => (
+                  <option key={m.key}
+                    value={m.key}
+                    disabled={isLockedMode(m.key)}>
+                    {m.icon} {m.label} {isLockedMode(m.key) && " 🔒"}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {mode === "Trắc nghiệm" && flashcards.length >= 4 && (
+            {mode === "QUIZ" && flashcards.length >= 4 && (
               <div className="flex items-center gap-2">
                 <label className="text-sm font-semibold text-gray-700">
                   Hướng dịch:
@@ -216,7 +246,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
         </div>
 
         {/* Content Area */}
-        {mode === "Trắc nghiệm" ? (
+        {mode === "QUIZ" ? (
           <FlashcardQuiz
           canQuiz={canQuiz}
           quizDirection={quizDirection}
@@ -227,7 +257,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           onSelectOption={handleOptionClick}
           onNext={handleNextQuiz}
           />
-        ) : mode === "Ngẫu nhiên" ? (
+        ) : mode === "RANDOM" ? (
           <FlashcardRandomMode
           flashcards={flashcards}
           editable={editable}
@@ -235,7 +265,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           onUpdateFlashcards={setFlashcards}
           setId={setId}
           />
-        ) : mode === "Tìm cặp" ? (
+        ) : mode === "MATCH" ? (
           flashcards.length > 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
               <FlashcardMatrix flashcards={flashcards} />
@@ -253,7 +283,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
               </p>
             </div>
           )
-        ): mode === "Nghe chép" ? (
+        ): mode === "DICTATION" ? (
           <FlashcardDictation flashcards={flashcards} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

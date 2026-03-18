@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { isLoggedIn } from "../../config/axios";
-import FlashcardSetList from "./components/FlashcardSetList";
+import { isLoggedIn } from "../../../config/axios";
+import FlashcardSetList from "../components/FlashcardSetList";
 
 const FlashcardPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"myList" | "explore">("myList");

@@ -1,10 +1,18 @@
+import { Book } from "lucide-react";
 import api from "../../../config/axios";
 import FlashcardItem from "./FlashcardItem";
-import "react-toastify/dist/ReactToastify.css";
+import FlashcardQuiz from "./FlashcardQuiz";
+import FlashcardModal from "./FlashcardModal";
 import { useLocation } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import FlashcardMatrix from "./FlashcardMatrix";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
-import { Book } from "lucide-react";
+import FlashcardDictation from "./FlashcardDictation";
+import FlashcardRandomMode from "./FlashcardRandomMode";
+import { MODE_CONFIG, ModeKey } from "../types/FlashcardModes";
+import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
+import UpgradeModal from "../../../components/common/UpgradeModal";
 
 export interface Flashcard {
   _id?: string;
@@ -25,7 +33,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ word: "", meaning: "", example: "", note: "" });
-  const [mode, setMode] = useState("Xem toàn bộ thẻ");
+  const [mode, setMode] = useState<ModeKey>("ALL");
   const [randomIndex, setRandomIndex] = useState(0);
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizOptions, setQuizOptions] = useState<string[]>([]);
@@ -36,9 +44,38 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [correctCard, setCorrectCard] = useState<Flashcard | null>(null);
   const [error, setError] = useState("");
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-
+  const [userTier, setUserTier] = useState<"basic" | "advanced" | "premium">("basic");
   const type = propType || location.state?.type || "myList";
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
   const editable = type === "myList";
+
+  const checkPremium = async () => {
+    try {
+      const res = await api.get("/auth/me");
+      setUserTier(res.data.data.tier);
+    } catch {
+      setUserTier("basic");
+    }
+  };
+
+  const tierOrder = {
+    basic: 0,
+    advanced: 1,
+    premium: 2,
+  };
+
+  const isLockedMode = (key: ModeKey) => {
+    const m = MODE_CONFIG.find((x) => x.key === key);
+
+    if (!m?.requiredTier) return false;
+    return tierOrder[userTier] < tierOrder[m.requiredTier];
+  };
+
+  const getRequiredTier = (key: ModeKey) => {
+    const mode = MODE_CONFIG.find(m => m.key === key);
+    return mode?.requiredTier;
+  };
 
   const closeModal = () => {
     setShowModal(false);
@@ -89,14 +126,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
     } finally {
       setDeleteCardId(null);
     }
-  };
-
-  const nextCard = () => {
-    setRandomIndex((prev) => (prev + 1) % flashcards.length);
-  };
-
-  const prevCard = () => {
-    setRandomIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length);
   };
 
   const generateQuiz = () => {
@@ -150,8 +179,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   }, [setId]);
 
   useEffect(() => {
-    if (mode === "Ngẫu nhiên") setRandomIndex(0);
-    if (mode === "Trắc nghiệm") generateQuiz();
+    checkPremium();
+  }, []);
+
+  useEffect(() => {
+    if (mode === "RANDOM") setRandomIndex(0);
+    if (mode === "QUIZ") generateQuiz();
   }, [mode, flashcards, quizDirection]);
 
   if (loading) {
@@ -177,25 +210,38 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-wrap items-center justify-center gap-4">
             <div className="flex items-center gap-2">
-              <label htmlFor="mode" className="text-sm font-semibold text-gray-700">
+              <label htmlFor="mode"
+                className="text-sm font-semibold text-gray-700">
                 Chế độ học:
               </label>
-              <select 
-                id="mode"
-                value={mode} 
-                onChange={(e) => setMode(e.target.value)}
-                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
-                <option value="Xem toàn bộ thẻ">📖 Xem toàn bộ thẻ</option>
-                <option value="Ngẫu nhiên">🔀 Ngẫu nhiên</option>
-                <option value="Trắc nghiệm">🎯 Trắc nghiệm</option>
+              <select
+                value={mode}
+                onChange={(e) => {
+                  const selected = e.target.value as ModeKey;
+
+                  if (isLockedMode(selected)) {
+                    setUpgradeMode(selected);
+                    setShowUpgradeModal(true);
+                    return;
+                  }
+
+                  setMode(selected);
+                }}
+                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm">
+                {MODE_CONFIG.map((m) => (
+                  <option key={m.key} value={m.key}>
+                    {m.icon} {m.label} {isLockedMode(m.key) && " 🔒"}
+                  </option>
+                ))}
               </select>
             </div>
-            
-            {mode === "Trắc nghiệm" && flashcards.length >= 4 && (
+
+            {mode === "QUIZ" && flashcards.length >= 4 && (
               <div className="flex items-center gap-2">
-                <label className="text-sm font-semibold text-gray-700">Hướng dịch:</label>
-                <select 
-                  value={quizDirection} 
+                <label className="text-sm font-semibold text-gray-700">
+                  Hướng dịch:
+                </label>
+                <select value={quizDirection}
                   onChange={(e) => setQuizDirection(e.target.value as any)}
                   className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
                   <option value="en2vi">Anh → Việt</option>
@@ -205,156 +251,70 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
             )}
           </div>
         </div>
-        
-        {/* Modal cofirm delete flashcard */}
-        {deleteCardId && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fadeIn">
-              <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Xác nhận xóa</h2>
-              <p className="text-gray-600 mb-6">
-                Bạn có chắc muốn xóa flashcard?
-                Hành động này không thể hoàn tác.
-              </p>
-              <div className="flex justify-end gap-3">
-                <button onClick={() => setDeleteCardId(null)}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                  Hủy
-                </button>
-                <button onClick={confirmDeleteCard}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
-                  Xóa
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Content Area */}
-        {mode === "Trắc nghiệm" ? (
-          canQuiz ? (
-            <div className="flex justify-center">
-              <div className="w-full max-w-2xl">
-                <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-                  <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                      {quizDirection === "en2vi" ? correctCard?.word : correctCard?.meaning}
-                    </h2>
-                    <p className="text-gray-600">Chọn đáp án đúng</p>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {quizOptions.map((opt, index) => (
-                      <button 
-                        key={opt} 
-                        onClick={() => handleOptionClick(opt)}
-                        disabled={!!selectedOption}
-                        className={`p-4 rounded-2xl border-2 text-left font-medium transition-all duration-300 transform ${
-                          selectedOption
-                            ? opt === (quizDirection === "en2vi" ? correctCard?.meaning : correctCard?.word)
-                              ? "bg-green-100 border-green-400 text-green-800 scale-105"
-                              : opt === selectedOption
-                                ? "bg-red-100 border-red-400 text-red-800"
-                                : "bg-gray-50 border-gray-200 text-gray-500"
-                            : "bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 hover:scale-105 cursor-pointer"
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold mr-3">
-                            {String.fromCharCode(65 + index)}
-                          </span>
-                          {opt}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {selectedOption && (
-                    <div className="text-center">
-                      <button onClick={handleNextQuiz} 
-                        className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 transition-all duration-200 shadow-lg">
-                        Câu tiếp theo →
-                      </button>
-                    </div>
-                  )}
-                  
-                  <div className="mt-6 text-center">
-                    <div className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-4 py-2">
-                      <span className="text-2xl mr-2">🏆</span>
-                      <span className="font-bold text-gray-800">Điểm: {score}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {mode === "QUIZ" ? (
+          <FlashcardQuiz
+          canQuiz={canQuiz}
+          quizDirection={quizDirection}
+          correctCard={correctCard}
+          quizOptions={quizOptions}
+          selectedOption={selectedOption}
+          score={score}
+          onSelectOption={handleOptionClick}
+          onNext={handleNextQuiz}
+          />
+        ) : mode === "RANDOM" ? (
+          <FlashcardRandomMode
+          flashcards={flashcards}
+          editable={editable}
+          onDelete={(id) => setDeleteCardId(id)}
+          onUpdateFlashcards={setFlashcards}
+          setId={setId}
+          />
+        ) : mode === "MATCH" ? (
+          flashcards.length > 0 ? (
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
+              <FlashcardMatrix flashcards={flashcards} />
             </div>
           ) : (
             <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
-                <span className="text-3xl">😕</span>
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
+                <span className="text-3xl">🧩</span>
               </div>
-              <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
-              <p className="text-gray-500">Cần ít nhất 4 flashcards để chơi trắc nghiệm</p>
+              <p className="text-xl font-semibold text-gray-700 mb-2">
+                Chưa có flashcard!
+              </p>
+              <p className="text-gray-500">
+                Hãy thêm flashcard để chơi chế độ tìm cặp
+              </p>
             </div>
           )
-        ) : mode === "Ngẫu nhiên" && flashcards.length > 0 ? (
-          <div className="flex flex-col items-center">
-            <div className="w-full max-w-md mb-6">
-              <FlashcardItem
-                flashcard={flashcards[randomIndex]}
-                onDelete={editable ? () => setDeleteCardId(flashcards[randomIndex]._id!) : undefined}
-              />
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={prevCard} 
-                disabled={flashcards.length <= 1} 
-                className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
-                  flashcards.length > 1 
-                    ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100'
-                }`}>
-                ← Trước
-              </button>
-              
-              <div className="px-4 py-2 bg-blue-100 rounded-full">
-                <span className="text-sm font-semibold text-blue-800">
-                  {randomIndex + 1} / {flashcards.length}
-                </span>
-              </div>
-              
-              <button 
-                onClick={nextCard} 
-                disabled={flashcards.length <= 1} 
-                className={`px-5 py-2 rounded-3xl font-semibold transition-all duration-200 ${
-                  flashcards.length > 1 
-                    ? 'bg-white text-gray-700 border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-md hover:shadow-lg transform hover:scale-105' 
-                    : 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-100'
-                }`}
-              >
-                Tiếp →
-              </button>
-            </div>
-          </div>
+        ): mode === "DICTATION" ? (
+          <FlashcardDictation flashcards={flashcards} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {editable && (
-              <div 
-                onClick={() => setShowModal(true)}
-                className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
+              <div onClick={() => setShowModal(true)}
+              className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
                   <span className="text-3xl text-blue-500 font-bold">+</span>
                 </div>
                 <p className="font-semibold text-lg">Thêm flashcard</p>
-                <p className="text-sm text-blue-400 mt-1 text-center">Nhấn để tạo mới</p>
+                <p className="text-sm text-blue-400 mt-1 text-center">
+                  Nhấn để tạo mới
+                </p>
               </div>
             )}
-            
+
             {flashcards.length > 0 ? (
               flashcards.map((card) => (
                 <FlashcardItem
-                  key={card._id}
-                  flashcard={card}
-                  onDelete={editable ? (id: string) => setDeleteCardId(id) : undefined}
+                key={card._id}
+                flashcard={card}
+                onDelete={
+                  editable ? (id: string) => setDeleteCardId(id) : undefined
+                }
                 />
               ))
             ) : (
@@ -364,110 +324,49 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 </div>
 
                 <h3 className="text-lg font-bold text-gray-700 mb-2">
-                  { editable ? "Chưa có flashcard nào" : "Set này chưa có flashcard" }
+                  {editable
+                    ? "Chưa có flashcard nào"
+                    : "Set này chưa có flashcard"}
                 </h3>
                 {editable && (
-                  <p className="text-gray-500 text-sm text-center max-w-xs">Nhấn vào nút '+' để tạo các từ vựng đầu tiên!</p>
+                  <p className="text-gray-500 text-sm text-center max-w-xs">
+                    Nhấn vào nút '+' để tạo các từ vựng đầu tiên!
+                  </p>
                 )}
               </div>
             )}
           </div>
         )}
 
-        {/* Modal */}
         {editable && showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            onClick={closeModal}>
-            <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all duration-300 scale-100"
-              onClick={(e) => e.stopPropagation()}>
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Tạo Flashcard Mới</h2>
-                <p className="text-gray-500 mt-2">Thêm vào các từ mới vào bộ từng vựng của bạn</p>
-                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Từ vựng: <span className="text-red-500">*</span></label>
-                  <input 
-                    name="word" 
-                    placeholder="Nhập từ vựng..." 
-                    value={form.word}
-                    onChange={(e) => setForm({ ...form, word: e.target.value })}
-                    maxLength={100}
-                    className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
-                      error.includes("Từ") ? "border-red-500" : "border-gray-200"
-                    }`} 
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.word.length}/100 ký tự
-                  </span>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Nghĩa: <span className="text-red-500">*</span></label>
-                  <input 
-                    name="meaning" 
-                    placeholder="Nhập nghĩa..." 
-                    value={form.meaning}
-                    maxLength={100}
-                    onChange={(e) => setForm({ ...form, meaning: e.target.value })}
-                    className={`w-full border-2 rounded-xl px-4 py-3 transition-all duration-200 ${
-                      error.includes("nghĩa") ? "border-red-500" : "border-gray-200"
-                    }`} 
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.meaning.length}/100 ký tự
-                  </span>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Ví dụ:</label>
-                  <input 
-                    name="example" 
-                    placeholder="Nhập ví dụ..." 
-                    value={form.example}
-                    maxLength={200}
-                    onChange={(e) => setForm({ ...form, example: e.target.value })}
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200" 
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.example.length}/200 ký tự
-                  </span>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Ghi chú:</label>
-                  <input 
-                    name="note" 
-                    placeholder="Nhập ghi chú..." 
-                    value={form.note}
-                    maxLength={200}
-                    onChange={(e) => setForm({ ...form, note: e.target.value })}
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 transition-all duration-200" 
-                  />
-                  <span className="text-xs text-gray-500">
-                    {form.note.length}/200 ký tự
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex gap-4 mt-8">
-                <button onClick={handleAdd}
-                  className="flex-1 px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200">
-                  Tạo mới
-                </button>
-                <button onClick={closeModal}
-                  className="flex-1 px-6 py-3 text-base font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
-                  Hủy
-                </button>
-              </div>
-            </div>
-          </div>
+          <FlashcardModal
+          form={form}
+          error={error}
+          onChange={(field, value) => setForm({ ...form, [field]: value })}
+          onAdd={handleAdd}
+          onClose={closeModal}
+          />
         )}
+
+        <ConfirmDeleteFlashcardModal
+          open={!!deleteCardId}
+          onCancel={() => setDeleteCardId(null)}
+          onConfirm={confirmDeleteCard}
+        />
+        
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          title="Nâng cấp tài khoản"
+          description={
+            getRequiredTier(upgradeMode!) === "advanced"
+              ? "Bạn cần gói Advanced để sử dụng tính năng này."
+              : "Bạn cần gói Premium để sử dụng tính năng này."
+          }
+        />
       </div>
     </div>
-  );
+  )
 };
 
 export default FlashcardList;

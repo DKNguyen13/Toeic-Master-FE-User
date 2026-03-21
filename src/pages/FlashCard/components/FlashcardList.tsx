@@ -10,7 +10,8 @@ import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
 import FlashcardDictation from "./FlashcardDictation";
 import FlashcardRandomMode from "./FlashcardRandomMode";
-import { MODE_CONFIG, ModeKey } from "../types/FlashcardModes";
+import FlashcardListenPickMode from "./FlashcardListenPickMode";
+import { MODE_CONFIG, ModeKey } from "../types/flashcardModes";
 import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
 import UpgradeModal from "../../../components/common/UpgradeModal";
 
@@ -292,6 +293,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           )
         ): mode === "DICTATION" ? (
           <FlashcardDictation flashcards={flashcards} />
+        ) : mode === "LISTEN_PICK" ? (
+          <FlashcardListenPickMode flashcards={flashcards} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {editable && (

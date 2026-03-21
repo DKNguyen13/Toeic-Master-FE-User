@@ -293,7 +293,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
         ): mode === "DICTATION" ? (
           <FlashcardDictation flashcards={flashcards} />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {editable && (
               <div onClick={() => setShowModal(true)}
               className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">

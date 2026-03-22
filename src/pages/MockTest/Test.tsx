@@ -116,6 +116,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
             session={session}
             onGoBack={handleGoBack}
             isView={isView}
+            currentPart={currentPart}
           />
 
           <PartSelector

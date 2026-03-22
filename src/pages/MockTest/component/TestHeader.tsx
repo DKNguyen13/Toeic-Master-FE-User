@@ -5,20 +5,32 @@ interface TestHeaderProps {
   session: any;
   onGoBack: () => void;
   isView: boolean;
+  currentPart: number;
 }
 
 const TestHeader: React.FC<TestHeaderProps> = ({
   session,
   onGoBack,
   isView,
+  currentPart
 }) => {
+  const sessionType = session?.sessionType || "full-test";
   const LISTENING_PARTS = [1, 2, 3, 4];
   const hasListeningPart = session?.testConfig?.selectedParts?.some(
   (part: number) => LISTENING_PARTS.includes(part));
+
+  let audioSrc = null
+
+  if (sessionType === "full-test") {
+    audioSrc = session?.audio
+  } else if (sessionType === "practice") {
+    audioSrc = session?.partsAudio?.[currentPart] || null
+  }
   return (
     <div className="w-full flex items-center justify-between mb-5">
       {/* Return button */}
-      <div className="
+      <div
+        className="
           inline-flex items-center gap-2 text-base text-main
           cursor-pointer transition-colors duration-200 
           hover:text-blue-600
@@ -30,19 +42,20 @@ const TestHeader: React.FC<TestHeaderProps> = ({
       </div>
 
       {/* Audio player */}
-      {hasListeningPart && session?.audio && (
+      {hasListeningPart && audioSrc && (
         <div className="flex-1 flex justify-center">
           <audio
+            key={audioSrc}
             controls
             className="w-full max-w-2xl rounded-full bg-gray-100"
-            src={session?.audio}
+            src={audioSrc}
           >
             Your browser does not support the audio element.
           </audio>
         </div>
       )}
     </div>
-  );
+  )
 };
 
 export default TestHeader;

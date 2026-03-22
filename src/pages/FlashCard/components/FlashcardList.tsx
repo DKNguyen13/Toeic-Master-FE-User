@@ -15,6 +15,7 @@ import { MODE_CONFIG, ModeKey } from "../types/flashcardModes";
 import UpgradeModal from "../../../components/common/UpgradeModal";
 import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
 import FlashcardTrueFalseMode from "./FlashcardTrueFalseMode";
+import FlashcardShadowingMode from "./FlashcardShadowingMode";
 
 export interface Flashcard {
   _id?: string;
@@ -298,6 +299,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           <FlashcardTrueFalseMode flashcards={flashcards} />
         ) : mode === "LISTEN_PICK" ? (
           <FlashcardListenPickMode flashcards={flashcards} />
+        ) : mode === "SHADOWING" ? (
+          <FlashcardShadowingMode flashcards={flashcards} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             {editable && (

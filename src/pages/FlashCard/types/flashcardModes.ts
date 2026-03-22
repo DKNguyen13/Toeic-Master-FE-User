@@ -5,7 +5,8 @@ export type ModeKey =
   | "QUIZ"
   | "MATCH"
   | "DICTATION"
-  | "LISTEN_PICK";
+  | "LISTEN_PICK"
+  | "SHADOWING";
 
 export type UserTier = "basic" | "advanced" | "premium";
 
@@ -24,4 +25,5 @@ export const MODE_CONFIG: ModeConfig[] = [
   { key: "LISTEN_PICK", label: "Nghe và chọn", icon: "🃏", requiredTier: "advanced" },
   { key: "MATCH", label: "Tìm cặp", icon: "🔗", requiredTier: "premium" },
   { key: "DICTATION", label: "Nghe chép chính tả", icon: "🎧", requiredTier: "premium" },
+  { key: "SHADOWING", label: "Nói theo", icon: "🗣️", requiredTier: "premium" },
 ];

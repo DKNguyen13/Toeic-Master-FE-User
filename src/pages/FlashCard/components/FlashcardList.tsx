@@ -10,12 +10,12 @@ import { showToast } from "../../../utils/toast";
 import React, { useEffect, useState } from "react";
 import FlashcardDictation from "./FlashcardDictation";
 import FlashcardRandomMode from "./FlashcardRandomMode";
-import FlashcardListenPickMode from "./FlashcardListenPickMode";
-import { MODE_CONFIG, ModeKey } from "../types/flashcardModes";
-import UpgradeModal from "../../../components/common/UpgradeModal";
-import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
 import FlashcardTrueFalseMode from "./FlashcardTrueFalseMode";
 import FlashcardShadowingMode from "./FlashcardShadowingMode";
+import FlashcardListenPickMode from "./FlashcardListenPickMode";
+import UpgradeModal from "../../../components/common/UpgradeModal";
+import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
+import { MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
 
 export interface Flashcard {
   _id?: string;
@@ -47,7 +47,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [correctCard, setCorrectCard] = useState<Flashcard | null>(null);
   const [error, setError] = useState("");
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-  const [userTier, setUserTier] = useState<"basic" | "advanced" | "premium">("basic");
+  const [userTier, setUserTier] = useState<UserTier>("free");
   const type = propType || location.state?.type || "myList";
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
@@ -58,14 +58,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
       const res = await api.get("/auth/me");
       setUserTier(res.data.data.tier);
     } catch {
-      setUserTier("basic");
+      setUserTier("free");
     }
   };
 
-  const tierOrder = {
-    basic: 0,
-    advanced: 1,
-    premium: 2,
+  const tierOrder: Record<UserTier, number> = {
+    free: 0,
+    basic: 1,
+    advanced: 2,
+    premium: 3,
   };
 
   const isLockedMode = (key: ModeKey) => {
@@ -368,9 +369,18 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           onClose={() => setShowUpgradeModal(false)}
           title="Nâng cấp tài khoản"
           description={
-            getRequiredTier(upgradeMode!) === "advanced"
-              ? "Bạn cần gói Advanced để sử dụng tính năng này."
-              : "Bạn cần gói Premium để sử dụng tính năng này."
+            upgradeMode
+              ? (() => {
+                  const required = getRequiredTier(upgradeMode);
+                  if (!required) return "";
+                  switch (required) {
+                    case "basic": return "Bạn cần gói Basic để sử dụng tính năng này.";
+                    case "advanced": return "Bạn cần gói Advanced để sử dụng tính năng này.";
+                    case "premium": return "Bạn cần gói Premium để sử dụng tính năng này.";
+                    default: return "";
+                  }
+                })()
+              : ""
           }
         />
       </div>

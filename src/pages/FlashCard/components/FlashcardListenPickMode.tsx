@@ -96,7 +96,7 @@ const FlashcardListenPickMode: React.FC<Props> = ({ flashcards }) => {
         });
 
         setWrongIndices((prev) => prev.filter((i) => i !== index));
-      }, 1000);
+      }, 600);
     }
   };
 

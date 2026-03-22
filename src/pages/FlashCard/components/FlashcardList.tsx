@@ -12,8 +12,9 @@ import FlashcardDictation from "./FlashcardDictation";
 import FlashcardRandomMode from "./FlashcardRandomMode";
 import FlashcardListenPickMode from "./FlashcardListenPickMode";
 import { MODE_CONFIG, ModeKey } from "../types/flashcardModes";
-import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
 import UpgradeModal from "../../../components/common/UpgradeModal";
+import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
+import FlashcardTrueFalseMode from "./FlashcardTrueFalseMode";
 
 export interface Flashcard {
   _id?: string;
@@ -109,7 +110,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
       setFlashcards((prev) => [...prev, res.data.data]);
       setShowModal(false);
       setForm({ word: "", meaning: "", example: "", note: "" });
-      showToast("Thêm flashcard thành công!", "success", {autoClose: 1000});
+      showToast("Thêm flashcard thành công!", "success", { autoClose: 1000 });
       setError("");
     } catch (err: any) {
       setError(err.response?.data?.message || "Lỗi khi tạo flashcard!");
@@ -293,6 +294,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           )
         ): mode === "DICTATION" ? (
           <FlashcardDictation flashcards={flashcards} />
+        ) : mode === "TRUE_FALSE" ? (
+          <FlashcardTrueFalseMode flashcards={flashcards} />
         ) : mode === "LISTEN_PICK" ? (
           <FlashcardListenPickMode flashcards={flashcards} />
         ) : (

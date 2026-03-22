@@ -10,12 +10,10 @@ import {
   submitBulkAnswers,
   submitSession,
 } from "../../../service/sessionService";
-import { useSocket } from "../../../context/SocketContext";
-import { useSocketReady } from "../../../context/useSocketReady"; // THÊM IMPORT
+import { useSessionTest } from "../../../context/sessionTest/useSessionTest" // IMPORT useSocket để lấy sendAnswer và registerSession
 
 export const useTestSession = () => {
-  const { registerSession, sendAnswer } = useSocket();
-  const isSocketReady = useSocketReady();
+  const { registerSession, sendAnswer, connected } = useSessionTest() // Lấy sendAnswer và registerSession từ context
   const navigate = useNavigate();
   const { id: sessionId } = useParams();
 
@@ -60,8 +58,8 @@ export const useTestSession = () => {
 
         setQuestions(fetchedQuestions);
 
-        console.group("📦 FETCH SESSION DATA");
-        console.log("Total fetchedQuestions:", fetchedQuestions.length);
+        // console.group("📦 FETCH SESSION DATA");
+        // console.log("Total fetchedQuestions:", fetchedQuestions.length);
 
         fetchedQuestions.forEach((q, idx) => {
           console.log(
@@ -102,10 +100,10 @@ export const useTestSession = () => {
   }, [sessionId]);
 
   useEffect(() => {
-    if (sessionId) {
-      registerSession(sessionId);
+    if (sessionId && connected) {
+      registerSession(sessionId)
     }
-  }, [sessionId, registerSession]);
+  }, [sessionId, registerSession, connected]);
 
   // ====== Phần transform câu hỏi của 1 part (memoize) ======
   const questionsInPart: Question[] = useMemo(() => {
@@ -155,15 +153,7 @@ export const useTestSession = () => {
     }));
 
     // CHỈ GỬI ĐÁP ÁN KHI SOCKET READY (hoặc sẽ được queue nếu chưa ready)
-    if (isSocketReady) {
-      sendAnswer(sessionId!, question.id, selectedLetter);
-    } else {
-      console.warn(
-        `⚠ Socket not ready yet → Answer will be queued (Q${question.globalQuestionNumber}, ${selectedLetter})`
-      );
-      // Vẫn gọi sendAnswer, nhưng nó sẽ queue lại trong context
-      sendAnswer(sessionId!, question.id, selectedLetter);
-    }
+    sendAnswer(sessionId!, question.id, selectedLetter)
   };
 
   // Điều hướng câu hỏi trong part
@@ -261,8 +251,7 @@ export const useTestSession = () => {
     loading,
     error,
     handlePauseTestSession,
-    handleResumeTestSession,
-    isSocketReady, // EXPORT cái này để component biết socket đã sẵn sàng chưa
+    handleResumeTestSession
   };
 };
 

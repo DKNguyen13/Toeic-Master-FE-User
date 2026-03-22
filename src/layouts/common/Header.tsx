@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import api, { setAccessToken } from "../../config/axios.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useSocket } from "../../context/SocketContext.jsx";
-import { useSocketReady } from "../../context/useSocketReady.jsx";
 import { FaBell, FaHome, FaFileAlt, FaSearch, FaCrown, FaClipboardList } from "react-icons/fa";
 import { ClipboardList, HelpCircle, History, LogOut, UserCircle } from "lucide-react";
+import { useNotification } from "../../context/Notification/useNotification.js";
 
 interface Notification {
-  _id: string;
+  id: string;
   title: string;
   message: string;
   icon: string;
@@ -47,12 +46,11 @@ const Header: React.FC = () => {
   
   // Sử dụng socket context
   const { 
-    notifications:  socketNotifications, 
+    notifications, 
     unreadCount, 
     markAsRead,
     clearNotifications 
-  } = useSocket();
-  const isSocketReady = useSocketReady();
+  } = useNotification();
 
   const updateUser = () => {
     setFullname(localStorage.getItem("fullname"));
@@ -71,18 +69,18 @@ const Header: React.FC = () => {
 
   // Sử dụng real-time notifications từ Socket
   useEffect(() => {
-    if (socketNotifications && socketNotifications.length > 0) {
+    if (notifications && notifications.length > 0) {
       // Kết hợp socket notifications với local notifications
       // Socket notifications được thêm vào trước (mới nhất)
       const combinedNotifications = [
-        ...socketNotifications. filter(
-          sn => !localNotifications.some(ln => ln._id === sn._id)
+        ...notifications.filter(
+          (sn) => !localNotifications.some((ln) => ln.id === sn.id),
         ),
-        ...localNotifications
-      ];
-      setLocalNotifications(combinedNotifications);
+        ...localNotifications,
+      ]
+      setLocalNotifications(combinedNotifications)
     }
-  }, [socketNotifications]);
+  }, [notifications])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -116,17 +114,17 @@ const Header: React.FC = () => {
         if (reset) {
           // Merge socket notifications (mới) với API notifications
           const merged = [
-            ...socketNotifications.filter(
-              sn => !apiNotifications.some(an => an._id === sn._id)
+            ...notifications.filter(
+              (sn) => !apiNotifications.some((an: Notification) => an.id === sn.id),
             ),
-            ...apiNotifications
-          ];
+            ...apiNotifications,
+          ]
           setLocalNotifications(merged);
         } else {
           // Load more - thêm vào cuối
           setLocalNotifications(prev => {
             const newNotifications = apiNotifications.filter(
-              an => !prev.some(pn => pn._id === an._id)
+              (an: Notification) => !prev.some((pn: Notification) => pn.id === an.id)
             );
             return [...prev, ...newNotifications];
           });
@@ -157,15 +155,15 @@ const Header: React.FC = () => {
     if (! notification.read) {
       try {
         // Gọi API để save read status
-        await api.patch(`/notifications/${notification._id}/read`);
+        await api.patch(`/notifications/${notification.id}/read`);
         
         // Update local state
         setLocalNotifications(prev => 
-          prev.map(n => n._id === notification._id ? { ... n, read: true } : n)
+          prev.map(n => n.id === notification.id ? { ... n, read: true } : n)
         );
         
         // Also notify socket context (nếu có)
-        markAsRead(notification._id);
+        markAsRead(notification.id);
       } catch (error) {
         console.error("Failed to mark notification as read:", error);
       }
@@ -300,9 +298,9 @@ const Header: React.FC = () => {
                 </span>
               )}
               {/* Socket status indicator */}
-              {isSocketReady && (
+              {/* {isSocketReady && (
                 <span className="absolute bottom-1 right-1 w-2 h-2 bg-green-500 rounded-full"></span>
-              )}
+              )} */}
             </button>
 
             {/* Notifications Dropdown */}
@@ -335,7 +333,7 @@ const Header: React.FC = () => {
                     <>
                       {localNotifications. map((notification) => (
                         <div
-                          key={notification._id}
+                          key={notification.id}
                           onClick={() => handleNotificationClick(notification)}
                           className={`px-4 py-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer transition-colors duration-150 ${
                             ! notification.read ?  'bg-blue-25 border-l-4 border-l-blue-600' : ''

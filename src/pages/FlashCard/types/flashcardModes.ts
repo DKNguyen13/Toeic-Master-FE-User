@@ -8,7 +8,7 @@ export type ModeKey =
   | "LISTEN_PICK"
   | "SHADOWING";
 
-export type UserTier = "basic" | "advanced" | "premium";
+export type UserTier = "free" | "basic" | "advanced" | "premium";
 
 export interface ModeConfig {
   key: ModeKey;

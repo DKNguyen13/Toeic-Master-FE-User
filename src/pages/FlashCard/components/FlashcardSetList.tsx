@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { showToast } from "../../../utils/toast";
 import React, { useEffect, useRef, useState } from "react";
 import LoginModal from "../../../layouts/common/LoginModal";
-import { Book, Inbox, Library, Search, Star, Trash } from "lucide-react";
 import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
+import { Book, Inbox, Library, Search, Star, Trash } from "lucide-react";
 
 export interface FlashcardSet {
   _id?: string;
@@ -47,7 +47,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           : await api.get("/flashcard-set/free");
       setSets(res.data.data as FlashcardSet[]);
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error", { autoClose: 1500 });         
+      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error", { autoClose: 1000 });         
     } finally {
       setLoading(false);
     }
@@ -58,9 +58,9 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     try {
       await api.delete(`/flashcard-set/${deleteSetId}`);
       setSets(prev => prev.filter(s => s._id !== deleteSetId));
-      showToast("Xóa bộ flashcard thành công!", "success", { autoClose: 1500 });
+      showToast("Xóa bộ flashcard thành công!", "success", { autoClose: 1000 });
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", { autoClose: 1500 });
+      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", { autoClose: 1000 });
     } finally {
       setDeleteSetId(null);
     }
@@ -82,7 +82,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       setSets((prev) => [...prev, res.data.data]);
       setShowModal(false);
       setForm({ name: "", description: "" });
-      showToast("Thêm bộ từ vựng thành công!", "success", {autoClose: 1500});
+      showToast("Thêm bộ từ vựng thành công!", "success", { autoClose: 1000 });
       setError("");
     } catch (err: any) {
       setError(err.response?.data?.message || "Lỗi khi tạo bộ từ vựng!");
@@ -315,7 +315,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
         </div>
       )}
 
-      {/* Modal đăng nhập */}
+      {/* Modal login */}
       <LoginModal 
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}

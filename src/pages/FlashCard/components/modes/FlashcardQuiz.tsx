@@ -32,20 +32,13 @@ const FlashcardQuiz: React.FC<QuizModeProps> = ({
         <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
           <span className="text-3xl">😕</span>
         </div>
-        <p className="text-xl font-semibold text-gray-700 mb-2">
-          Chưa đủ flashcards!
-        </p>
-        <p className="text-gray-500">
-          Cần ít nhất 4 flashcards để chơi trắc nghiệm
-        </p>
+        <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
+        <p className="text-gray-500">Cần ít nhất 4 flashcards để chơi trắc nghiệm</p>
       </div>
     );
   }
 
-  const correctAnswer =
-    quizDirection === "en2vi"
-      ? correctCard?.meaning
-      : correctCard?.word;
+  const correctAnswer = quizDirection === "en2vi" ? correctCard?.meaning : correctCard?.word;
 
   return (
     <div className="flex justify-center">

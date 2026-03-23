@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import FlashcardItem from "./FlashcardItem";
+import FlashcardItem from "../FlashcardItem";
 import { HelpCircle } from "lucide-react";
 
 export interface Flashcard {

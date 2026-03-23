@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Flashcard } from "./FlashcardList";
+import { Flashcard } from "../FlashcardList";
 
 interface Props {
   flashcards: Flashcard[];

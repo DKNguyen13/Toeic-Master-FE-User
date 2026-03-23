@@ -1,4 +1,4 @@
-import { Flashcard } from "./FlashcardList";
+import { Flashcard } from "../FlashcardList";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Volume2, VolumeX, Repeat, ChevronRight, RotateCcw, Eye, EyeOff, CheckCircle2, XCircle, BookOpen, Mic, Trophy, AlertTriangle, Send } from "lucide-react";
 

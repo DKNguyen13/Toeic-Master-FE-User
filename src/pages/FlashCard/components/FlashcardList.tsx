@@ -1,20 +1,20 @@
 import { Book } from "lucide-react";
 import api from "../../../config/axios";
 import FlashcardItem from "./FlashcardItem";
-import FlashcardQuiz from "./FlashcardQuiz";
-import FlashcardModal from "./FlashcardModal";
 import { useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import FlashcardMatrix from "./FlashcardMatrix";
 import { showToast } from "../../../utils/toast";
+import FlashcardQuiz from "./modes/FlashcardQuiz";
 import React, { useEffect, useState } from "react";
-import FlashcardDictation from "./FlashcardDictation";
-import FlashcardRandomMode from "./FlashcardRandomMode";
-import FlashcardTrueFalseMode from "./FlashcardTrueFalseMode";
-import FlashcardShadowingMode from "./FlashcardShadowingMode";
-import FlashcardListenPickMode from "./FlashcardListenPickMode";
+import FlashcardModal from "./modals/FlashcardModal";
+import FlashcardMatrix from "./modes/FlashcardMatrix";
+import FlashcardDictation from "./modes/FlashcardDictation";
+import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
+import FlashcardRandomMode from "./modes/FlashcardRandomMode";
 import UpgradeModal from "../../../components/common/UpgradeModal";
-import ConfirmDeleteFlashcardModal from "./ConfirmDeleteFlashcardModal";
+import FlashcardTrueFalseMode from "./modes/FlashcardTrueFalseMode";
+import FlashcardShadowingMode from "./modes/FlashcardShadowingMode";
+import FlashcardListenPickMode from "./modes/FlashcardListenPickMode";
 import { MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
 
 export interface Flashcard {
@@ -36,7 +36,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ word: "", meaning: "", example: "", note: "" });
-  const [mode, setMode] = useState<ModeKey>("ALL");
   const [randomIndex, setRandomIndex] = useState(0);
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizOptions, setQuizOptions] = useState<string[]>([]);
@@ -52,6 +51,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
   const editable = type === "myList";
+
+  const [mode, setMode] = useState<ModeKey>(() => {
+    return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
+  });
 
   const checkPremium = async () => {
     try {
@@ -230,6 +233,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                   }
 
                   setMode(selected);
+                  localStorage.setItem("flashcard_mode", selected);
                 }}
                 className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm">
                 {MODE_CONFIG.map((m) => (
@@ -358,8 +362,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           />
         )}
 
-        <ConfirmDeleteFlashcardModal
+        <ConfirmDeleteModal
           open={!!deleteCardId}
+          message="Bạn có chắc muốn xóa flashcard này? Hành động này không thể hoàn tác."
           onCancel={() => setDeleteCardId(null)}
           onConfirm={confirmDeleteCard}
         />

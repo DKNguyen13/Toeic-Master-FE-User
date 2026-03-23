@@ -4,6 +4,7 @@ import { showToast } from "../../../utils/toast";
 import React, { useEffect, useRef, useState } from "react";
 import LoginModal from "../../../layouts/common/LoginModal";
 import { Book, Inbox, Library, Search, Star, Trash } from "lucide-react";
+import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
 
 export interface FlashcardSet {
   _id?: string;
@@ -155,30 +156,15 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
             )}
 
             {/* Modal confirm delete */}
-            {deleteSetId && (
-              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fadeIn">
-                  <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Xác nhận xóa</h2>
-                  <p className="text-gray-600 mb-6">
-                    Bạn có chắc muốn xóa bộ {sets.find(s => s._id === deleteSetId)?.name || ""} này?<br></br> Hành động này không thể hoàn tác.
-                  </p>
-                  <div className="flex justify-end gap-3">
-                    <button
-                      onClick={() => setDeleteSetId(null)}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                    >
-                      Hủy
-                    </button>
-                    <button
-                      onClick={confirmDelete}
-                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
+            <ConfirmDeleteModal
+              open={!!deleteSetId}
+              title="Xác nhận xóa"
+              message={`Bạn có chắc muốn xóa bộ ${
+                sets.find(s => s._id === deleteSetId)?.name || ""
+              } này? Hành động này không thể hoàn tác.`}
+              onCancel={() => setDeleteSetId(null)}
+              onConfirm={confirmDelete}
+            />
 
             {/* Flashcard Sets */}
             {sets.length > 0 ? (

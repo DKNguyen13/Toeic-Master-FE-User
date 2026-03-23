@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import FlashcardList from "../components/FlashcardList";
 
 const FlashcardListPage: React.FC = () => {
   const { setId } = useParams<{ setId: string }>();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("flashcard_mode");
+    };
+  }, []);
 
   return (
     <div className="p-6 max-w-6xl mx-auto">

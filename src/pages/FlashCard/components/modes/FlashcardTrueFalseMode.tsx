@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Flashcard } from "./FlashcardList";
+import { Flashcard } from "../FlashcardList";
 
 interface Props {
   flashcards: Flashcard[];
@@ -150,17 +150,17 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-4">
+        <div className="flex gap-3">
           <button onClick={() => handleAnswer(true)}
-            className="flex-1 py-4 rounded-2xl bg-green-500 text-white font-semibold text-lg shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 transition">Đúng
+            className="flex-1 py-2.5 rounded-3xl bg-gradient-to-r from-green-400 to-green-500 text-white font-semibold text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+            Đúng
           </button>
 
           <button onClick={() => handleAnswer(false)}
-            className="flex-1 py-4 rounded-2xl bg-red-500 text-white font-semibold text-lg shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-95 transition">
+            className="flex-1 py-2.5 rounded-3xl bg-gradient-to-r from-red-400 to-red-500 text-white font-semibold text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
             Sai
           </button>
         </div>
-
         {/* Result */}
         {answered && (
           <div className="mt-8">

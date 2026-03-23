@@ -1,4 +1,4 @@
-import { Flashcard } from "./FlashcardList";
+import { Flashcard } from "../FlashcardList";
 import { RefreshCcw, Volume2 } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 

@@ -248,6 +248,12 @@ const Header: React.FC = () => {
       <nav className="flex items-center space-x-6">
         {filteredNavLinks.map((link) => (
           <Link key={link.to} to={link.to}
+          onClick={() => {
+            if (link.to !== "/flashcard") {
+              localStorage.removeItem("flashcard_tab");
+              localStorage.removeItem("flashcard_mode");
+            }
+          }}
             className={`hidden sm:block relative transition-colors duration-200 ${
               location.pathname === link.to
                 ? link.premium ? "text-yellow-600 font-semibold" : "text-blue-600 font-semibold"

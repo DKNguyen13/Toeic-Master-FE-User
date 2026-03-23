@@ -3,7 +3,9 @@ import { isLoggedIn } from "../../../config/axios";
 import FlashcardSetList from "../components/FlashcardSetList";
 
 const FlashcardPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"myList" | "explore">("myList");
+  const [activeTab, setActiveTab] = useState<"myList" | "explore">(() => {
+    return (localStorage.getItem("flashcard_tab") as "myList" | "explore") || "myList";
+  });
 
   return (
     <div className="min-h-screen">
@@ -22,21 +24,21 @@ const FlashcardPage: React.FC = () => {
 
         {/* Buttons */}
         <div className="flex space-x-4">
-          <button
-            onClick={() => setActiveTab("myList")}
+          <button onClick={() => {
+            setActiveTab("myList");
+            localStorage.setItem("flashcard_tab", "myList");
+          }}
             className={`text-base font-medium px-4 py-2 rounded-full transition ${
-              activeTab === "myList"
-                ? "bg-blue-200 text-blue-800"
-                : "bg-white text-blue-700 hover:bg-blue-100"
+              activeTab === "myList" ? "bg-blue-200 text-blue-800" : "bg-white text-blue-700 hover:bg-blue-100"
             }`}>
             List từ của tôi
           </button>
-          <button
-            onClick={() => setActiveTab("explore")}
+          <button onClick={() => {
+            setActiveTab("explore");
+            localStorage.setItem("flashcard_tab", "explore");
+          }}
             className={`text-base font-medium px-4 py-2 rounded-full transition ${
-              activeTab === "explore"
-                ? "bg-blue-200 text-blue-800"
-                : "bg-white text-blue-700 hover:bg-blue-100"
+              activeTab === "explore" ? "bg-blue-200 text-blue-800" : "bg-white text-blue-700 hover:bg-blue-100"
             }`}>
             Khám phá
           </button>

@@ -36,7 +36,6 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ word: "", meaning: "", example: "", note: "" });
-  const [mode, setMode] = useState<ModeKey>("ALL");
   const [randomIndex, setRandomIndex] = useState(0);
   const [quizIndex, setQuizIndex] = useState(0);
   const [quizOptions, setQuizOptions] = useState<string[]>([]);
@@ -52,6 +51,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
   const editable = type === "myList";
+
+  const [mode, setMode] = useState<ModeKey>(() => {
+    return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
+  });
 
   const checkPremium = async () => {
     try {
@@ -230,6 +233,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                   }
 
                   setMode(selected);
+                  localStorage.setItem("flashcard_mode", selected);
                 }}
                 className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm">
                 {MODE_CONFIG.map((m) => (

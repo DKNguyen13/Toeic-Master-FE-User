@@ -2,30 +2,8 @@ import socketService from "../../service/socket";
 import { config } from "../../config/env.config";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, MessageCircle, X, Minimize2, Sparkles, Bot, User } from "lucide-react";
-
-// Types
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "bot";
-  timestamp: Date;
-  isLoading?: boolean;
-}
-
-interface ChatbotProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  socketUrl?: string;
-}
-
-// Loading Dots
-const LoadingDots = () => (
-  <div className="flex space-x-1 items-center">
-    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
-  </div>
-);
+import LoadingDots from "../common/LoadingSpinner/LoadingDots";
+import { ChatbotProps, Message } from "./types/chatbot";
 
 // Message Bubble
 const MessageBubble = ({ message }: { message: Message }) => {

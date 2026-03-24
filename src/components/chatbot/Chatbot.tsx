@@ -1,39 +1,32 @@
-import socketService from "../../service/socket";
+import SuggestionList from "./SuggestionList";
 import { config } from "../../config/env.config";
+import socketService from "../../service/socket";
+import { ChatbotProps, Message } from "./types/chatbot";
+import LoadingDots from "../common/LoadingSpinner/LoadingDots";
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send, MessageCircle, X, Minimize2, Sparkles, Bot, User } from "lucide-react";
 
-// Types
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "bot";
-  timestamp: Date;
-  isLoading?: boolean;
-}
-
-interface ChatbotProps {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  socketUrl?: string;
-}
-
-// Loading Dots
-const LoadingDots = () => (
-  <div className="flex space-x-1 items-center">
-    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
-  </div>
-);
+const DEFAULT_SUGGESTIONS = [
+  "Nâng cấp tài khoản",
+  "Thông tin khóa học",
+  "Báo cáo sự cố",
+  "Về chúng tôi",
+];
 
 // Message Bubble
-const MessageBubble = ({ message }: { message: Message }) => {
+const MessageBubble = ({
+    message,
+    onSuggestionClick,
+    isWaitingResponse
+  }: {
+    message: Message;
+    onSuggestionClick?: (text: string) => void;
+    isWaitingResponse?: boolean;
+  }) => {
   const isBot = message.sender === "bot";
   return (
     <div className={`flex items-start gap-3 ${isBot ? "" : "flex-row-reverse"} animate-slideIn`}>
-      <div
-        className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+      <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
           isBot
             ? "bg-blue-500 shadow-lg"
             : "bg-gradient-to-br from-green-400 to-blue-500 shadow-lg"
@@ -59,13 +52,28 @@ const MessageBubble = ({ message }: { message: Message }) => {
             minute: "2-digit",
           })}
         </span>
+        {message.sender === "bot" && message.suggestions && (
+          <SuggestionList
+            suggestions={message.suggestions}
+            onClick={onSuggestionClick!}
+            disabled={isWaitingResponse}
+          />
+        )}
       </div>
     </div>
   );
 };
 
 // Chat container
-const ChatContainer = ({ messages }: { messages: Message[] }) => {
+const ChatContainer = ({
+    messages,
+    onSuggestionClick,
+    isWaitingResponse
+  }: {
+    messages: Message[];
+    onSuggestionClick: (text: string) => void;
+    isWaitingResponse: boolean;
+  }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -73,14 +81,19 @@ const ChatContainer = ({ messages }: { messages: Message[] }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-white">
       {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} />
+        <MessageBubble
+          key={m.id}
+          message={m}
+          onSuggestionClick={onSuggestionClick}
+          isWaitingResponse={isWaitingResponse}
+        />
       ))}
       <div ref={messagesEndRef} />
     </div>
   );
 };
 
-  // Chat Input
+// Chat Input
 const ChatInput = React.forwardRef<HTMLInputElement, {
   onSendMessage: (text: string) => void;
   disabled: boolean;
@@ -108,8 +121,7 @@ const ChatInput = React.forwardRef<HTMLInputElement, {
         className="w-full pl-4 pr-12 py-3 rounded-xl border-2 border-gray-200 
                    focus:border-blue-500 focus:outline-none transition-colors
                    disabled:bg-gray-100 disabled:cursor-not-allowed
-                   text-sm shadow-sm"
-      />
+                   text-sm shadow-sm"/>
       <button
         onClick={handleSubmit}
         disabled={disabled || !input.trim()}
@@ -134,6 +146,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = `${con
       text: "Xin chào! 👋 Tôi là Toeic Bot, trợ lý học tiếng Anh của bạn. Tôi có thể giúp gì cho bạn hôm nay?",
       sender: "bot",
       timestamp: new Date(),
+      suggestions: DEFAULT_SUGGESTIONS
     },
   ]);
   const [isConnected, setIsConnected] = useState(false);
@@ -160,26 +173,40 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = `${con
       });
 
       socket.on("response", (text: string) => {
-        setMessages((prev) => prev.filter((m) => !m.isLoading));
-        setMessages((prev) => [
-          ...prev,
-          { id: `bot-${Date.now()}`, text, sender: "bot", timestamp: new Date() },
-        ]);
+        const suggestions = DEFAULT_SUGGESTIONS;
+
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => !m.isLoading);
+          return [
+            ...filtered,
+            {
+              id: `bot-${Date.now()}`,
+              text,
+              sender: "bot",
+              timestamp: new Date(),
+              suggestions: DEFAULT_SUGGESTIONS,
+            },
+          ];
+        });
+
         setIsWaitingResponse(false);
       });
 
       socket.on("error", (err: string) => {
         console.error("Socket error:", err);
-        setMessages((prev) => prev.filter((m) => !m.isLoading));
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `error-${Date.now()}`,
-            text: "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại.",
-            sender: "bot",
-            timestamp: new Date(),
-          },
-        ]);
+        setMessages((prev) => {
+          const filtered = prev.filter((m) => !m.isLoading);
+
+          return [
+            ...filtered,
+            {
+              id: `error-${Date.now()}`,
+              text: "Hệ thống hiện đang bảo trì hoặc gặp sự cố tạm thời. Chúng tôi xin lỗi vì sự bất tiện này, vui lòng thử lại sau ít phút.",
+              sender: "bot",
+              timestamp: new Date(),
+            },
+          ];
+        });
         setIsWaitingResponse(false);
       });
 
@@ -222,7 +249,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = `${con
         ...prev,
         {
           id: `error-${Date.now()}`,
-          text: "Không thể kết nối đến server. Vui lòng thử lại.",
+          text: "Hệ thống hiện đang bảo trì hoặc gặp sự cố tạm thời. Chúng tôi xin lỗi vì sự bất tiện này, vui lòng thử lại sau ít phút.",
           sender: "bot",
           timestamp: new Date(),
         },
@@ -282,21 +309,20 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = `${con
                     <p className="text-xs text-blue-100">{isConnected ? "Trực tuyến" : "Mất kết nối"}</p>
                   </div>
                 </div>
-                <button
-                  onClick={toggleChatbot}
-                  className="p-2 rounded-lg hover:bg-white/20 transition-colors"
-                  aria-label="Thu nhỏ chatbot"
-                >
+                <button onClick={toggleChatbot} className="p-2 rounded-lg hover:bg-white/20 transition-colors" aria-label="Thu nhỏ chatbot">
                   <Minimize2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            <ChatContainer messages={messages} />
+            <ChatContainer
+              messages={messages}
+              onSuggestionClick={handleSendMessage}
+              isWaitingResponse={isWaitingResponse}
+            />
 
             <div className="p-4 bg-white border-t border-gray-100">
-              <ChatInput
-                  ref={chatInputRef}
+              <ChatInput ref={chatInputRef}
                   onSendMessage={handleSendMessage}
                   disabled={!isConnected || isWaitingResponse}
                 />

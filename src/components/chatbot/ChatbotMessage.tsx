@@ -1,12 +1,11 @@
 import React from "react";
-import { Message } from "./types/chatbot";
-import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
-import rehypeKatex from "rehype-katex";
 import remarkMath from 'remark-math';
-
+import rehypeKatex from "rehype-katex";
+import { Message } from "./types/chatbot";
+import ReactMarkdown from "react-markdown";
+import rehypeSanitize from "rehype-sanitize";
 
 interface ChatMessageProps {
   message: Message;
@@ -17,8 +16,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-4`}>
-      <div
-        className={`max-w-[70%] rounded-lg px-4 py-2 ${
+      <div className={`max-w-[70%] rounded-lg px-4 py-2 ${
           isUser
             ? "bg-blue-600 text-white rounded-br-none"
             : "bg-gray-200 text-gray-800 rounded-bl-none"
@@ -34,8 +32,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             <div className="text-sm whitespace-pre-wrap break-words">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeKatex]}
-              >
+                rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeKatex]}>
                 {message.text}
               </ReactMarkdown>
             </div>

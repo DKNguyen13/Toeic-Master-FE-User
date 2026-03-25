@@ -1,5 +1,5 @@
 import AppRoutes from "../src/routes/AppRoutes";
-import { SocketProvider } from "./context/Socket/SocketProvider";
+import { SocketProvider } from "./context/socket/SocketProvider";
 import { SessionTestProvider } from "./context/sessionTest/SessionTestProvider";
 import { NotificationProvider } from "./context/Notification/NotificationProvider";
 // import Header from "./layouts/common/Header";

@@ -1,4 +1,4 @@
-import { Flashcard } from "../FlashcardList";
+import { Flashcard } from "../../types/flashcardModes";
 import React, { useState, useEffect, useRef } from "react";
 import { Volume2, Mic, MicOff, RefreshCw, SkipForward } from "lucide-react";
 
@@ -12,7 +12,7 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
   const [transcript, setTranscript] = useState("");
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1.0); // 0.8 slow, 1.0 normal, 1.2 fast
+  const [speed, setSpeed] = useState(1.0); // 0.5 slow, 1.0 normal, 1.5 fast
   const recognitionRef = useRef<any>(null);
   const currentCard = flashcards[currentIndex] || null;
   const textToSpeak = currentCard?.example || currentCard?.word || "";
@@ -169,13 +169,13 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
 
         <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}
           className="px-4 py-3 rounded-xl border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <option value={0.8}>Chậm (0.8x)</option>
+          <option value={0.5}>Chậm (0.5x)</option>
           <option value={1.0}>Bình thường (1.0x)</option>
-          <option value={1.2}>Nhanh (1.2x)</option>
+          <option value={1.5}>Nhanh (1.5x)</option>
         </select>
       </div>
 
-      {/* Ghi âm & Nói theo */}
+      {/* Record & speak */}
       <div className="flex flex-col items-center gap-6">
         <button onClick={isRecording ? stopRecording : startRecording}
           className={`inline-flex items-center gap-3 px-10 py-5 rounded-full font-bold text-white transition shadow-lg transform hover:scale-105 active:scale-95 ${

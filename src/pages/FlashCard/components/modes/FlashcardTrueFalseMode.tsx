@@ -1,5 +1,5 @@
+import { Flashcard } from "../../types/flashcardModes";
 import React, { useEffect, useState, useRef } from "react";
-import { Flashcard } from "../FlashcardList";
 
 interface Props {
   flashcards: Flashcard[];

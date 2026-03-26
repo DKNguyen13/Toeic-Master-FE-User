@@ -10,20 +10,13 @@ import FlashcardModal from "./modals/FlashcardModal";
 import FlashcardMatrix from "./modes/FlashcardMatrix";
 import FlashcardDictation from "./modes/FlashcardDictation";
 import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
+import BulkFlashcardModal from "./modals/BulkFlashcardModal";
 import FlashcardRandomMode from "./modes/FlashcardRandomMode";
 import UpgradeModal from "../../../components/common/UpgradeModal";
 import FlashcardTrueFalseMode from "./modes/FlashcardTrueFalseMode";
 import FlashcardShadowingMode from "./modes/FlashcardShadowingMode";
 import FlashcardListenPickMode from "./modes/FlashcardListenPickMode";
-import { MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
-
-export interface Flashcard {
-  _id?: string;
-  word: string;
-  meaning: string;
-  example?: string;
-  note?: string;
-}
+import { Flashcard, MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
 
 interface FlashcardListProps {
   setId?: string;
@@ -48,9 +41,10 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
   const [userTier, setUserTier] = useState<UserTier>("free");
   const type = propType || location.state?.type || "myList";
+  const editable = type === "myList";
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
-  const editable = type === "myList";
+  const [showBulkModal, setShowBulkModal] = useState(false);
 
   const [mode, setMode] = useState<ModeKey>(() => {
     return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
@@ -320,6 +314,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
                 </p>
               </div>
             )}
+            {editable && (
+              <div onClick={() => setShowBulkModal(true)}
+                className="group border-3 border-dashed border-green-300 rounded-3xl flex flex-col justify-center items-center h-64 text-green-500 hover:border-green-400 hover:bg-green-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+                  <span className="text-3xl text-green-400 font-bold">+</span>
+                </div>
+                <p className="font-semibold text-lg">Thêm hàng loạt</p>
+                <p className="text-sm text-green-400 mt-1 text-center">Dán nhiều từ vựng cùng lúc</p>
+              </div>
+            )}
 
             {flashcards.length > 0 ? (
               flashcards.map((card) => (
@@ -361,6 +365,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
           onClose={closeModal}
           />
         )}
+
+        <BulkFlashcardModal
+          open={showBulkModal}
+          onClose={() => setShowBulkModal(false)}
+          setId={setId}
+          onSuccess={(newCards) =>
+            setFlashcards((prev) => [...prev, ...newCards])
+          }
+        />
 
         <ConfirmDeleteModal
           open={!!deleteCardId}

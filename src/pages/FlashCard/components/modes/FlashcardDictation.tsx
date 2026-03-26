@@ -1,6 +1,7 @@
-import { Flashcard } from "../FlashcardList";
+
+import { Flashcard } from "../../types/flashcardModes";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Volume2, VolumeX, Repeat, ChevronRight, RotateCcw, Eye, EyeOff, CheckCircle2, XCircle, BookOpen, Mic, Trophy, AlertTriangle, Send } from "lucide-react";
+import { Volume2, Repeat, ChevronRight, RotateCcw, Eye, EyeOff, CheckCircle2, XCircle, BookOpen, Mic, Trophy, AlertTriangle, Send } from "lucide-react";
 
 interface Props {
   flashcards: Flashcard[];

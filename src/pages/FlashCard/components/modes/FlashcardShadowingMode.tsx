@@ -1,4 +1,4 @@
-import { Flashcard } from "../FlashcardList";
+import { Flashcard } from "../../types/flashcardModes";
 import React, { useState, useEffect, useRef } from "react";
 import { Volume2, Mic, MicOff, RefreshCw, SkipForward } from "lucide-react";
 

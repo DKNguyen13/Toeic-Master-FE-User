@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Flashcard } from "./FlashcardList";
+import { Flashcard } from "../types/flashcardModes";
 import { Trash, Music, Volume2, Lightbulb } from "lucide-react";
 
 interface FlashcardItemProps {

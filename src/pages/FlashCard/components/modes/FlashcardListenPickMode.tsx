@@ -1,5 +1,5 @@
-import { Flashcard } from "../FlashcardList";
 import { RefreshCcw, Volume2 } from "lucide-react";
+import { Flashcard } from "../../types/flashcardModes";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 interface Props {

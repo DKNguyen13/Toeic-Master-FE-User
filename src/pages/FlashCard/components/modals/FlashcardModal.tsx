@@ -1,5 +1,5 @@
 import React from "react";
-import { Flashcard } from "../FlashcardList";
+import { Flashcard } from "../../types/flashcardModes";
 
 type FlashcardFields = "word" | "meaning" | "example" | "note";
 

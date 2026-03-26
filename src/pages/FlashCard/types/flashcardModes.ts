@@ -1,3 +1,11 @@
+export interface Flashcard {
+  _id?: string;
+  word: string;
+  meaning: string;
+  example?: string;
+  note?: string;
+}
+
 export type ModeKey =
   | "ALL"
   | "RANDOM"

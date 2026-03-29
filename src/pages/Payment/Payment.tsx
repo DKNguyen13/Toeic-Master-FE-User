@@ -167,11 +167,11 @@ const PaymentPage: React.FC = () => {
                           <span className="text-4xl font-bold text-gray-900">
                             {pkg.discountedPrice.toLocaleString()}
                           </span>
-                          <span className="text-gray-600">đ/tháng</span>
+                          <span className="text-gray-600">vnđ</span>
                         </div>
                         <div className="flex items-center justify-center gap-2 mb-3">
                           <span className="text-gray-400 line-through text-lg">
-                            {pkg.originalPrice.toLocaleString()}đ
+                            {pkg.originalPrice.toLocaleString()} vnđ
                           </span>
                         </div>
                       {/* CTA Button */}
@@ -225,8 +225,19 @@ const PaymentPage: React.FC = () => {
                 </p>
 
                 <p className="mt-4 text-center text-2xl font-bold text-gray-600">
-                  {selectedPkg.discountedPrice.toLocaleString()}đ
-                  <span className="text-base font-normal text-gray-600">/tháng</span>
+                  {selectedPkg.durationMonths === 1 ? (
+                    <>
+                      {selectedPkg.discountedPrice.toLocaleString()} vnđ
+                      <span className="text-base font-normal text-gray-500">/tháng</span>
+                    </>
+                  ) : (
+                    <>
+                      {selectedPkg.discountedPrice.toLocaleString()} vnđ
+                      <span className="text-base font-normal text-gray-500">
+                        /{selectedPkg.durationMonths} tháng
+                      </span>
+                    </>
+                  )}
                 </p>
 
                 <div className="mt-4 rounded-lg bg-gray-50 px-4 py-3">

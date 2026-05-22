@@ -192,6 +192,10 @@ export const useTestSession = () => {
           questionId,
           selectedAnswer: value.selectedAnswer,
         }))
+      if(finalAnswers.length === 0) {
+        alert("Bạn chưa trả lời câu hỏi nào để nộp bài.")
+        return
+      }
 
       await submitBulkAnswers(sessionId!, finalAnswers)
 

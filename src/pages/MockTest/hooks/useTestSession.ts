@@ -131,17 +131,14 @@ export const useTestSession = () => {
 
   // handleAnswer với kiểm tra isSocketReady
   const handleAnswer = (questionId: string, answerIndex: number) => {
-    const questionsInPart = questions.filter(
-      (q) => q.partNumber === currentPart
-    );
-    const question = questions.find((q) => q.id === questionId);
+    const question = questions.find((q) => q.id === questionId)
 
     if (!question) {
-      console.error("Question not found:", questionId);
-      return;
+      console.error("Question not found:", questionId)
+      return
     }
 
-    const selectedLetter = indexToLetter[answerIndex] as "A" | "B" | "C" | "D";
+    const selectedLetter = indexToLetter[answerIndex] as "A" | "B" | "C" | "D"
 
     setAnswers((prev) => ({
       ...prev,
@@ -150,11 +147,11 @@ export const useTestSession = () => {
         selectedAnswer: selectedLetter,
         isSkipped: false,
       },
-    }));
+    }))
 
-    // CHỈ GỬI ĐÁP ÁN KHI SOCKET READY (hoặc sẽ được queue nếu chưa ready)
+    // Chỉ auto-save, không phụ thuộc nó để submit
     sendAnswer(sessionId!, question.id, selectedLetter)
-  };
+  }
 
   // Điều hướng câu hỏi trong part
   const handleNavigateQuestion = (indexInPart: number) => {
@@ -186,23 +183,29 @@ export const useTestSession = () => {
 
   const handleSubmitSession = async (noRedirect = false) => {
     try {
-      setError(null);
-      setLoading(true);
+      setError(null)
+      setLoading(true)
 
-      if (unsentAnswers.length) {
-        await submitBulkAnswers(sessionId!, unsentAnswers);
-        setUnsentAnswers([]);
-      }
-      await submitSession(sessionId!);
+      const finalAnswers = Object.entries(answers)
+        .filter(([_, value]) => value.selectedAnswer !== null)
+        .map(([questionId, value]) => ({
+          questionId,
+          selectedAnswer: value.selectedAnswer,
+        }))
+
+      await submitBulkAnswers(sessionId!, finalAnswers)
+
+      await submitSession(sessionId!)
+
       if (!noRedirect) {
-        navigate(`/session/${sessionId}/results`);
+        navigate(`/session/${sessionId}/results`)
       }
     } catch (err: any) {
-      setError(err.message || "Lỗi khi nộp bài");
+      setError(err.message || "Lỗi khi nộp bài")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleGoBack = () => navigate(-1);
 

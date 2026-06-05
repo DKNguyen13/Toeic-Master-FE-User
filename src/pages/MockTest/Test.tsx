@@ -16,6 +16,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   //Chọn hook theo mode
   const hookData = isView ? useViewSession() : useTestSession();
   const {
+    sessionId,
     session,
     parts,
     currentPart,
@@ -36,7 +37,11 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   } = hookData as ReturnType<typeof useTestSession> &
     ReturnType<typeof useViewSession>;
 
-  useBlockNavigation(!isView, handlePauseTestSession);
+  useBlockNavigation({
+    shouldBlock: !isView,
+    onConfirmLeave: handlePauseTestSession,
+    sessionId: sessionId,
+  })
 
   const shouldScrollRef = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -47,24 +52,26 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   };
 
   useEffect(() => {
-    if (!isView && session && session.status === "paused") {
+    if (isView) return;
+
+    const handlePageShow = () => {
       handleResumeTestSession();
-    }
-  }, [session, isView]);
+    };
 
-  useEffect(() => {
-    if (!isView) {
-      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        event.preventDefault();
-      };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        handleResumeTestSession();
+      }
+    };
 
-      window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-      return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
-    }
-  }, [isView]);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [isView, handleResumeTestSession]);
 
   useEffect(() => {
     if (!shouldScrollRef.current) return;

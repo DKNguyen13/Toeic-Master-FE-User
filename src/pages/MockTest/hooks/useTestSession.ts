@@ -26,10 +26,15 @@ export const useTestSession = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [parts, setParts] = useState<number[]>([]);
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
-  const [unsentAnswers, setUnsentAnswers] = useState<
-    { questionId: string; selectedAnswer: string | null }[]
-  >([]);
   const hasPausedRef = useRef(false);
+  const isResumingRef = useRef(false);
+  const isInitialLoadingRef = useRef(true);
+  const sessionRef = useRef<Session | null>(null);
+
+  // Keep sessionRef updated
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,6 +98,7 @@ export const useTestSession = () => {
         setError("Lỗi khi tải dữ liệu bài thi.");
       } finally {
         setLoading(false);
+        isInitialLoadingRef.current = false;
       }
     };
 
@@ -130,7 +136,7 @@ export const useTestSession = () => {
   const indexToLetter = ["A", "B", "C", "D"];
 
   // handleAnswer với kiểm tra isSocketReady
-  const handleAnswer = (questionId: string, answerIndex: number) => {
+  const handleAnswer = useCallback((questionId: string, answerIndex: number) => {
     const question = questions.find((q) => q.id === questionId)
 
     if (!question) {
@@ -151,7 +157,7 @@ export const useTestSession = () => {
 
     // Chỉ auto-save, không phụ thuộc nó để submit
     sendAnswer(sessionId!, question.id, selectedLetter)
-  }
+  }, [questions, sendAnswer, sessionId]);
 
   // Điều hướng câu hỏi trong part
   const handleNavigateQuestion = (indexInPart: number) => {
@@ -214,30 +220,70 @@ export const useTestSession = () => {
   const handleGoBack = () => navigate(-1);
 
   const handlePauseTestSession = useCallback(async () => {
+    if (!sessionId) return
+
     if (hasPausedRef.current) {
-      return;
+      return
     }
 
-    hasPausedRef.current = true;
+    hasPausedRef.current = true
+
     try {
-      await pauseSession(sessionId);
+      await pauseSession(sessionId)
     } catch (err: any) {
-      setError(`Lỗi khi pause session :  ${err.message}`);
+      hasPausedRef.current = false
+      setError(`Lỗi khi pause session: ${err.message}`)
     }
-  }, [sessionId]);
+  }, [sessionId])
 
   const handleResumeTestSession = useCallback(async () => {
+    if (!sessionId) return
+    if (isInitialLoadingRef.current) return
+    if (isResumingRef.current) return
+
+    isResumingRef.current = true
+
     try {
-      await resumeSession(sessionId);
-      const refreshed = await getSession(sessionId);
-      if (refreshed?.session) {
-        setSession(refreshed.session);
+      const localStatus = sessionRef.current?.status;
+
+      if (localStatus === "paused") {
+        await resumeSession(sessionId)
+        const refreshed = await getSession(sessionId, true)
+
+        if (refreshed?.session) {
+          setSession(refreshed.session)
+        }
+
+        hasPausedRef.current = false
+        return
       }
-      hasPausedRef.current = false;
+
+      const refreshed = await getSession(sessionId, true)
+      const latestSession = refreshed?.session
+      console.log("Latest session status on resume attempt:", latestSession?.status)
+
+      if (!latestSession) return
+
+      if (latestSession.status === "paused") {
+        await resumeSession(sessionId)
+
+        const afterResume = await getSession(sessionId, true)
+
+        if (afterResume?.session) {
+          setSession(afterResume.session)
+        }
+
+        hasPausedRef.current = false
+        return
+      }
+
+      setSession(latestSession)
     } catch (err) {
-      console.error("Resume failed:", err);
+      console.error("Resume failed:", err)
+    } finally {
+      isResumingRef.current = false
     }
-  }, [sessionId]);
+  }, [sessionId])
 
   return {
     sessionId,

@@ -12,27 +12,25 @@ interface NavigationProps {
   time?: number;
 }
 
-const Navigation: React.FC<NavigationProps> = ({
-  isView,
-  questions,
-  currentPart,
-  currentQuestion,
-  answers,
-  onNavigate,
-  onSubmit,
+interface TimerDisplayProps {
+  time: number;
+  isCountDown: boolean;
+  isView: boolean;
+  onSubmit?: () => void;
+}
+
+const TimerDisplayComponent: React.FC<TimerDisplayProps> = ({
   time,
+  isCountDown,
+  isView,
+  onSubmit,
 }) => {
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [remainingTime, setRemainingTime] = useState(
     typeof time === "number" && time > 0 ? time : 0
   );
 
-  const isCountDown = typeof time === "number" && time > 0;
-
   useEffect(() => {
-    if (isCountDown) {
-      setRemainingTime(time);
-    }
+    setRemainingTime(time);
   }, [time]);
 
   // Đếm ngược thời gian
@@ -61,6 +59,34 @@ const Navigation: React.FC<NavigationProps> = ({
     const s = seconds % 60;
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
+
+  return (
+    <div className="flex flex-col">
+      <span className="text-sm">
+        {isCountDown ? "Thời gian còn lại:" : "Thời gian làm bài:"}
+      </span>
+      <span className="font-semibold text-lg text-blue-600">
+        {formatTime(remainingTime)}
+      </span>
+    </div>
+  );
+};
+
+const TimerDisplay = React.memo(TimerDisplayComponent);
+
+const NavigationComponent: React.FC<NavigationProps> = ({
+  isView,
+  questions,
+  currentPart,
+  currentQuestion,
+  answers,
+  onNavigate,
+  onSubmit,
+  time,
+}) => {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const isCountDown = typeof time === "number" && time > 0;
 
   const toggleFullScreen = () => {
     if (!document.fullscreenElement) {
@@ -118,12 +144,12 @@ const Navigation: React.FC<NavigationProps> = ({
       <div className="space-y-4">
         {!isView && (
           <div className="flex flex-col mb-4">
-            <span className="text-sm">
-              {isCountDown ? "Thời gian còn lại:" : "Thời gian làm bài:"}
-            </span>
-            <span className="font-semibold text-lg text-blue-600">
-              {formatTime(remainingTime)}
-            </span>
+            <TimerDisplay
+              time={time ?? 0}
+              isCountDown={isCountDown}
+              isView={isView}
+              onSubmit={onSubmit}
+            />
           </div>
         )}
 
@@ -161,5 +187,7 @@ const Navigation: React.FC<NavigationProps> = ({
     </div>
   );
 };
+
+const Navigation = React.memo(NavigationComponent);
 
 export default Navigation;

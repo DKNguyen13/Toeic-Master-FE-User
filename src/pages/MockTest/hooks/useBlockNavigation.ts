@@ -1,94 +1,147 @@
-import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react"
+import { useNavigate } from "react-router-dom"
+import { config } from "../../../config/env.config"
 
-export function useBlockNavigation(
-  shouldBlock: boolean,
-  onConfirmLeave?: () => void
-) {
-  const navigate = useNavigate();
-  const originalNavigate = useRef(navigate);
+interface UseBlockNavigationProps {
+  shouldBlock: boolean
+  onConfirmLeave?: () => Promise<void> | void
+  sessionId?: string
+}
 
-  // Cảnh báo khi reload / đóng tab
+export function useBlockNavigation({
+  shouldBlock,
+  onConfirmLeave,
+  sessionId,
+}: UseBlockNavigationProps) {
+  const navigate = useNavigate()
+
+  const sessionIdRef = useRef<string | undefined>(sessionId)
+  const onConfirmLeaveRef = useRef(onConfirmLeave)
+
   useEffect(() => {
+    sessionIdRef.current = sessionId
+  }, [sessionId])
+
+  useEffect(() => {
+    onConfirmLeaveRef.current = onConfirmLeave
+  }, [onConfirmLeave])
+
+  const pauseByKeepAliveFetch = () => {
+    const currentSessionId = sessionIdRef.current
+
+    if (!currentSessionId) return
+
+    const token = sessionStorage.getItem("accessToken")
+
+    if (!token) return
+
+    fetch(`${config.apiBaseUrl}/api/session/${currentSessionId}/pause`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        reason: "leave_page",
+      }),
+      keepalive: true,
+    })
+  }
+
+  // Cảnh báo khi reload / đóng tab / đóng trình duyệt
+  useEffect(() => {
+    if (!shouldBlock) return
+
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (shouldBlock) {
-        e.preventDefault();
-        e.returnValue = "";
+      e.preventDefault()
+      e.returnValue = ""
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+    }
+  }, [shouldBlock])
+
+  // Gửi pause khi trang bị ẩn / đóng / reload
+  useEffect(() => {
+    if (!shouldBlock) return
+
+    const handlePageHide = () => {
+      pauseByKeepAliveFetch()
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        pauseByKeepAliveFetch()
       }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [shouldBlock]);
+    }
+
+    window.addEventListener("pagehide", handlePageHide)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener("pagehide", handlePageHide)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [shouldBlock])
 
   // Chặn click link nội bộ
   useEffect(() => {
-    if (!shouldBlock) return;
+    if (!shouldBlock) return
 
-    const handleClick = (e: MouseEvent) => {
-      const link = (e.target as HTMLElement).closest("a");
+    const handleClick = async (e: MouseEvent) => {
+      const link = (e.target as HTMLElement).closest("a")
+
       if (link && link.href && link.origin === window.location.origin) {
-        e.preventDefault();
-        e.stopPropagation(); // chặn lan truyền thêm
+        e.preventDefault()
+        e.stopPropagation()
+
         const confirmLeave = window.confirm(
-          "Bạn có chắc muốn rời trang này không? Bài thi sẽ được tạm dừng"
-        );
+          "Bạn có chắc muốn rời trang này không? Bài thi sẽ được tạm dừng.",
+        )
+
         if (confirmLeave) {
-          onConfirmLeave?.();
-          navigate(link.pathname + link.search + link.hash);
+          await onConfirmLeaveRef.current?.()
+
+          navigate(link.pathname + link.search + link.hash)
         }
       }
-    };
+    }
 
-    // Thêm useCapture = true
-    document.addEventListener("click", handleClick, true);
-    return () => document.removeEventListener("click", handleClick, true);
-  }, [shouldBlock, onConfirmLeave, navigate]);
+    document.addEventListener("click", handleClick, true)
 
-  // Ghi đè navigate() trong code
-  useEffect(() => {
-    if (!shouldBlock) return;
-
-    const customNavigate = (to: any, options?: any) => {
-      const confirmLeave = window.confirm(
-        "Bạn có chắc muốn rời trang này không? Mọi thay đổi chưa lưu sẽ bị mất."
-      );
-      if (confirmLeave) {
-        onConfirmLeave?.();
-        originalNavigate.current(to, options);
-      }
-    };
-
-    (window as any).navigate = customNavigate;
     return () => {
-      (window as any).navigate = originalNavigate.current;
-    };
-  }, [shouldBlock, onConfirmLeave]);
+      document.removeEventListener("click", handleClick, true)
+    }
+  }, [shouldBlock, navigate])
 
+  // Chặn nút back
   useEffect(() => {
-    if (!shouldBlock) return;
+    if (!shouldBlock) return
 
-    // Push state giả để chặn back
-    window.history.pushState(null, "", window.location.href);
+    window.history.pushState(null, "", window.location.href)
 
     const handlePopState = async () => {
       const confirmLeave = window.confirm(
-        "Bạn có chắc muốn thoát không? Bài thi sẽ được tạm dừng."
-      );
+        "Bạn có chắc muốn thoát không? Bài thi sẽ được tạm dừng.",
+      )
 
       if (confirmLeave) {
-        onConfirmLeave?.();
-        window.removeEventListener("popstate", handlePopState);
-        window.history.go(-2);
+        await onConfirmLeaveRef.current?.()
+
+        window.removeEventListener("popstate", handlePopState)
+        window.history.go(-2)
       } else {
-        // Không cho back
-        window.history.pushState(null, "", window.location.href);
+        window.history.pushState(null, "", window.location.href)
       }
-    };
-    //window.history.pushState(null, "", window.location.href);
-    window.addEventListener("popstate", handlePopState);
+    }
+
+    window.addEventListener("popstate", handlePopState)
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, [shouldBlock, onConfirmLeave]);
+      window.removeEventListener("popstate", handlePopState)
+    }
+  }, [shouldBlock])
 }

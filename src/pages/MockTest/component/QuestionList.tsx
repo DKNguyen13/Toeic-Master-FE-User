@@ -27,7 +27,7 @@ const groupQuestions = (questions: Question[]) => {
   return { groups: Object.values(groups), singles };
 };
 
-const QuestionList: React.FC<QuestionListProps> = ({
+const QuestionListComponent: React.FC<QuestionListProps> = ({
   questionsInPart,
   answers,
   handleAnswer,
@@ -69,5 +69,7 @@ const QuestionList: React.FC<QuestionListProps> = ({
     </div>
   );
 };
+
+const QuestionList = React.memo(QuestionListComponent);
 
 export default QuestionList;

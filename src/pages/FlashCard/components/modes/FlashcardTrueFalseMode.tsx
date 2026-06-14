@@ -16,7 +16,6 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Text to Speech
   const speak = (text: string) => {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "en-US";
@@ -25,26 +24,22 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
     window.speechSynthesis.speak(utter);
   };
 
-  // Generate question
   const generateQuestion = () => {
-    if (flashcards.length === 0) return;
+    if (!flashcards.length) return;
 
-    const randomCard =
-      flashcards[Math.floor(Math.random() * flashcards.length)];
+    const random = flashcards[Math.floor(Math.random() * flashcards.length)];
+    const correct = Math.random() > 0.5;
 
-    const shouldBeCorrect = Math.random() > 0.5;
-
-    if (shouldBeCorrect) {
-      setCurrent(randomCard);
-      setDisplayMeaning(randomCard.meaning);
+    if (correct) {
+      setCurrent(random);
+      setDisplayMeaning(random.meaning);
       setIsCorrectPair(true);
     } else {
-      const otherCards = flashcards.filter(f => f.word !== randomCard.word);
-      const wrong =
-        otherCards[Math.floor(Math.random() * otherCards.length)];
+      const others = flashcards.filter((f) => f.word !== random.word);
+      const wrong = others[Math.floor(Math.random() * others.length)];
 
-      setCurrent(randomCard);
-      setDisplayMeaning(wrong.meaning);
+      setCurrent(random);
+      setDisplayMeaning(wrong?.meaning || "");
       setIsCorrectPair(false);
     }
 
@@ -56,129 +51,117 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
     generateQuestion();
   }, [flashcards]);
 
-  // Cleanup timeout
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+  const next = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIndex((i) => i + 1);
+    generateQuestion();
+  };
 
-  // Handle answer
-  const handleAnswer = (userChoice: boolean) => {
-    if (answered) return;
+  const handleAnswer = (choice: boolean) => {
+    if (answered || !current) return;
 
-    const isRight = userChoice === isCorrectPair;
+    const isRight = choice === isCorrectPair;
     setResult(isRight);
     setAnswered(true);
 
     if (isRight) {
-      setScore(prev => prev + 1);
-
-      if (current?.word) speak(current.word);
+      setScore((s) => s + 1);
+      speak(current.word);
 
       timeoutRef.current = setTimeout(() => {
-        nextQuestion();
-      }, 1000);
+        next();
+      }, 900);
     }
   };
 
-  // Next
-  const nextQuestion = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIndex(prev => prev + 1);
-    generateQuestion();
-  };
-
   if (!current) {
-    return <div className="text-center py-10">Không có dữ liệu</div>;
+    return (
+      <div className="text-center py-10 text-sm text-gray-500">
+        Không có dữ liệu
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4 text-sm text-gray-500">
-        <span>Câu: {index + 1}</span>
-        <span>Điểm: {score}</span>
+    <div className="max-w-xl mx-auto space-y-5">
+
+      {/* HEADER */}
+      <div className="flex justify-between text-xs text-gray-500 px-1">
+        <span className="font-medium">Câu {index + 1}</span>
+        <span className="font-medium text-gray-500">Điểm {score}</span>
       </div>
 
-      {/* Progress bar */}
-      <div className="h-2 bg-gray-200 rounded-full mb-4">
+      {/* PROGRESS */}
+      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
         <div
-          className="h-2 bg-blue-500 rounded-full transition-all duration-300"
+          className="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300"
           style={{ width: `${(index % 20) * 5}%` }}
         />
       </div>
 
-      {/* Card */}
-      <div
-        className={`rounded-3xl px-8 py-12 text-center shadow-xl border transition-all duration-300 min-h-[320px] flex flex-col justify-center
-        ${
-          answered
-            ? result
-              ? "border-green-400 bg-gradient-to-br from-green-50 to-white"
-              : "border-red-400 bg-gradient-to-br from-red-50 to-white"
-            : "border-gray-200 bg-white"
-        }`}
-      >
-        {/* Word - Meaning */}
-        <div className="mb-10 text-center space-y-6">
-            {/* WORD */}
-            <div>
-                <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                Từ vựng
-                </p>
-                <p className="text-4xl font-bold text-blue-600 tracking-wide">
-                {current.word}
-                </p>
-            </div>
+      {/* CARD */}
+      <div className="relative bg-white border border-gray-200 rounded-2xl p-7 text-center shadow-md hover:shadow-lg transition overflow-hidden">
 
-            {/* MEANING */}
-            <div>
-                <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                Nghĩa
-                </p>
-                <p
-                className={`text-xl font-medium transition ${
-                    answered && result === false
-                    ? "text-red-600"
-                    : "text-gray-800"
-                }`}
-                >
-                {displayMeaning}
-                </p>
-            </div>
+        {/* glow background */}
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-40" />
+
+        {/* WORD */}
+        <div className="mb-8 space-y-1 relative">
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Từ vựng</p>
+          <p className="text-3xl font-bold text-gray-900 tracking-tight">{current.word}</p>
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-3">
+        {/* MEANING */}
+        <div className="mb-8 space-y-1 relative">
+          <p className="text-xs text-gray-500 uppercase tracking-wider">Nghĩa</p>
+          <p className={`text-lg font-medium transition ${
+              answered && result === false
+                ? "text-red-400 line-through"
+                : answered && result === true
+                ? "text-green-600"
+                : "text-gray-700"
+            }`}
+          >
+            {displayMeaning}
+          </p>
+        </div>
+
+        {/* BUTTONS */}
+        <div className="flex gap-10 relative">
           <button onClick={() => handleAnswer(true)}
-            className="flex-1 py-2.5 rounded-3xl bg-gradient-to-r from-green-400 to-green-500 text-white font-semibold text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+            className="flex-1 py-3 rounded-xl border border-green-200 bg-green-50 text-green-500 font-semibold hover:bg-green-500 hover:text-white hover:border-green-600 active:scale-95 transition text-sm">
             Đúng
           </button>
 
           <button onClick={() => handleAnswer(false)}
-            className="flex-1 py-2.5 rounded-3xl bg-gradient-to-r from-red-400 to-red-500 text-white font-semibold text-base shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+            className="flex-1 py-3 rounded-xl border border-red-200 bg-red-50 text-red-700 font-semibold hover:bg-red-500 hover:text-white hover:border-red-500 active:scale-95 transition text-sm">
             Sai
           </button>
         </div>
-        {/* Result */}
+
+        {/* RESULT */}
         {answered && (
-          <div className="mt-8">
+          <div className="mt-6 text-center text-sm">
             {result ? (
-              <p className="text-green-600 font-semibold text-xl animate-pulse">Chính xác!</p>
+              <div className="text-green-600 font-semibold">
+                🎉 Chính xác
+              </div>
             ) : (
-              <p className="text-red-600 font-semibold text-lg">
-                ✘ Sai! Nghĩa đúng:{" "}
-                <span className="font-bold">{current.meaning}</span>
-              </p>
+              <div className="text-gray-900">
+                Sai rồi, đáp án đúng:{" "}
+                <span className="text-red-500 font-semibold">
+                  {current.meaning}
+                </span>
+              </div>
             )}
           </div>
         )}
       </div>
 
-      {answered && result === false && (
-        <button onClick={nextQuestion}
-          className="mt-6 w-full py-4 rounded-2xl bg-blue-500 text-white font-semibold text-lg shadow-md hover:bg-blue-600 hover:shadow-lg active:scale-95 transition">
+      {/* NEXT BUTTON */}
+      {answered && (
+        <button onClick={next} className="w-full py-3 rounded-xl bg-gray-900 text-white
+          hover:bg-black active:scale-95 transition text-sm font-semibold">
           Câu tiếp →
         </button>
       )}

@@ -1,4 +1,4 @@
-import { RefreshCcw, Volume2 } from "lucide-react";
+import { RefreshCcw, Volume2, Trophy, Headphones } from "lucide-react";
 import { Flashcard } from "../../types/flashcardModes";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
@@ -11,26 +11,39 @@ const BOARD_SIZE = 9;
 
 const speak = (text: string, lang = "en-US", rate = 0.9) => {
   if (!window.speechSynthesis || !text) return;
+
   window.speechSynthesis.cancel();
+
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang;
   utterance.rate = rate;
+
   window.speechSynthesis.speak(utterance);
 };
 
 const shuffle = <T,>(items: T[]) => {
   const arr = [...items];
+
   for (let i = arr.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+
   return arr;
 };
 
-const getRandomCardNotInBoard = (all: Flashcard[], currentBoard: Flashcard[]) => {
-  const usedIds = new Set(currentBoard.map(c => c._id || c.word));
-  const candidates = all.filter(c => !usedIds.has(c._id || c.word));
+const getRandomCardNotInBoard = (
+  all: Flashcard[],
+  currentBoard: Flashcard[]
+) => {
+  const usedIds = new Set(currentBoard.map((c) => c._id || c.word));
+
+  const candidates = all.filter(
+    (c) => !usedIds.has(c._id || c.word)
+  );
+
   if (candidates.length === 0) return currentBoard[0];
+
   return candidates[Math.floor(Math.random() * candidates.length)];
 };
 
@@ -39,27 +52,29 @@ const FlashcardListenPickMode: React.FC<Props> = ({ flashcards }) => {
   const [targetIndex, setTargetIndex] = useState(0);
   const [wrongIndices, setWrongIndices] = useState<number[]>([]);
   const [hasFoundCorrect, setHasFoundCorrect] = useState(false);
-  const [score, setScore] = useState(0);
-  const [round, setRound] = useState(1);
-
+  const [replacingIndices, setReplacingIndices] = useState<number[]>([]);
   const canPlay = flashcards.length >= MIN_CARD_COUNT;
-  const targetCard = useMemo(() => board[targetIndex] ?? null, [board, targetIndex]);
+
+  const targetCard = useMemo(
+    () => board[targetIndex] ?? null,
+    [board, targetIndex]
+  );
 
   const generateRound = useCallback(() => {
     if (!canPlay) return;
+
     const nextBoard = shuffle(flashcards).slice(0, BOARD_SIZE);
-    const nextTargetIndex = Math.floor(Math.random() * nextBoard.length);
+    const nextTargetIndex = Math.floor(
+      Math.random() * nextBoard.length
+    );
 
     setBoard(nextBoard);
     setTargetIndex(nextTargetIndex);
     setWrongIndices([]);
     setHasFoundCorrect(false);
-    setRound((prev) => prev + 1);
   }, [canPlay, flashcards]);
 
   useEffect(() => {
-    setScore(0);
-    setRound(1);
     generateRound();
   }, [generateRound]);
 
@@ -76,29 +91,43 @@ const FlashcardListenPickMode: React.FC<Props> = ({ flashcards }) => {
 
     if (index === targetIndex) {
       setHasFoundCorrect(true);
-      setScore((prev) => prev + 1);
       speak(selectedCard.word, "en-US", 1.05);
-
       setTimeout(() => {
         generateRound();
       }, 2200);
-    } else {
+    } 
+    else {
       speak(selectedCard.word, "en-US", 0.8);
 
       setWrongIndices((prev) => [...prev, index]);
-
       setTimeout(() => {
-        setBoard((prevBoard) => {
-          const newBoard = [...prevBoard];
-          const replacement = getRandomCardNotInBoard(flashcards, prevBoard);
-          newBoard[index] = replacement;
-          return newBoard;
-        });
+        setReplacingIndices((prev) => [...prev, index]);
 
-        setWrongIndices((prev) => prev.filter((i) => i !== index));
-      }, 600);
+        setWrongIndices((prev) =>
+          prev.filter((i) => i !== index)
+        );
+
+        setTimeout(() => {
+          setBoard((prevBoard) => {
+            const newBoard = [...prevBoard];
+
+            const replacement = getRandomCardNotInBoard(
+              flashcards,
+              prevBoard
+            );
+
+            newBoard[index] = replacement;
+
+            return newBoard;
+          });
+
+          setReplacingIndices((prev) =>
+            prev.filter((i) => i !== index)
+          );
+        }, 1000);
+      }, 1000);
     }
-  };
+  }
 
   const handleRefresh = () => {
     generateRound();
@@ -106,84 +135,135 @@ const FlashcardListenPickMode: React.FC<Props> = ({ flashcards }) => {
 
   if (!canPlay) {
     return (
-      <div className="text-center py-16">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
-          <span className="text-3xl">😕</span>
+      <div className="py-20 text-center">
+        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-red-100">
+          <span className="text-4xl">😕</span>
         </div>
-        <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ số lượng thẻ flashcard!</p>
-        <p className="text-gray-500">Cần ít nhất 9 flashcards cho chế độ này.</p>
+
+        <h3 className="mb-2 text-2xl font-bold text-slate-800">
+          Chưa đủ số lượng flashcard
+        </h3>
+
+        <p className="text-slate-500">
+          Chế độ này cần ít nhất <b>9 flashcards</b> để bắt đầu.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="mx-auto max-w-6xl space-y-8">
       {/* Header */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-sm text-gray-600">Round {round}</p>
-          <h3 className="text-xl font-bold text-gray-900">Nghe và chọn đúng từ</h3>
-        </div>
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 via-blue-50 to-cyan-50" />
+          <div className="relative p-6">
+            <div className="flex flex-col gap-2">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
+                  Listen & Pick
+                </p>
 
-        <div className="flex items-center gap-3">
-          <button onClick={() => targetCard && speak(targetCard.word, "en-US", 1.0)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-sm">
-            <Volume2 className="w-5 h-5" />
-            Nghe lại
-          </button>
-          <button onClick={handleRefresh}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition shadow-sm">
-            <RefreshCcw className="w-5 h-5" />
-            Làm mới
-          </button>
+                <h2 className="mt-2 flex items-center gap-2 text-lg font-bold text-slate-900">
+                  <Headphones className="h-4 w-4 text-blue-600" />
+                  Nghe và chọn đúng từ
+                </h2>
+
+                <p className="mt-2 text-sm text-slate-500">
+                  Nghe phát âm và chọn đúng từ tương ứng.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() =>
+                    targetCard &&
+                    speak(targetCard.word, "en-US", 1)
+                  }
+                  className="group inline-flex h-11 items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 font-semibold text-white shadow-md transition-all hover:-translate-y-1 hover:shadow-xl"
+                >
+                  <Volume2 className="h-5 w-5 group-hover:animate-pulse" />
+                  Nghe lại
+                </button>
+
+                <button onClick={handleRefresh}
+                  className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+                >
+                  <RefreshCcw className="h-5 w-5" />
+                  Làm mới
+                </button>
+              </div>
+
+              {hasFoundCorrect ? (
+                <div className="inline-flex h-12 items-center rounded-2xl bg-emerald-100 px-5 text-sm font-semibold text-emerald-700 shadow-sm">
+                  Chính xác! Đang chuyển sang round mới...
+                </div>
+              ) : wrongIndices.length > 0 ? (
+                <div className="inline-flex h-12 items-center rounded-2xl bg-red-100 px-5 text-sm font-semibold text-red-600 shadow-sm">
+                  Sai rồi! Đang thay từ mới...
+                </div>
+              ) : (
+                <div className="inline-flex h-12 items-center rounded-2xl bg-blue-100 px-5 text-sm font-semibold text-blue-700 shadow-sm">
+                  Nghe kỹ và chọn từ đúng
+                </div>
+              )}
+            </div>
         </div>
       </div>
 
       {/* Board */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 lg:gap-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-6">
         {board.map((card, index) => {
+          const isReplacing = replacingIndices.includes(index);
           const isAnimatingWrong = wrongIndices.includes(index);
           const isCorrect = hasFoundCorrect && index === targetIndex;
 
           return (
-            <button
-              type="button"
-              key={`${card._id ?? card.word}-${index}-${round}`}
+            <button type="button"
+              key={`${card._id ?? card.word}-${index}`}
               onClick={() => handleSelect(index)}
-              disabled={isAnimatingWrong || hasFoundCorrect}
-              className={`relative text-left p-6 rounded-2xl border-2 bg-white transition-all duration-500 transform
-                ${!hasFoundCorrect && wrongIndices.length === 0
-                  ? "border-gray-200 hover:border-blue-400 hover:shadow-lg hover:-translate-y-1 active:scale-98"
-                  : ""}
-                ${isAnimatingWrong
-                  ? "border-red-500 bg-red-50/70 scale-95 opacity-90 animate-pulse-short"
-                  : ""}
-                ${isCorrect
-                  ? "border-emerald-500 bg-emerald-50 shadow-lg scale-105"
-                  : ""}
+              disabled={
+                isAnimatingWrong || hasFoundCorrect
+              }
+              className={`
+                group
+                relative
+                overflow-hidden
+                rounded-3xl
+                border
+                bg-white
+                p-5
+                text-left
+                shadow-sm
+                transition-all
+                duration-300
+
+                ${!hasFoundCorrect ? "border-slate-200 hover:-translate-y-1 hover:border-blue-400 hover:shadow-xl" : ""}
+                ${isAnimatingWrong ? "border-red-500 bg-red-50 ring-2 ring-red-200" : ""}
+                ${isReplacing ? "opacity-0 scale-90 pointer-events-none": ""}
+                ${isCorrect ? "scale-105 border-emerald-500 bg-emerald-50 shadow-xl ring-4 ring-emerald-200" : ""}
               `}
             >
-              <p className="text-xs text-gray-400 mb-2">Thẻ {index + 1}</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{card.word}</p>
-              <p className="text-sm text-gray-600 line-clamp-3">{card.meaning}</p>
+              <div className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600">
+                {index + 1}
+              </div>
+
+              <div className="mb-3 h-1.5 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500" />
+              <h3 className="mb-2 text-xl font-medium tracking-tight text-slate-900 md:text-2xl">{card.word}</h3>
+              <p className="line-clamp-3 text-sm leading-relaxed text-slate-600">{card.meaning}</p>
+
+              {!hasFoundCorrect && (
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-500 opacity-0 transition-opacity group-hover:opacity-100" />
+              )}
+
+              {isCorrect && (
+                <div className="absolute left-4 top-4">
+                </div>
+              )}
             </button>
           );
         })}
-      </div>
-
-      {/* Footer */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
-        <div className="inline-flex items-center bg-gradient-to-r from-yellow-50 to-yellow-100 text-yellow-800 rounded-full px-5 py-2.5 font-bold shadow-sm">
-          Điểm: {score}
-        </div>
-
-        {hasFoundCorrect ? (
-          <p className="font-semibold text-emerald-600">Chính xác! +1 điểm • Đang chuyển round...</p>
-        ) : wrongIndices.length > 0 ? (
-          <p className="text-sm text-gray-600">Sai rồi! Ô sẽ thay từ mới...</p>
-        ) : (
-          <p className="text-gray-600">Nghe kỹ và chọn thẻ đúng.</p>
-        )}
       </div>
     </div>
   );

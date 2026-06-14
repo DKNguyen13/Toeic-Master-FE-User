@@ -1,4 +1,3 @@
-import { Book } from "lucide-react";
 import api from "../../../config/axios";
 import FlashcardItem from "./FlashcardItem";
 import { useLocation } from "react-router-dom";
@@ -13,6 +12,7 @@ import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
 import BulkFlashcardModal from "./modals/BulkFlashcardModal";
 import FlashcardRandomMode from "./modes/FlashcardRandomMode";
 import UpgradeModal from "../../../components/common/UpgradeModal";
+import { ArrowLeft, Book, Check, ChevronDown } from "lucide-react";
 import FlashcardTrueFalseMode from "./modes/FlashcardTrueFalseMode";
 import FlashcardShadowingMode from "./modes/FlashcardShadowingMode";
 import FlashcardListenPickMode from "./modes/FlashcardListenPickMode";
@@ -21,9 +21,10 @@ import { Flashcard, MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardMod
 interface FlashcardListProps {
   setId?: string;
   type?: "myList" | "explore";
+  onBack?: () => void;
 }
 
-const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) => {
+const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, onBack, }) => {
   const location = useLocation();
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMode, setUpgradeMode] = useState<ModeKey | null>(null);
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [openMode, setOpenMode] = useState(false);
+  const [openDirection, setOpenDirection] = useState(false);
 
   const [mode, setMode] = useState<ModeKey>(() => {
     return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
@@ -184,6 +187,29 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
   }, []);
 
   useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+
+      const modeEl = document.getElementById("mode-dropdown");
+      const directionEl = document.getElementById("direction-dropdown");
+
+      if (modeEl && !modeEl.contains(target)) {
+        setOpenMode(false);
+      }
+
+      if (directionEl && !directionEl.contains(target)) {
+        setOpenDirection(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, []);
+
+  useEffect(() => {
     if (mode === "RANDOM") setRandomIndex(0);
     if (mode === "QUIZ") generateQuiz();
   }, [mode, flashcards, quizDirection]);
@@ -198,57 +224,114 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType }) 
 
   return (
     <div className="min-h-screen">
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="p-6 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            📚 Flashcards
-          </h1>
-          <p className="text-gray-600">Học từ vựng hiệu quả với flashcards</p>
+        <div className="relative mb-8">
+          {onBack && (
+            <button onClick={onBack}
+              className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
+              <ArrowLeft size={18} />Quay lại
+            </button>
+          )}
+
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">📚 Flashcards</h1>
+            <p className="text-gray-600">Học từ vựng hiệu quả với flashcards</p>
+          </div>
         </div>
 
         {/* Mode Controls */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <label htmlFor="mode"
-                className="text-sm font-semibold text-gray-700">
-                Chế độ học:
-              </label>
-              <select
-                value={mode}
-                onChange={(e) => {
-                  const selected = e.target.value as ModeKey;
 
-                  if (isLockedMode(selected)) {
-                    setUpgradeMode(selected);
-                    setShowUpgradeModal(true);
-                    return;
-                  }
+            {/* Custom Dropdown */}
+            <div className="flex items-center gap-3 relative">
+              <label className="text-sm font-semibold text-gray-700">Chế độ học:</label>
+              <div id="mode-dropdown" className="relative">
+                {/* Button */}
+                <button
+                  onClick={() => setOpenMode(prev => !prev)}
+                  className="min-w-[210px] flex items-center justify-between px-4 py-2 border-2 border-gray-200 rounded-xl bg-white text-sm font-medium hover:border-gray-300 transition-all">
+                  <span>
+                    {MODE_CONFIG.find(m => m.key === mode)?.icon}{" "}
+                    {MODE_CONFIG.find(m => m.key === mode)?.label}
+                  </span>
+                  <ChevronDown size={16} />
+                </button>
 
-                  setMode(selected);
-                  localStorage.setItem("flashcard_mode", selected);
-                }}
-                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm">
-                {MODE_CONFIG.map((m) => (
-                  <option key={m.key} value={m.key}>
-                    {m.icon} {m.label} {isLockedMode(m.key) && " 🔒"}
-                  </option>
-                ))}
-              </select>
+                {/* Dropdown */}
+                {openMode && (
+                  <div className="absolute top-full left-0 mt-2 w-[210px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                    {MODE_CONFIG.map((m) => {
+                      const locked = isLockedMode(m.key);
+                      const active = mode === m.key;
+
+                      return (
+                        <button key={m.key}
+                          onClick={() => {
+                            if (locked) {
+                              setUpgradeMode(m.key);
+                              setShowUpgradeModal(true);
+                              setOpenMode(false);
+                              return;
+                            }
+
+                            setMode(m.key);
+                            localStorage.setItem("flashcard_mode", m.key);
+                            setOpenMode(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 transition
+                            ${active ? "bg-blue-50 text-blue-600 font-semibold" : ""}
+                          `}>
+                          <span>{m.icon} {m.label} {locked && " 🔒"}</span>
+                          {active && <Check size={16} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             {mode === "QUIZ" && flashcards.length >= 4 && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-semibold text-gray-700">
-                  Hướng dịch:
-                </label>
-                <select value={quizDirection}
-                  onChange={(e) => setQuizDirection(e.target.value as any)}
-                  className="border-2 border-gray-200 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 bg-white hover:border-gray-300">
-                  <option value="en2vi">Anh → Việt</option>
-                  <option value="vi2en">Việt → Anh</option>
-                </select>
+              <div className="flex items-center gap-2 relative">
+                <label className="text-sm font-semibold text-gray-700">Chuyển đổi:</label>
+
+                {/* Button */}
+                <div id="direction-dropdown" className="relative">
+                  <button onClick={() => setOpenDirection(prev => !prev)}
+                    className="flex items-center justify-between gap-2 px-4 py-2 min-w-[120px] border-2 border-gray-200 rounded-xl bg-white text-sm font-medium hover:border-gray-300 transition">
+                    <span>
+                      {quizDirection === "en2vi" ? "Anh → Việt" : "Việt → Anh"}
+                    </span>
+                    <span className="text-gray-400">▾</span>
+                  </button>
+
+                  {/* Dropdown */}
+                  {openDirection && (
+                    <div className=" absolute top-full left-0 mt-2 w-[130px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                      <button
+                        onClick={() => {
+                          setQuizDirection("en2vi");
+                          setOpenDirection(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50
+                          ${quizDirection === "en2vi" ? "bg-blue-50 text-blue-600 font-semibold" : ""}`}>
+                        Anh → Việt
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setQuizDirection("vi2en");
+                          setOpenDirection(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50
+                         ${quizDirection === "vi2en" ? "bg-blue-50 text-blue-600 font-semibold" : ""}`}>
+                        Việt → Anh
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

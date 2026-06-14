@@ -251,7 +251,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
                 {/* Button */}
                 <button
                   onClick={() => setOpenMode(prev => !prev)}
-                  className="min-w-[200px] flex items-center justify-between px-4 py-2 border-2 border-gray-200 rounded-xl bg-white text-sm font-medium hover:border-gray-300 transition-all">
+                  className="min-w-[210px] flex items-center justify-between px-4 py-2 border-2 border-gray-200 rounded-xl bg-white text-sm font-medium hover:border-gray-300 transition-all">
                   <span>
                     {MODE_CONFIG.find(m => m.key === mode)?.icon}{" "}
                     {MODE_CONFIG.find(m => m.key === mode)?.label}
@@ -261,7 +261,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
 
                 {/* Dropdown */}
                 {openMode && (
-                  <div className="absolute top-full left-0 mt-2 w-[200px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  <div className="absolute top-full left-0 mt-2 w-[210px] bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden">
                     {MODE_CONFIG.map((m) => {
                       const locked = isLockedMode(m.key);
                       const active = mode === m.key;

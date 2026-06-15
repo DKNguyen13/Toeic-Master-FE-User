@@ -139,23 +139,35 @@ const FlashcardRandomMode: React.FC<Props> = ({
     );
   }
 
-  if (activeCards.length === 0) {
+  if (!currentCard) {
+    return <div className="text-center py-20 text-gray-400">Đang tải...</div>;
+  }
+
+  if (flashcards.length < 4) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <Trophy className="w-24 h-24 text-yellow-500 mb-6" />
-        <p className="text-4xl font-bold text-gray-800 mb-3">Chúc mừng!</p>
-        <p className="text-xl text-gray-600 mb-8">Bạn đã hoàn thành toàn bộ bộ thẻ</p>
-        <button onClick={resetProgress}
-          className="flex items-center gap-3 px-10 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-2xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
-          <RotateCw className="w-6 h-6" />
-          Học lại từ đầu
-        </button>
+      <div className="text-center py-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
+          <span className="text-3xl">😕</span>
+        </div>
+        <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
+        <p className="text-gray-500">Cần ít nhất 4 flashcards để chơi trắc nghiệm</p>
       </div>
     );
   }
 
-  if (!currentCard) {
-    return <div className="text-center py-20 text-gray-400">Đang tải...</div>;
+  if (activeCards.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <Trophy className="w-20 h-20 text-yellow-500 mb-6" />
+        <p className="text-xl font-bold text-gray-800 mb-3">Chúc mừng!</p>
+        <p className="text-md text-gray-600 mb-8">Bạn đã hoàn thành toàn bộ bộ thẻ</p>
+        <button onClick={resetProgress}
+          className="flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-2xl font-semibold text-lg hover:scale-105 transition-all shadow-lg">
+          <RotateCw className="w-5 h-5" />
+          Học lại từ đầu
+        </button>
+      </div>
+    );
   }
 
   return (

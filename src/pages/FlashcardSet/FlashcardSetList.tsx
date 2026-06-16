@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import AddFlashcardSetModal from "./modals/AddFlashcardSetModal";
 import EditFlashcardSetModal from "./modals/EditFlashcardSetModal";
 import { Book, Inbox, Library, Pencil, Search, Star, Trash } from "lucide-react";
-import ConfirmDeleteModal from "../FlashCard/components/modals/ConfirmDeleteModal";
+import ConfirmDeleteModal from "../Flashcard/components/modals/ConfirmDeleteModal";
 
 export interface FlashcardSet {
   _id?: string;

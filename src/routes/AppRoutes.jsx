@@ -19,7 +19,7 @@ import DetailTestPage from "../pages/Detail/DetailTestPage";
 import PaymentFail from "../pages/Payment/PaymentFail";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 import ResultPage from "../pages/MockTest/result/ResultPage";
-import FlashcardPage from "../pages/FlashCard/pages/FlashcardPage";
+import FlashcardPage from "../pages/Flashcard/pages/FlashcardPage";
 import FlashcardListPage from "../pages/FlashcardSet/Page/FlashcardListPage";
 import TestList from "../pages/MockTest/TestList";
 import HomePage from "../pages/Home/Home";

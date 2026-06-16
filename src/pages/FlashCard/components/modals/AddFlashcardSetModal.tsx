@@ -105,7 +105,7 @@ const AddFlashcardSetModal: React.FC<Props> = ({
             Tạo mới
           </button>
 
-          <button onClick={onClose} className="flex-1 px-6 py-3 text-base font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+          <button onClick={onClose} className="flex-1 px-6 py-3 text-base font-semibold text-gray-600 bg-gray-200 border border-gray-300 rounded-lg hover:bg-gray-300 hover:border-gray-400 transition-all duration-200">
             Hủy
           </button>
         </div>

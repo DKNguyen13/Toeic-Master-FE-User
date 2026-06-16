@@ -4,7 +4,8 @@ import { showToast } from "../../../utils/toast";
 import React, { useEffect, useRef, useState } from "react";
 import LoginModal from "../../../layouts/common/LoginModal";
 import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
-import { Book, Inbox, Library, Search, Star, Trash } from "lucide-react";
+import { Book, Inbox, Library, Pencil, Search, Star, Trash } from "lucide-react";
+import EditFlashcardSetModal from "./modals/EditFlashcardSetModal";
 
 export interface FlashcardSet {
   _id?: string;
@@ -28,6 +29,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: "", description: "" });
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [editingSet, setEditingSet] = useState<FlashcardSet | null>(null);
   const [deleteSetId, setDeleteSetId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -64,6 +66,10 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     } finally {
       setDeleteSetId(null);
     }
+  };
+
+  const handleEdit = (set: FlashcardSet) => {
+    setEditingSet(set);
   };
 
   const handleAdd = async () => {
@@ -155,23 +161,12 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
             </div>
             )}
 
-            {/* Modal confirm delete */}
-            <ConfirmDeleteModal
-              open={!!deleteSetId}
-              title="Xác nhận xóa"
-              message={`Bạn có chắc muốn xóa bộ ${
-                sets.find(s => s._id === deleteSetId)?.name || ""
-              } này? Hành động này không thể hoàn tác.`}
-              onCancel={() => setDeleteSetId(null)}
-              onConfirm={confirmDelete}
-            />
-
             {/* Flashcard Sets */}
             {sets.length > 0 ? (
               sets.map((set) => (
                 <div  key={set._id}
                   onClick={() => handleSetClick(set._id)}
-                  className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 h-56 flex flex-col justify-between cursor-pointer transform hover:scale-105 border border-gray-100 hover:border-blue-300 overflow-hidden">
+                  className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 h-56 flex flex-col justify-between cursor-pointer transform hover:scale-105 border border-gray-200 hover:border-blue-300 overflow-hidden">
                   {/* Gradient Background Effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   
@@ -181,14 +176,25 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                         <Book className="text-white text-2xl" />
                       </div>
                       {type === "myList" && isLoggedIn && (
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteSetId(set._id!);
-                          }}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-50">
-                          <Trash className="text-red-500 text-lg" />
-                        </button>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(set);
+                            }}
+                            className="p-2 rounded-lg hover:bg-blue-100" title="Chỉnh sửa">
+                            <Pencil size={18} className="text-blue-500" />
+                          </button>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteSetId(set._id!);
+                            }}
+                            className="p-2 rounded-lg hover:bg-red-100" title="Xóa">
+                            <Trash size={18} className="text-red-500" />
+                          </button>
+                        </div>
                       )}
                     </div>
                     
@@ -314,6 +320,33 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Modal update flashcard set */}
+      <EditFlashcardSetModal
+        open={!!editingSet}
+        set={editingSet}
+        onClose={() => setEditingSet(null)}
+        onUpdated={(updatedSet) => {
+          setSets(prev =>
+            prev.map(item =>
+              item._id === updatedSet._id ? updatedSet : item
+            )
+          );
+
+          setEditingSet(null);
+        }}
+      />
+
+      {/* Modal confirm delete */}
+      <ConfirmDeleteModal
+        open={!!deleteSetId}
+        title="Xác nhận xóa"
+        message={`Bạn có chắc muốn xóa bộ ${
+          sets.find(s => s._id === deleteSetId)?.name || ""
+        } này? Hành động này không thể hoàn tác.`}
+        onCancel={() => setDeleteSetId(null)}
+        onConfirm={confirmDelete}
+      />
 
       {/* Modal login */}
       <LoginModal 

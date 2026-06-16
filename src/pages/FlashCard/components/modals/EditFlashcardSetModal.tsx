@@ -55,7 +55,7 @@ const EditFlashcardSetModal: React.FC<Props> = ({
       <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Chỉnh sửa bộ từ vựng</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Cập nhật bộ từ vựng</h2>
           <p className="text-gray-500 mt-2">Cập nhật thông tin bộ flashcard của bạn</p>
         </div>
 

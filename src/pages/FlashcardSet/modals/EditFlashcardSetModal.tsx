@@ -1,7 +1,7 @@
-import api from "../../../../config/axios";
+import api from "../../../config/axios";
 import { FlashcardSet } from "../FlashcardSetList";
 import React, { useEffect, useState } from "react";
-import { showToast } from "../../../../utils/toast";
+import { showToast } from "../../../utils/toast";
 
 interface Props {
   open: boolean;

@@ -1,12 +1,12 @@
-import api from "../../../config/axios";
+import api from "../../config/axios";
+import { showToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
-import { showToast } from "../../../utils/toast";
+import LoginModal from "../../layouts/common/LoginModal";
 import React, { useEffect, useRef, useState } from "react";
-import LoginModal from "../../../layouts/common/LoginModal";
-import ConfirmDeleteModal from "./modals/ConfirmDeleteModal";
-import { Book, Inbox, Library, Pencil, Search, Star, Trash } from "lucide-react";
 import EditFlashcardSetModal from "./modals/EditFlashcardSetModal";
 import AddFlashcardSetModal from "./modals/AddFlashcardSetModal";
+import { Book, Inbox, Library, Pencil, Search, Star, Trash } from "lucide-react";
+import ConfirmDeleteModal from "../FlashCard/components/modals/ConfirmDeleteModal";
 
 export interface FlashcardSet {
   _id?: string;

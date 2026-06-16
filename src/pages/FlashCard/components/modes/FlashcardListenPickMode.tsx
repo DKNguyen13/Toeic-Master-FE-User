@@ -135,18 +135,12 @@ const FlashcardListenPickMode: React.FC<Props> = ({ flashcards }) => {
 
   if (!canPlay) {
     return (
-      <div className="py-20 text-center">
-        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-red-100">
-          <span className="text-4xl">😕</span>
+      <div className="text-center py-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
+          <Headphones className="w-10 h-10 text-blue-500" />
         </div>
-
-        <h3 className="mb-2 text-2xl font-bold text-slate-800">
-          Chưa đủ số lượng flashcard
-        </h3>
-
-        <p className="text-slate-500">
-          Chế độ này cần ít nhất <b>9 flashcards</b> để bắt đầu.
-        </p>
+        <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
+        <p className="text-gray-500">Hãy thêm flashcard để chơi chế độ tìm cặp</p>
       </div>
     );
   }

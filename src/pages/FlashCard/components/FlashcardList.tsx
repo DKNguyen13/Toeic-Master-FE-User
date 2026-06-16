@@ -17,6 +17,7 @@ import FlashcardTrueFalseMode from "./modes/FlashcardTrueFalseMode";
 import FlashcardShadowingMode from "./modes/FlashcardShadowingMode";
 import FlashcardListenPickMode from "./modes/FlashcardListenPickMode";
 import { Flashcard, MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
+import EditFlashcardModal from "./modals/EditFlashcardModal";
 
 interface FlashcardListProps {
   setId?: string;
@@ -48,6 +49,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [openMode, setOpenMode] = useState(false);
   const [openDirection, setOpenDirection] = useState(false);
+  const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
 
   const [mode, setMode] = useState<ModeKey>(() => {
     return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
@@ -129,6 +131,32 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
       showToast(err.response?.data?.message || "Không thể xóa flashcard!", "error", { autoClose: 1000 });
     } finally {
       setDeleteCardId(null);
+    }
+  };
+
+  const handleUpdateFlashcard = async (updatedCard: Flashcard) => {
+    try {
+      const res = await api.put(`/flashcard/${updatedCard._id}`,
+        {
+          word: updatedCard.word,
+          meaning: updatedCard.meaning,
+          example: updatedCard.example,
+          note: updatedCard.note,
+        }
+      );
+
+      setFlashcards(prev =>
+        prev.map(card =>
+          card._id === updatedCard._id
+            ? res.data.data
+            : card
+        )
+      );
+
+      showToast("Cập nhật flashcard thành công!", "success", { autoClose: 1000 });
+      setEditingCard(null);
+    } catch (err: any) {
+      showToast(err.response?.data?.message || "Không thể cập nhật flashcard!", "error");
     }
   };
 
@@ -411,11 +439,14 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
             {flashcards.length > 0 ? (
               flashcards.map((card) => (
                 <FlashcardItem
-                key={card._id}
-                flashcard={card}
-                onDelete={
-                  editable ? (id: string) => setDeleteCardId(id) : undefined
-                }
+                  key={card._id}
+                  flashcard={card}
+                  onDelete={
+                    editable ? (id) => setDeleteCardId(id) : undefined
+                  }
+                  onEdit={
+                    editable ? (card) => setEditingCard(card) : undefined
+                  }
                 />
               ))
             ) : (
@@ -446,6 +477,17 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
           onChange={(field, value) => setForm({ ...form, [field]: value })}
           onAdd={handleAdd}
           onClose={closeModal}
+          />
+        )}
+
+        {editingCard && (
+          <EditFlashcardModal
+            flashcard={editingCard}
+            onClose={() => {
+              setEditingCard(null);
+              setError("");
+            }}
+            onSave={handleUpdateFlashcard}
           />
         )}
 

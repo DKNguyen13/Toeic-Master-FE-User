@@ -7,7 +7,6 @@ import MainLayout from "../layouts/MainLayout";
 import Register from "../pages/Register/Register";
 import { Test } from "../pages/MockTest/Test";
 import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
-import Leaderboard from "../pages/Leaderboard/Leaderboard";
 import Profile from "../pages/Profile/Profile";
 import UpdateProfile from "../pages/Profile/UpdateProfile/UpdateProfile";
 import Payment from "../pages/Payment/Payment";
@@ -136,14 +135,6 @@ const routes = [
     element: (
       <MainLayout>
         <Test isView={true} />
-      </MainLayout>
-    ),
-  },
-  {
-    path: "/leaderboard",
-    element: (
-      <MainLayout>
-        <Leaderboard />
       </MainLayout>
     ),
   },

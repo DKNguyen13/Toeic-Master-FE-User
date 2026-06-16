@@ -4,27 +4,27 @@ const features = [
   {
     icon: Target,
     title: 'Lộ trình học cá nhân hoá',
-    desc: 'AI tự động điều chỉnh bài học theo trình độ của bạn.',
+    desc: 'AI tự động điều chỉnh bài học theo trình độ và mục tiêu của bạn.',
   },
   {
     icon: BookOpen,
-    title: 'Kho đề thi khổng lồ',
-    desc: 'Hơn 500+ đề thật, sát đề thi thật 99%.',
+    title: 'Kho đề luyện tập đa dạng',
+    desc: 'Luyện tập với nhiều bộ đề được xây dựng theo cấu trúc TOEIC hiện hành.',
   },
   {
     icon: Users,
-    title: 'Cộng đồng 50.000+ học viên',
-    desc: 'Thảo luận, chia sẻ kinh nghiệm luyện thi.',
+    title: 'Học tập cùng cộng đồng',
+    desc: 'Trao đổi kinh nghiệm, chia sẻ mẹo học và giải đáp thắc mắc.',
   },
   {
     icon: Sparkles,
     title: 'AI hỗ trợ 24/7',
-    desc: 'Giải thích chi tiết và gợi ý học tập tức thì.',
+    desc: 'Giải thích đáp án, phân tích lỗi sai và đề xuất hướng cải thiện.',
   },
   {
     icon: Layers,
-    title: 'Học từ vựng bằng Flashcard',
-    desc: 'Ghi nhớ nhanh hơn với hệ thống flashcard thông minh và nhắc lại định kỳ bằng AI.',
+    title: 'Flashcard thông minh',
+    desc: 'Ghi nhớ từ vựng hiệu quả với cơ chế nhắc lại ngắt quãng (Spaced Repetition).',
   },
 ];
 

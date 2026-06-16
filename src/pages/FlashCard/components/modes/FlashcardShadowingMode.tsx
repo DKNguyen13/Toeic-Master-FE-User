@@ -95,11 +95,12 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
 
   if (flashcards.length === 0) {
     return (
-      <div style={{ textAlign: "center", padding: "4rem 1rem" }}>
-        <p style={{ fontSize: 18, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-          Chưa có flashcard!
-        </p>
-        <p style={{ color: "#9CA3AF" }}>Hãy thêm thẻ để luyện nói theo.</p>
+      <div className="text-center py-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
+          <Mic className="w-8 h-8 text-blue-500" />
+        </div>
+        <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
+        <p className="text-gray-500">Hãy thêm flashcard để chơi chế độ tìm cặp</p>
       </div>
     );
   }

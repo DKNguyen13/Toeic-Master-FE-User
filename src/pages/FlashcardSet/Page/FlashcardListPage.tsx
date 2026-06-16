@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import FlashcardList from "../components/FlashcardList";
+import FlashcardList from "../../FlashCard/components/FlashcardList";
 
 const FlashcardListPage: React.FC = () => {
   const { setId } = useParams<{ setId: string }>();

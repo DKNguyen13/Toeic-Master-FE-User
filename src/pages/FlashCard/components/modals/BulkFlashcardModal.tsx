@@ -94,46 +94,35 @@ const BulkFlashcardModal: React.FC<Props> = ({
               {rows.map((row, i) => (
                 <tr key={i} className="border-t">
                   <td className="p-1">
-                    <input
-                      value={row.word}
+                    <input value={row.word}
                       onChange={(e) =>
                         handleChange(i, "word", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"
-                    />
+                      className="w-full border rounded px-2 py-1"/>
                   </td>
                   <td className="p-1">
-                    <input
-                      value={row.meaning}
+                    <input value={row.meaning}
                       onChange={(e) =>
                         handleChange(i, "meaning", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"
-                    />
+                      className="w-full border rounded px-2 py-1"/>
                   </td>
                   <td className="p-1">
-                    <input
-                      value={row.example}
+                    <input value={row.example}
                       onChange={(e) =>
                         handleChange(i, "example", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"
-                    />
+                      className="w-full border rounded px-2 py-1"/>
                   </td>
                   <td className="p-1">
-                    <input
-                      value={row.note}
+                    <input value={row.note}
                       onChange={(e) =>
                         handleChange(i, "note", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"
-                    />
+                      className="w-full border rounded px-2 py-1"/>
                   </td>
                   <td className="text-center">
-                    <button
-                      onClick={() => handleDeleteRow(i)}
-                      className="text-red-500 hover:text-red-700"
-                    >
+                    <button onClick={() => handleDeleteRow(i)} className="text-red-500 hover:text-red-700">
                       ✕
                     </button>
                   </td>
@@ -145,26 +134,16 @@ const BulkFlashcardModal: React.FC<Props> = ({
 
         {/* Actions */}
         <div className="flex justify-between items-center mt-4">
-          <button
-            onClick={handleAddRow}
-            className="px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50"
-          >
+          <button onClick={handleAddRow} className="px-4 py-2 rounded-xl border text-blue-600 hover:bg-blue-50">
             + Thêm dòng
           </button>
 
           <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 rounded-xl border text-gray-600 hover:bg-gray-100"
-            >
+            <button onClick={onClose} className="px-4 py-2 rounded-xl border text-gray-600 hover:bg-gray-100">
               Hủy
             </button>
 
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="px-4 py-2 rounded-xl bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50"
-            >
+            <button onClick={handleSubmit} disabled={loading} className="px-4 py-2 rounded-xl bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50">
               {loading ? "Đang thêm..." : "Lưu tất cả"}
             </button>
           </div>

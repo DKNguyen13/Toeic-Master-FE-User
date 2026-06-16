@@ -1,3 +1,4 @@
+import { CheckCircle2 } from "lucide-react";
 import { Flashcard } from "../../types/flashcardModes";
 import React, { useEffect, useState, useRef } from "react";
 
@@ -73,6 +74,18 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
       }, 900);
     }
   };
+
+  if (flashcards.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
+          <CheckCircle2 className="w-10 h-10 text-indigo-400" />
+        </div>
+        <p className="text-lg font-semibold text-gray-700">Chưa có flashcard!</p>
+        <p className="text-gray-400 mt-1 text-sm">Thêm ít nhất 1 thẻ để luyện Đúng / Sai.</p>
+      </div>
+    );
+  }
 
   if (!current) {
     return (

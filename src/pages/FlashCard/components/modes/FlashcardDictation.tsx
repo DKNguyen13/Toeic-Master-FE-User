@@ -174,12 +174,12 @@ const FlashcardDictation: React.FC<Props> = ({ flashcards }) => {
   // ─── Empty state ────
   if (flashcards.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
-          <Mic className="w-10 h-10 text-indigo-400" />
+      <div className="text-center py-16">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
+          <span className="text-3xl">😕</span>
         </div>
-        <p className="text-lg font-semibold text-gray-700">Chưa có flashcard!</p>
-        <p className="text-gray-400 mt-1 text-sm">Thêm ít nhất 1 thẻ để luyện nghe chép.</p>
+        <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
+        <p className="text-gray-500">Hãy thêm flashcard để chơi chế độ tìm cặp</p>
       </div>
     );
   }

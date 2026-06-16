@@ -16,6 +16,7 @@ interface Props {
   flashcards: Flashcard[];
   editable: boolean;
   onDelete?: (id: string) => void;
+  onEdit?: (flashcard: Flashcard) => void;
   onUpdateFlashcards: (cards: Flashcard[]) => void;
   setId?: string;
 }
@@ -41,6 +42,7 @@ const FlashcardRandomMode: React.FC<Props> = ({
   flashcards,
   editable,
   onDelete,
+  onEdit,
   onUpdateFlashcards,
   setId,
 }) => {
@@ -150,7 +152,7 @@ const FlashcardRandomMode: React.FC<Props> = ({
           <span className="text-3xl">😕</span>
         </div>
         <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
-        <p className="text-gray-500">Cần ít nhất 4 flashcards để chơi trắc nghiệm</p>
+        <p className="text-gray-500">Cần ít nhất 4 flashcards để bắt đầu chế độ ôn tập ngẫu nhiên</p>
       </div>
     );
   }
@@ -186,12 +188,11 @@ const FlashcardRandomMode: React.FC<Props> = ({
       </div>
 
       {/* Card */}
-      <div className={`w-full max-w-xl transition-all duration-[160ms] ${
-          animating ? "scale-[0.97] opacity-60" : "scale-100 opacity-100"
-        }`}>
+      <div className={`w-full max-w-xl transition-all duration-[160ms] ${animating ? "scale-[0.97] opacity-60" : "scale-100 opacity-100"}`}>
         <FlashcardItem
           flashcard={currentCard}
           onDelete={editable && onDelete ? () => onDelete(currentCard._id!) : undefined}
+          onEdit={editable && onEdit ? () => onEdit(currentCard) : undefined}
         />
       </div>
 

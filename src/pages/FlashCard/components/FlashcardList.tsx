@@ -382,6 +382,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
           flashcards={flashcards}
           editable={editable}
           onDelete={(id) => setDeleteCardId(id)}
+          onEdit={(card) => setEditingCard(card)}
           onUpdateFlashcards={setFlashcards}
           setId={setId}
           />

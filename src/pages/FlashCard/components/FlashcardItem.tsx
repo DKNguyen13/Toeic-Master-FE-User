@@ -30,14 +30,13 @@ const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, onEdit, onDele
         style={{
           transformStyle: "preserve-3d",
           transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-        }}
-      >
+        }}>
         {/* Mặt trước */}
         <div className="absolute inset-0 w-full h-full" style={{ backfaceVisibility: "hidden" }}>
           <div className="bg-white rounded-2xl shadow-md hover:shadow-xl p-6 h-full flex flex-col justify-center items-center border-2 border-gray-200 hover:border-blue-400 transition-all duration-300">
             <div className="flex-1 w-full flex flex-col justify-center items-center overflow-y-auto px-4">
-              <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <span className="text-2xl">🇺🇸</span>
+              <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center mb-2 mx-auto">
+                <span className="text-lg">🇺🇸</span>
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-3 break-all text-center leading-tight">{flashcard.word}</h2>   
               <p className="text-gray-500 text-sm">Nhấn để xem nghĩa</p>
@@ -70,8 +69,8 @@ const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, onEdit, onDele
           <div className="bg-white rounded-2xl shadow-md hover:shadow-xl p-5 h-full flex flex-col border-2 border-gray-200 hover:border-green-400 transition-all duration-300">
             <div className="flex-1 overflow-y-auto overflow-x-hidden">
               <div className="text-center">
-                <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mb-3 mx-auto">
-                  <span className="text-2xl">🇻🇳</span>
+                <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center mb-2 mx-auto">
+                  <span className="text-lg">🇻🇳</span>
                 </div>
                 
                 <p className="text-xl font-bold text-gray-800 mb-3 break-words px-2">

@@ -83,7 +83,7 @@ const ResourcePage: React.FC = () => {
   if (loading) return <LoadingSkeleton/>;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="w-full flex flex-col min-h-screen">
       {/* Header */}
       <div className="w-full shadow-lg py-10 px-8"
         style={{

@@ -52,7 +52,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   const [openDirection, setOpenDirection] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 12;
+  const FLASHCARD_PER_PAGE = type === "myList" ? 10 : 12;
 
   const [mode, setMode] = useState<ModeKey>(() => {
     return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
@@ -246,17 +246,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   }, [mode, flashcards, quizDirection]);
 
   const getPaginatedFlashcards = () => {
-    if (!editable) {
-      const start = (currentPage - 1) * 12;
-      return flashcards.slice(start, start + 12);
-    }
-
-    if (currentPage === 1) {
-      return flashcards.slice(0, 10);
-    }
-
-    const start = 10 + (currentPage - 2) * 12;
-    return flashcards.slice(start, start + 12);
+    const start = (currentPage - 1) * FLASHCARD_PER_PAGE;
+    return flashcards.slice(start, start + FLASHCARD_PER_PAGE);
   };
 
   const paginatedFlashcards = getPaginatedFlashcards();
@@ -490,11 +481,11 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
           </div>
         )}
 
-        {mode === "ALL" && flashcards.length > ITEMS_PER_PAGE && (
+        {mode === "ALL" && flashcards.length > FLASHCARD_PER_PAGE && (
           <Pagination
             totalItems={flashcards.length}
             currentPage={currentPage}
-            itemsPerPage={ITEMS_PER_PAGE}
+            itemsPerPage={FLASHCARD_PER_PAGE}
             onPageChange={setCurrentPage}
           />
         )}

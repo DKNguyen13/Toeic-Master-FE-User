@@ -19,6 +19,8 @@ import FlashcardTrueFalseMode from "./modes/FlashcardTrueFalseMode";
 import FlashcardListenPickMode from "./modes/FlashcardListenPickMode";
 import Pagination from "../../../components/common/Pagination/Pagination";
 import { Flashcard, MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
+import { useWrongWords } from "../../../hooks/useWrongWords";
+import WrongWordsModal from "./modals/WrongWordsModal";
 
 interface FlashcardListProps {
   setId?: string;
@@ -57,6 +59,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   const [mode, setMode] = useState<ModeKey>(() => {
     return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
   });
+
+  const { wrongWords, addWrongWord } = useWrongWords(setId, mode);
+  const [isPracticeWrong, setIsPracticeWrong] = useState(false);
+  const [showWrongWordsModal, setShowWrongWordsModal] = useState(false);
+
+  const activeFlashcards = isPracticeWrong
+    ? flashcards.filter(card =>
+        wrongWords.some(w => (w._id && card._id && w._id === card._id) || w.word.trim().toLowerCase() === card.word.trim().toLowerCase())
+      )
+    : flashcards;
 
   const checkPremium = async () => {
     try {
@@ -164,12 +176,12 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   };
 
   const generateQuiz = () => {
-    if (flashcards.length < 4) {
+    if (activeFlashcards.length < 4) {
       setCanQuiz(false);
       return;
     }
 
-    const shuffled = [...flashcards].sort(() => Math.random() - 0.5);
+    const shuffled = [...activeFlashcards].sort(() => Math.random() - 0.5);
     const correct = shuffled[0];
     setCorrectCard(correct);
 
@@ -194,7 +206,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   };
 
   const handleNextQuiz = () => {
-    setQuizIndex(prev => (prev + 1) % flashcards.length);
+    setQuizIndex(prev => (prev + 1) % activeFlashcards.length);
     generateQuiz();
   };
 
@@ -241,13 +253,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   }, []);
 
   useEffect(() => {
+    if (mode !== "TRUE_FALSE") {
+      setIsPracticeWrong(false);
+    }
     if (mode === "RANDOM") setRandomIndex(0);
     if (mode === "QUIZ") generateQuiz();
-  }, [mode, flashcards, quizDirection]);
+  }, [mode, activeFlashcards, quizDirection]);
 
   const getPaginatedFlashcards = () => {
     const start = (currentPage - 1) * FLASHCARD_PER_PAGE;
-    return flashcards.slice(start, start + FLASHCARD_PER_PAGE);
+    return activeFlashcards.slice(start, start + FLASHCARD_PER_PAGE);
   };
 
   const paginatedFlashcards = getPaginatedFlashcards();
@@ -372,8 +387,37 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
                 </div>
               </div>
             )}
+
+            {/* Wrong Words Button */}
+            {mode === "TRUE_FALSE" && (
+              <button
+                onClick={() => setShowWrongWordsModal(true)}
+                className="flex items-center gap-2 px-4 py-2 border-2 border-red-200 rounded-xl bg-red-50 text-red-700 text-sm font-semibold hover:bg-red-100 transition-all duration-200"
+              >
+                📝 Từ sai ({wrongWords.length})
+              </button>
+            )}
           </div>
         </div>
+
+        {/* Wrong Words Practice Indicator Banner */}
+        {isPracticeWrong && (
+          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-8 flex flex-wrap items-center justify-between gap-4 animate-fadeIn">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">⚡</span>
+              <div>
+                <p className="font-bold text-red-800 text-sm">Chế độ: Luyện từ sai</p>
+                <p className="text-xs text-red-600">Đang luyện tập {activeFlashcards.length} từ trả lời chưa chính xác trong bộ này.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsPracticeWrong(false)}
+              className="px-4 py-2 bg-white border border-red-300 text-red-700 hover:bg-red-50 text-xs font-semibold rounded-xl transition"
+            >
+              Học tất cả từ
+            </button>
+          </div>
+        )}
 
         {/* Content Area */}
         {mode === "QUIZ" ? (
@@ -389,17 +433,17 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
           />
         ) : mode === "RANDOM" ? (
           <FlashcardRandomMode
-          flashcards={flashcards}
-          editable={editable}
+          flashcards={activeFlashcards}
+          editable={editable && !isPracticeWrong}
           onDelete={(id) => setDeleteCardId(id)}
           onEdit={(card) => setEditingCard(card)}
           onUpdateFlashcards={setFlashcards}
           setId={setId}
           />
         ) : mode === "MATCH" ? (
-          flashcards.length > 0 ? (
+          activeFlashcards.length > 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
-              <FlashcardMatrix flashcards={flashcards} />
+              <FlashcardMatrix flashcards={activeFlashcards} />
             </div>
           ) : (
             <div className="text-center py-16">
@@ -415,16 +459,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
             </div>
           )
         ): mode === "DICTATION" ? (
-          <FlashcardDictation flashcards={flashcards} />
+          <FlashcardDictation flashcards={activeFlashcards} />
         ) : mode === "TRUE_FALSE" ? (
-          <FlashcardTrueFalseMode flashcards={flashcards} />
+          <FlashcardTrueFalseMode flashcards={activeFlashcards} onWrongAnswer={addWrongWord} />
         ) : mode === "LISTEN_PICK" ? (
-          <FlashcardListenPickMode flashcards={flashcards} />
+          <FlashcardListenPickMode flashcards={activeFlashcards} />
         ) : mode === "SHADOWING" ? (
-          <FlashcardShadowingMode flashcards={flashcards} />
+          <FlashcardShadowingMode flashcards={activeFlashcards} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {editable && (
+            {editable && !isPracticeWrong && (
               <div onClick={() => setShowModal(true)}
               className="group border-3 border-dashed border-blue-300 rounded-3xl flex flex-col justify-center items-center h-64 text-blue-500 hover:border-blue-400 hover:bg-blue-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
@@ -436,7 +480,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
                 </p>
               </div>
             )}
-            {editable && (
+            {editable && !isPracticeWrong && (
               <div onClick={() => setShowBulkModal(true)}
                 className="group border-3 border-dashed border-green-300 rounded-3xl flex flex-col justify-center items-center h-64 text-green-500 hover:border-green-400 hover:bg-green-50 cursor-pointer transition-all duration-300 transform hover:scale-105">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
@@ -447,16 +491,16 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
               </div>
             )}
 
-            {flashcards.length > 0 ? (
+            {activeFlashcards.length > 0 ? (
               paginatedFlashcards.map((card) => (
                 <FlashcardItem
                   key={card._id}
                   flashcard={card}
                   onDelete={
-                    editable ? (id) => setDeleteCardId(id) : undefined
+                    editable && !isPracticeWrong ? (id) => setDeleteCardId(id) : undefined
                   }
                   onEdit={
-                    editable ? (card) => setEditingCard(card) : undefined
+                    editable && !isPracticeWrong ? (card) => setEditingCard(card) : undefined
                   }
                 />
               ))
@@ -467,11 +511,13 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
                 </div>
 
                 <h3 className="text-lg font-bold text-gray-700 mb-2">
-                  {editable
+                  {isPracticeWrong
+                    ? "Không có từ sai nào để hiển thị"
+                    : editable
                     ? "Chưa có flashcard nào"
                     : "Set này chưa có flashcard"}
                 </h3>
-                {editable && (
+                {editable && !isPracticeWrong && (
                   <p className="text-gray-500 text-sm text-center max-w-xs">
                     Nhấn vào nút '+' để tạo các từ vựng đầu tiên!
                   </p>
@@ -481,9 +527,9 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
           </div>
         )}
 
-        {mode === "ALL" && flashcards.length > FLASHCARD_PER_PAGE && (
+        {mode === "ALL" && activeFlashcards.length > FLASHCARD_PER_PAGE && (
           <Pagination
-            totalItems={flashcards.length}
+            totalItems={activeFlashcards.length}
             currentPage={currentPage}
             itemsPerPage={FLASHCARD_PER_PAGE}
             onPageChange={setCurrentPage}
@@ -545,6 +591,14 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
                 })()
               : ""
           }
+        />
+
+        <WrongWordsModal
+          open={showWrongWordsModal}
+          onClose={() => setShowWrongWordsModal(false)}
+          onStartPractice={() => setIsPracticeWrong(true)}
+          setId={setId}
+          mode={mode}
         />
       </div>
     </div>

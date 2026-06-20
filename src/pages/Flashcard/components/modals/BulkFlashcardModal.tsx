@@ -83,10 +83,10 @@ const BulkFlashcardModal: React.FC<Props> = ({
           <table className="w-full text-sm">
             <thead className="bg-gray-100 sticky top-0">
               <tr>
-                <th className="p-2 text-left">Word</th>
-                <th className="p-2 text-left">Meaning</th>
-                <th className="p-2 text-left">Example</th>
-                <th className="p-2 text-left">Note</th>
+                <th className="p-2 text-left">Từ vựng</th>
+                <th className="p-2 text-left">Nghĩa</th>
+                <th className="p-2 text-left">Ví dụ</th>
+                <th className="p-2 text-left">Ghi chú</th>
                 <th className="p-2 text-center"></th>
               </tr>
             </thead>
@@ -98,28 +98,28 @@ const BulkFlashcardModal: React.FC<Props> = ({
                       onChange={(e) =>
                         handleChange(i, "word", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"/>
+                      className="w-full border rounded px-2 py-1" />
                   </td>
                   <td className="p-1">
                     <input value={row.meaning}
                       onChange={(e) =>
                         handleChange(i, "meaning", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"/>
+                      className="w-full border rounded px-2 py-1" />
                   </td>
                   <td className="p-1">
                     <input value={row.example}
                       onChange={(e) =>
                         handleChange(i, "example", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"/>
+                      className="w-full border rounded px-2 py-1" />
                   </td>
                   <td className="p-1">
                     <input value={row.note}
                       onChange={(e) =>
                         handleChange(i, "note", e.target.value)
                       }
-                      className="w-full border rounded px-2 py-1"/>
+                      className="w-full border rounded px-2 py-1" />
                   </td>
                   <td className="text-center">
                     <button onClick={() => handleDeleteRow(i)} className="text-red-500 hover:text-red-700">

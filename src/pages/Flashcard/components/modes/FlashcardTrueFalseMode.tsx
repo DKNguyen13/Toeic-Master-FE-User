@@ -4,9 +4,10 @@ import React, { useEffect, useState, useRef } from "react";
 
 interface Props {
   flashcards: Flashcard[];
+  onWrongAnswer?: (card: Flashcard) => void;
 }
 
-const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
+const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards, onWrongAnswer }) => {
   const [current, setCurrent] = useState<Flashcard | null>(null);
   const [displayMeaning, setDisplayMeaning] = useState("");
   const [isCorrectPair, setIsCorrectPair] = useState(true);
@@ -29,14 +30,14 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
     if (!flashcards.length) return;
 
     const random = flashcards[Math.floor(Math.random() * flashcards.length)];
-    const correct = Math.random() > 0.5;
+    const others = flashcards.filter((f) => f.word !== random.word);
+    const correct = others.length === 0 ? true : Math.random() > 0.5;
 
     if (correct) {
       setCurrent(random);
       setDisplayMeaning(random.meaning);
       setIsCorrectPair(true);
     } else {
-      const others = flashcards.filter((f) => f.word !== random.word);
       const wrong = others[Math.floor(Math.random() * others.length)];
 
       setCurrent(random);
@@ -72,6 +73,8 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
       timeoutRef.current = setTimeout(() => {
         next();
       }, 900);
+    } else {
+      onWrongAnswer?.(current);
     }
   };
 
@@ -98,22 +101,8 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
   return (
     <div className="max-w-xl mx-auto space-y-5">
 
-      {/* HEADER */}
-      <div className="flex justify-between text-xs text-gray-500 px-1">
-        <span className="font-medium">Câu {index + 1}</span>
-        <span className="font-medium text-gray-500">Điểm {score}</span>
-      </div>
-
-      {/* PROGRESS */}
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-blue-500 transition-all duration-300"
-          style={{ width: `${(index % 20) * 5}%` }}
-        />
-      </div>
-
       {/* CARD */}
-      <div className="relative bg-white border border-gray-200 rounded-2xl p-7 text-center shadow-md hover:shadow-lg transition overflow-hidden">
+      <div className="relative bg-white mt-10 border border-gray-200 rounded-2xl p-7 text-center shadow-md hover:shadow-lg transition overflow-hidden">
 
         {/* glow background */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-40" />
@@ -127,12 +116,11 @@ const FlashcardTrueFalseMode: React.FC<Props> = ({ flashcards }) => {
         {/* MEANING */}
         <div className="mb-8 space-y-1 relative">
           <p className="text-xs text-gray-500 uppercase tracking-wider">Nghĩa</p>
-          <p className={`text-lg font-medium transition ${
-              answered && result === false
-                ? "text-red-400 line-through"
-                : answered && result === true
-                ? "text-green-600"
-                : "text-gray-700"
+          <p className={`text-lg font-medium transition ${answered && result === false
+            ? "text-red-400 line-through"
+            : answered && result === true
+              ? "text-green-600"
+              : "text-gray-700"
             }`}
           >
             {displayMeaning}

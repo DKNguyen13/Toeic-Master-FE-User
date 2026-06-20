@@ -1,5 +1,5 @@
 import { Flashcard } from "../../types/flashcardModes";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Volume2, Mic, MicOff, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Props {
@@ -14,9 +14,40 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(1.0);
   const recognitionRef = useRef<any>(null);
+  const textToSpeakRef = useRef("");
 
   const currentCard = flashcards[currentIndex] || null;
   const textToSpeak = currentCard?.example || currentCard?.word || "";
+
+  useEffect(() => {
+    textToSpeakRef.current = textToSpeak;
+  }, [textToSpeak]);
+
+  const normalize = (text: string) =>
+    text.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
+
+  const calculateAccuracy = useCallback((spoken: string) => {
+    const target = textToSpeakRef.current;
+    if (!target) return;
+
+    const targetWords = normalize(target).split(" ");
+    const spokenWords = normalize(spoken).split(" ");
+
+    const targetFreq: Record<string, number> = {};
+    for (const w of targetWords) {
+      targetFreq[w] = (targetFreq[w] || 0) + 1;
+    }
+
+    let matchCount = 0;
+    for (const w of spokenWords) {
+      if (targetFreq[w] && targetFreq[w] > 0) {
+        matchCount++;
+        targetFreq[w]--;
+      }
+    }
+
+    setAccuracy(Math.round((matchCount / targetWords.length) * 100));
+  }, []);
 
   useEffect(() => {
     const SpeechRecognitionAPI =
@@ -34,11 +65,16 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
       setTranscript(spoken);
       calculateAccuracy(spoken);
     };
+
     recognitionRef.current.onerror = () => setIsRecording(false);
+
     recognitionRef.current.onend = () => setIsRecording(false);
 
-    return () => recognitionRef.current?.abort();
-  }, []);
+    return () => {
+      recognitionRef.current?.abort();
+      setIsRecording(false);
+    };
+  }, [calculateAccuracy]);
 
   const speak = () => {
     if (!textToSpeak) return;
@@ -47,6 +83,7 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
     utterance.lang = "en-US";
     utterance.rate = speed;
     utterance.onend = () => setIsPlaying(false);
+    utterance.onerror = () => setIsPlaying(false);
     window.speechSynthesis.speak(utterance);
     setIsPlaying(true);
   };
@@ -66,25 +103,22 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
 
   const stopRecording = () => recognitionRef.current?.stop();
 
-  const normalize = (text: string) =>
-    text.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, " ").trim();
-
-  const calculateAccuracy = (spoken: string) => {
-    if (!textToSpeak) return;
-    const targetWords = normalize(textToSpeak).split(" ");
-    const spokenWords = normalize(spoken).split(" ");
-    const matchCount = targetWords.filter((w) => spokenWords.includes(w)).length;
-    setAccuracy(Math.round((matchCount / targetWords.length) * 100));
+  const resetCardState = () => {
+    window.speechSynthesis.cancel();
+    setIsPlaying(false);
+    setTranscript("");
+    setAccuracy(null);
+    setIsRecording(false);
   };
 
   const nextCard = () => {
+    resetCardState();
     setCurrentIndex((prev) => (prev + 1) % flashcards.length);
-    setTranscript(""); setAccuracy(null); setIsRecording(false);
   };
 
   const prevCard = () => {
+    resetCardState();
     setCurrentIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length);
-    setTranscript(""); setAccuracy(null); setIsRecording(false);
   };
 
   const getAccuracyColor = (acc: number) => {
@@ -100,7 +134,7 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
           <Mic className="w-8 h-8 text-blue-500" />
         </div>
         <p className="text-xl font-semibold text-gray-700 mb-2">Chưa đủ flashcards!</p>
-        <p className="text-gray-500">Hãy thêm flashcard để chơi chế độ tìm cặp</p>
+        <p className="text-gray-500">Hãy thêm flashcard để luyện phát âm</p>
       </div>
     );
   }
@@ -108,7 +142,7 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
   return (
     <div style={{ maxWidth: 860, margin: "0 auto", padding: "1.5rem 1rem", fontFamily: "inherit" }}>
 
-      {/* ── Header card (matches Listen & Pick style) ── */}
+      {/* ── Header card ── */}
       <div
         style={{
           background: "linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 40%, #EDE9FE 100%)",
@@ -309,8 +343,8 @@ const FlashcardShadowingMode: React.FC<Props> = ({ flashcards }) => {
                   {accuracy >= 80
                     ? "🎉 Rất tốt! Phát âm của bạn rất chuẩn."
                     : accuracy >= 50
-                    ? "👍 Khá ổn! Hãy thử lại để cải thiện thêm."
-                    : "💪 Tiếp tục luyện tập — nghe lại và thử thêm lần nữa!"}
+                      ? "👍 Khá ổn! Hãy thử lại để cải thiện thêm."
+                      : "💪 Tiếp tục luyện tập — nghe lại và thử thêm lần nữa!"}
                 </p>
               </div>
             );

@@ -17,6 +17,7 @@ import UpgradeModal from "../../../components/common/UpgradeModal";
 import FlashcardShadowingMode from "./modes/FlashcardShadowingMode";
 import FlashcardTrueFalseMode from "./modes/FlashcardTrueFalseMode";
 import FlashcardListenPickMode from "./modes/FlashcardListenPickMode";
+import Pagination from "../../../components/common/Pagination/Pagination";
 import { Flashcard, MODE_CONFIG, ModeKey, UserTier } from "../types/flashcardModes";
 
 interface FlashcardListProps {
@@ -50,6 +51,8 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
   const [openMode, setOpenMode] = useState(false);
   const [openDirection, setOpenDirection] = useState(false);
   const [editingCard, setEditingCard] = useState<Flashcard | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 12;
 
   const [mode, setMode] = useState<ModeKey>(() => {
     return (localStorage.getItem("flashcard_mode") as ModeKey) || "ALL";
@@ -241,6 +244,22 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
     if (mode === "RANDOM") setRandomIndex(0);
     if (mode === "QUIZ") generateQuiz();
   }, [mode, flashcards, quizDirection]);
+
+  const getPaginatedFlashcards = () => {
+    if (!editable) {
+      const start = (currentPage - 1) * 12;
+      return flashcards.slice(start, start + 12);
+    }
+
+    if (currentPage === 1) {
+      return flashcards.slice(0, 10);
+    }
+
+    const start = 10 + (currentPage - 2) * 12;
+    return flashcards.slice(start, start + 12);
+  };
+
+  const paginatedFlashcards = getPaginatedFlashcards();
 
   if (loading) {
     return (
@@ -438,7 +457,7 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
             )}
 
             {flashcards.length > 0 ? (
-              flashcards.map((card) => (
+              paginatedFlashcards.map((card) => (
                 <FlashcardItem
                   key={card._id}
                   flashcard={card}
@@ -469,6 +488,15 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
               </div>
             )}
           </div>
+        )}
+
+        {mode === "ALL" && flashcards.length > ITEMS_PER_PAGE && (
+          <Pagination
+            totalItems={flashcards.length}
+            currentPage={currentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
+            onPageChange={setCurrentPage}
+          />
         )}
 
         {editable && showModal && (

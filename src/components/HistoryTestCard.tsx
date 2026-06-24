@@ -68,116 +68,119 @@ const HistoryTestCard: React.FC<HistoryTestCardProps> = ({
     <div
       className="
         relative overflow-hidden
-        bg-white border border-gray-100
+        bg-white border border-gray-150
         rounded-2xl p-5
-        shadow-md hover:shadow-2xl
+        shadow-sm hover:shadow-xl hover:-translate-y-1.5
         transition-all duration-300 ease-out
-        hover:-translate-y-2
         group
-        flex flex-col gap-4
+        flex flex-col justify-between gap-4
+        min-h-[210px]
       "
     >
       {/* Gradient Top Bar */}
       <div
         className={`
-          absolute top-0 left-0 w-full h-1.5 opacity-0 group-hover:opacity-100
+          absolute top-0 left-0 w-full h-1
+          bg-gradient-to-r ${isFullTest ? "from-orange-500 to-pink-500" : "from-emerald-500 to-teal-500"}
+          opacity-0 group-hover:opacity-100
           transition-opacity duration-300
         `}
       />
 
       {/* Header: Title + Badge */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
-        <h3 className="text-lg font-bold text-gray-900 line-clamp-2 group-hover:text-gray-800 transition-colors break-words">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-base font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors break-words flex-1 leading-snug">
           {title}
         </h3>
 
         <span
           className={`
-            text-xs font-bold px-3 py-1.5 rounded-full shadow-sm
+            text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm shrink-0
             ring-1 ring-inset transition-all duration-200
-            flex items-center justify-center gap-1.5
+            flex items-center justify-center gap-1
             ${
               isFullTest
-                ? "bg-gradient-to-r from-orange-50 to-pink-50 text-orange-700 ring-orange-200"
-                : "bg-gradient-to-r from-emerald-50 to-teal-50 text-emerald-700 ring-emerald-200"
+                ? "bg-orange-50 text-orange-700 ring-orange-200/50"
+                : "bg-emerald-50 text-emerald-700 ring-emerald-200/50"
             }
           `}
         >
           {isFullTest ? (
-            <BookOpen className="w-3 h-3" />
+            <BookOpen className="w-3.5 h-3.5" />
           ) : (
-            <CheckCircle className="w-3 h-3" />
+            <CheckCircle className="w-3.5 h-3.5" />
           )}
           {typeLabel}
         </span>
       </div>
 
-      {/* Kết quả & Độ chính xác */}
-      <div className="flex flex-wrap gap-4 text-sm">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-gray-600">Kết quả:</span>
-          <span className="font-bold text-gray-600 truncate">
-            {result}/{totalQuestions}
-          </span>
-          {isFullTest && totalScore !== undefined && (
-            <span className="ml-2 font-bold text-gray-600 truncate">
-              ({totalScore} điểm)
+      {/* Stats Grid: Kết quả & Độ chính xác */}
+      <div className="grid grid-cols-2 gap-3 text-sm bg-gray-50/60 rounded-xl p-3 border border-gray-100">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Kết quả</span>
+          <div className="flex items-baseline gap-1">
+            <span className="font-bold text-gray-800 text-sm">
+              {result}
             </span>
-          )}
+            <span className="text-xs text-gray-500">/ {totalQuestions}</span>
+            {isFullTest && totalScore !== undefined && (
+              <span className="ml-1 text-xs font-bold text-blue-600">
+                ({totalScore}đ)
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-gray-600">Độ chính xác:</span>
-          <span className={`font-bold truncate text-gray-600`}>
+        <div className="flex flex-col gap-0.5 border-l border-gray-200/60 pl-3">
+          <span className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider">Độ chính xác</span>
+          <span className="font-bold text-gray-850 text-sm">
             {accuracy ? `${accuracy}%` : "—"}
           </span>
         </div>
       </div>
 
-      {/* Thời gian & Nút */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 text-sm text-gray-500">
-        <div className="flex flex-wrap gap-4">
-          <span className="flex items-center gap-1.5 min-w-0">
-            <Clock className="w-4 h-4 text-gray-400" />
+      {/* Footer: Date, Time & Buttons */}
+      <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100/60 text-xs text-gray-500">
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className="flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
             <span className="font-medium truncate">{formatTime(time)}</span>
           </span>
-          <span className="flex items-center gap-1.5 min-w-0">
-            <Calendar className="w-4 h-4 text-gray-400" />
+          <span className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-gray-400 shrink-0" />
             <span className="font-medium truncate">{formattedDate}</span>
           </span>
         </div>
 
         {/* Nút tùy theo status */}
         {status === "completed" ? (
-          <Link to={`/session/${id}/results`} className="w-full sm:w-auto">
+          <Link to={`/session/${id}/results`} className="shrink-0">
             <button
               className="
-          flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
-          rounded-xl shadow-md
-          transition-all duration-300
-          w-full sm:w-auto
-          bg-blue-600 hover:bg-blue-700
-          hover:shadow-lg hover:scale-105 active:scale-95
-        "
+                flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white
+                rounded-xl shadow-sm
+                transition-all duration-300
+                bg-blue-600 hover:bg-blue-700
+                hover:shadow-md hover:translate-x-0.5 active:translate-x-0
+              "
             >
-              Xem chi tiết
-              <ArrowRight className="w-4 h-4" />
+              Chi tiết
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </Link>
         ) : status === "paused" || status === "in-progress" ? (
-          <Link to={`/session/${id}`} className="w-full sm:w-auto">
+          <Link to={`/session/${id}`} className="shrink-0">
             <button
               className="
-          flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white
-          rounded-xl shadow-md
-          transition-all duration-300
-          w-full sm:w-auto
-          bg-green-600 hover:bg-green-700
-          hover:shadow-lg hover:scale-105 active:scale-95
-        "
+                flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white
+                rounded-xl shadow-sm
+                transition-all duration-300
+                bg-emerald-600 hover:bg-emerald-700
+                hover:shadow-md hover:translate-x-0.5 active:translate-x-0
+              "
             >
-              Tiếp tục làm
-              <ArrowRight className="w-4 h-4" />
+              Tiếp tục
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </Link>
         ) : null}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AnswerState, Question } from "../interface/interfaces";
 
 interface NavigationProps {
@@ -8,15 +8,17 @@ interface NavigationProps {
   currentQuestion: number;
   answers?: Record<string, AnswerState>;
   onNavigate: (indexInPart: number) => void;
-  onSubmit?: () => void;
+  onSubmit?: (isAutoSubmit?: boolean) => void;
   time?: number;
+  sessionId?: string;
 }
 
 interface TimerDisplayProps {
   time: number;
   isCountDown: boolean;
   isView: boolean;
-  onSubmit?: () => void;
+  onSubmit?: (isAutoSubmit?: boolean) => void;
+  sessionId?: string;
 }
 
 const TimerDisplayComponent: React.FC<TimerDisplayProps> = ({
@@ -24,7 +26,9 @@ const TimerDisplayComponent: React.FC<TimerDisplayProps> = ({
   isCountDown,
   isView,
   onSubmit,
+  sessionId,
 }) => {
+  const hasAutoSubmitted = useRef(false);
   const [remainingTime, setRemainingTime] = useState(
     typeof time === "number" && time > 0 ? time : 0
   );
@@ -39,20 +43,32 @@ const TimerDisplayComponent: React.FC<TimerDisplayProps> = ({
 
     const timer = setInterval(() => {
       setRemainingTime((prev) => {
+        let newTime;
         if (isCountDown) {
           if (prev <= 1) {
             clearInterval(timer);
-            if (onSubmit) onSubmit();
-            return 0;
+            if (onSubmit && !hasAutoSubmitted.current) {
+              hasAutoSubmitted.current = true;
+              onSubmit(true);
+            }
+            newTime = 0;
+          } else {
+            newTime = prev - 1;
           }
-          return prev - 1;
+        } else {
+          newTime = prev + 1;
         }
-        return prev + 1;
+
+        if (sessionId) {
+          localStorage.setItem(`remainingTime_${sessionId}`, newTime.toString());
+        }
+
+        return newTime;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isView, isCountDown, onSubmit]);
+  }, [isView, isCountDown, onSubmit, sessionId]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -83,6 +99,7 @@ const NavigationComponent: React.FC<NavigationProps> = ({
   onNavigate,
   onSubmit,
   time,
+  sessionId,
 }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -149,6 +166,7 @@ const NavigationComponent: React.FC<NavigationProps> = ({
               isCountDown={isCountDown}
               isView={isView}
               onSubmit={onSubmit}
+              sessionId={sessionId}
             />
           </div>
         )}
@@ -175,7 +193,7 @@ const NavigationComponent: React.FC<NavigationProps> = ({
           <div className="mt-4 text-center">
             <button
               onClick={() => {
-                if (onSubmit) onSubmit();
+                if (onSubmit) onSubmit(false);
               }}
               className="bg-blue-500 text-white p-2 rounded-md w-full hover:bg-blue-600"
             >

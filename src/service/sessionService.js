@@ -34,8 +34,8 @@ export const getUserStatistics = async () => {
     return res.data.data;
 };
 
-export const pauseSession = async (sessionId) => {
-    await api.post(`/session/${sessionId}/pause`);
+export const pauseSession = async (sessionId, remainingTime) => {
+    await api.post(`/session/${sessionId}/pause`, { remainingTime });
 };
 
 export const resumeSession = async (sessionId) => {

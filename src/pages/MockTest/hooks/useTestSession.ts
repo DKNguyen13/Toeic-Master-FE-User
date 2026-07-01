@@ -187,7 +187,7 @@ export const useTestSession = () => {
     }
   };
 
-  const handleSubmitSession = async (noRedirect = false) => {
+  const handleSubmitSession = async (isAutoSubmit = false, noRedirect = false) => {
     try {
       setError(null)
       setLoading(true)
@@ -198,12 +198,14 @@ export const useTestSession = () => {
           questionId,
           selectedAnswer: value.selectedAnswer,
         }))
-      if(finalAnswers.length === 0) {
+      if(finalAnswers.length === 0 && !isAutoSubmit) {
         alert("Bạn chưa trả lời câu hỏi nào để nộp bài.")
         return
       }
 
-      await submitBulkAnswers(sessionId!, finalAnswers)
+      if (finalAnswers.length > 0) {
+        await submitBulkAnswers(sessionId!, finalAnswers)
+      }
 
       await submitSession(sessionId!)
 
@@ -229,7 +231,14 @@ export const useTestSession = () => {
     hasPausedRef.current = true
 
     try {
-      await pauseSession(sessionId)
+      const remainingTimeStr = localStorage.getItem(`remainingTime_${sessionId}`);
+      const remainingTime = remainingTimeStr ? parseInt(remainingTimeStr, 10) : undefined;
+      
+      await pauseSession(sessionId, remainingTime)
+      
+      if (remainingTimeStr) {
+         localStorage.removeItem(`remainingTime_${sessionId}`);
+      }
     } catch (err: any) {
       hasPausedRef.current = false
       setError(`Lỗi khi pause session: ${err.message}`)

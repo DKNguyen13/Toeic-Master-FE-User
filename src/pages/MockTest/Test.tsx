@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navigation from "./component/Navigation";
 import { useTestSession } from "./hooks/useTestSession";
 import TestHeader from "./component/TestHeader";
@@ -16,6 +16,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   //Chọn hook theo mode
   const hookData = isView ? useViewSession() : useTestSession();
   const {
+    sessionId,
     session,
     parts,
     currentPart,
@@ -36,7 +37,35 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   } = hookData as ReturnType<typeof useTestSession> &
     ReturnType<typeof useViewSession>;
 
-  useBlockNavigation(!isView, handlePauseTestSession);
+  useBlockNavigation({
+    shouldBlock: !isView,
+    onConfirmLeave: handlePauseTestSession,
+    sessionId: sessionId,
+  })
+
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const hasSubmittedRef = useRef(false);
+
+  const handleTestSubmit = (isAutoSubmit?: boolean) => {
+    if (hasSubmittedRef.current) return;
+    if (isAutoSubmit) {
+      hasSubmittedRef.current = true;
+      handleSubmitSession(true);
+    } else {
+      setIsConfirmModalOpen(true);
+    }
+  };
+
+  const confirmSubmit = () => {
+    if (hasSubmittedRef.current) return;
+    hasSubmittedRef.current = true;
+    setIsConfirmModalOpen(false);
+    handleSubmitSession(false);
+  };
+
+  const cancelSubmit = () => {
+    setIsConfirmModalOpen(false);
+  };
 
   const shouldScrollRef = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -47,24 +76,29 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   };
 
   useEffect(() => {
-    if (!isView && session && session.status === "paused") {
+    if (isView) return;
+
+    // Khi người dùng vào trang làm bài (hoặc tiếp tục), lập tức resume session
+    handleResumeTestSession();
+
+    const handlePageShow = () => {
       handleResumeTestSession();
-    }
-  }, [session, isView]);
+    };
 
-  useEffect(() => {
-    if (!isView) {
-      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        event.preventDefault();
-      };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        handleResumeTestSession();
+      }
+    };
 
-      window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-      return () => {
-        window.removeEventListener("beforeunload", handleBeforeUnload);
-      };
-    }
-  }, [isView]);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [isView, handleResumeTestSession]);
 
   useEffect(() => {
     if (!shouldScrollRef.current) return;
@@ -116,6 +150,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
             session={session}
             onGoBack={handleGoBack}
             isView={isView}
+            currentPart={currentPart}
           />
 
           <PartSelector
@@ -145,6 +180,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
         {/* Right: Navigation */}
         <div className="p-4 bg-white h-full w-fit overflow-y-scroll">
           <Navigation
+            sessionId={sessionId}
             isView={isView}
             time={session?.timeRemaining ?? 0}
             questions={questionsInPart}
@@ -152,10 +188,35 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
             currentQuestion={currentQuestion}
             answers={answers}
             onNavigate={handleNavigateQuestion}
-            onSubmit={!isView ? handleSubmitSession : undefined}
+            onSubmit={!isView ? handleTestSubmit : undefined}
           />
         </div>
       </div>
+
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-xl">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">Xác nhận nộp bài</h2>
+            <p className="text-gray-600 mb-6">
+              Bạn có chắc chắn muốn nộp bài lúc này không?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={cancelSubmit}
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors font-medium"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmSubmit}
+                className="px-4 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors font-medium"
+              >
+                Nộp bài
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

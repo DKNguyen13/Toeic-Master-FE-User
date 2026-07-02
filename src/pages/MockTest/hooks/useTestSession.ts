@@ -10,12 +10,10 @@ import {
   submitBulkAnswers,
   submitSession,
 } from "../../../service/sessionService";
-import { useSocket } from "../../../context/SocketContext";
-import { useSocketReady } from "../../../context/useSocketReady"; // THÊM IMPORT
+import { useSessionTest } from "../../../context/sessionTest/useSessionTest" // IMPORT useSocket để lấy sendAnswer và registerSession
 
 export const useTestSession = () => {
-  const { registerSession, sendAnswer } = useSocket();
-  const isSocketReady = useSocketReady();
+  const { registerSession, sendAnswer, connected } = useSessionTest() // Lấy sendAnswer và registerSession từ context
   const navigate = useNavigate();
   const { id: sessionId } = useParams();
 
@@ -28,10 +26,15 @@ export const useTestSession = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [parts, setParts] = useState<number[]>([]);
   const [answers, setAnswers] = useState<Record<string, AnswerState>>({});
-  const [unsentAnswers, setUnsentAnswers] = useState<
-    { questionId: string; selectedAnswer: string | null }[]
-  >([]);
   const hasPausedRef = useRef(false);
+  const isResumingRef = useRef(false);
+  const isInitialLoadingRef = useRef(true);
+  const sessionRef = useRef<Session | null>(null);
+
+  // Keep sessionRef updated
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,8 +63,8 @@ export const useTestSession = () => {
 
         setQuestions(fetchedQuestions);
 
-        console.group("📦 FETCH SESSION DATA");
-        console.log("Total fetchedQuestions:", fetchedQuestions.length);
+        // console.group("📦 FETCH SESSION DATA");
+        // console.log("Total fetchedQuestions:", fetchedQuestions.length);
 
         fetchedQuestions.forEach((q, idx) => {
           console.log(
@@ -95,6 +98,7 @@ export const useTestSession = () => {
         setError("Lỗi khi tải dữ liệu bài thi.");
       } finally {
         setLoading(false);
+        isInitialLoadingRef.current = false;
       }
     };
 
@@ -102,10 +106,10 @@ export const useTestSession = () => {
   }, [sessionId]);
 
   useEffect(() => {
-    if (sessionId) {
-      registerSession(sessionId);
+    if (sessionId && connected) {
+      registerSession(sessionId)
     }
-  }, [sessionId, registerSession]);
+  }, [sessionId, registerSession, connected]);
 
   // ====== Phần transform câu hỏi của 1 part (memoize) ======
   const questionsInPart: Question[] = useMemo(() => {
@@ -132,18 +136,15 @@ export const useTestSession = () => {
   const indexToLetter = ["A", "B", "C", "D"];
 
   // handleAnswer với kiểm tra isSocketReady
-  const handleAnswer = (questionId: string, answerIndex: number) => {
-    const questionsInPart = questions.filter(
-      (q) => q.partNumber === currentPart
-    );
-    const question = questions.find((q) => q.id === questionId);
+  const handleAnswer = useCallback((questionId: string, answerIndex: number) => {
+    const question = questions.find((q) => q.id === questionId)
 
     if (!question) {
-      console.error("Question not found:", questionId);
-      return;
+      console.error("Question not found:", questionId)
+      return
     }
 
-    const selectedLetter = indexToLetter[answerIndex] as "A" | "B" | "C" | "D";
+    const selectedLetter = indexToLetter[answerIndex] as "A" | "B" | "C" | "D"
 
     setAnswers((prev) => ({
       ...prev,
@@ -152,19 +153,11 @@ export const useTestSession = () => {
         selectedAnswer: selectedLetter,
         isSkipped: false,
       },
-    }));
+    }))
 
-    // CHỈ GỬI ĐÁP ÁN KHI SOCKET READY (hoặc sẽ được queue nếu chưa ready)
-    if (isSocketReady) {
-      sendAnswer(sessionId!, question.id, selectedLetter);
-    } else {
-      console.warn(
-        `⚠ Socket not ready yet → Answer will be queued (Q${question.globalQuestionNumber}, ${selectedLetter})`
-      );
-      // Vẫn gọi sendAnswer, nhưng nó sẽ queue lại trong context
-      sendAnswer(sessionId!, question.id, selectedLetter);
-    }
-  };
+    // Chỉ auto-save, không phụ thuộc nó để submit
+    sendAnswer(sessionId!, question.id, selectedLetter)
+  }, [questions, sendAnswer, sessionId]);
 
   // Điều hướng câu hỏi trong part
   const handleNavigateQuestion = (indexInPart: number) => {
@@ -194,53 +187,112 @@ export const useTestSession = () => {
     }
   };
 
-  const handleSubmitSession = async (noRedirect = false) => {
+  const handleSubmitSession = async (isAutoSubmit = false, noRedirect = false) => {
     try {
-      setError(null);
-      setLoading(true);
+      setError(null)
+      setLoading(true)
 
-      if (unsentAnswers.length) {
-        await submitBulkAnswers(sessionId!, unsentAnswers);
-        setUnsentAnswers([]);
+      const finalAnswers = Object.entries(answers)
+        .filter(([_, value]) => value.selectedAnswer !== null)
+        .map(([questionId, value]) => ({
+          questionId,
+          selectedAnswer: value.selectedAnswer,
+        }))
+      if(finalAnswers.length === 0 && !isAutoSubmit) {
+        alert("Bạn chưa trả lời câu hỏi nào để nộp bài.")
+        return
       }
-      await submitSession(sessionId!);
+
+      if (finalAnswers.length > 0) {
+        await submitBulkAnswers(sessionId!, finalAnswers)
+      }
+
+      await submitSession(sessionId!)
+
       if (!noRedirect) {
-        navigate(`/session/${sessionId}/results`);
+        navigate(`/session/${sessionId}/results`)
       }
     } catch (err: any) {
-      setError(err.message || "Lỗi khi nộp bài");
+      setError(err.message || "Lỗi khi nộp bài")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleGoBack = () => navigate(-1);
 
   const handlePauseTestSession = useCallback(async () => {
+    if (!sessionId) return
+
     if (hasPausedRef.current) {
-      return;
+      return
     }
 
-    hasPausedRef.current = true;
+    hasPausedRef.current = true
+
     try {
-      await pauseSession(sessionId);
+      const remainingTimeStr = localStorage.getItem(`remainingTime_${sessionId}`);
+      const remainingTime = remainingTimeStr ? parseInt(remainingTimeStr, 10) : undefined;
+      
+      await pauseSession(sessionId, remainingTime)
+      
+      if (remainingTimeStr) {
+         localStorage.removeItem(`remainingTime_${sessionId}`);
+      }
     } catch (err: any) {
-      setError(`Lỗi khi pause session :  ${err.message}`);
+      hasPausedRef.current = false
+      setError(`Lỗi khi pause session: ${err.message}`)
     }
-  }, [sessionId]);
+  }, [sessionId])
 
   const handleResumeTestSession = useCallback(async () => {
+    if (!sessionId) return
+    if (isInitialLoadingRef.current) return
+    if (isResumingRef.current) return
+
+    isResumingRef.current = true
+
     try {
-      await resumeSession(sessionId);
-      const refreshed = await getSession(sessionId);
-      if (refreshed?.session) {
-        setSession(refreshed.session);
+      const localStatus = sessionRef.current?.status;
+
+      if (localStatus === "paused") {
+        await resumeSession(sessionId)
+        const refreshed = await getSession(sessionId, true)
+
+        if (refreshed?.session) {
+          setSession(refreshed.session)
+        }
+
+        hasPausedRef.current = false
+        return
       }
-      hasPausedRef.current = false;
+
+      const refreshed = await getSession(sessionId, true)
+      const latestSession = refreshed?.session
+      console.log("Latest session status on resume attempt:", latestSession?.status)
+
+      if (!latestSession) return
+
+      if (latestSession.status === "paused") {
+        await resumeSession(sessionId)
+
+        const afterResume = await getSession(sessionId, true)
+
+        if (afterResume?.session) {
+          setSession(afterResume.session)
+        }
+
+        hasPausedRef.current = false
+        return
+      }
+
+      setSession(latestSession)
     } catch (err) {
-      console.error("Resume failed:", err);
+      console.error("Resume failed:", err)
+    } finally {
+      isResumingRef.current = false
     }
-  }, [sessionId]);
+  }, [sessionId])
 
   return {
     sessionId,
@@ -261,8 +313,7 @@ export const useTestSession = () => {
     loading,
     error,
     handlePauseTestSession,
-    handleResumeTestSession,
-    isSocketReady, // EXPORT cái này để component biết socket đã sẵn sàng chưa
+    handleResumeTestSession
   };
 };
 

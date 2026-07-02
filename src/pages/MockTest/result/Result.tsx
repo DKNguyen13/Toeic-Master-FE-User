@@ -279,10 +279,10 @@ const Result: React.FC<ResultProps> = ({
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800">
-                      Nhận xét từ AI
+                      Phân tích kết quả
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Phân tích chi tiết & gợi ý học tập
+                      Dựa trên điểm số và kết quả bài thi
                     </p>
                   </div>
                 </div>

@@ -72,6 +72,7 @@ export interface Session {
   progress: SessionProgress;
   testId: TestId;
   timeRemaining: number; // milliseconds còn lại
+  status?: "started" | "in-progress" | "paused" | "completed" | "timeout";
 }
 
 export interface UnsentAnswer {

@@ -1,9 +1,12 @@
-import api from "../../../config/axios";
+import api from "../../config/axios";
+import { showToast } from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
-import { showToast } from "../../../utils/toast";
+import LoginModal from "../../layouts/common/LoginModal";
 import React, { useEffect, useRef, useState } from "react";
-import LoginModal from "../../../layouts/common/LoginModal";
-import { Book, Inbox, Library, Search, Star, Trash } from "lucide-react";
+import AddFlashcardSetModal from "./modals/AddFlashcardSetModal";
+import EditFlashcardSetModal from "./modals/EditFlashcardSetModal";
+import { Book, Inbox, Library, Pencil, Search, Star, Trash } from "lucide-react";
+import ConfirmDeleteModal from "../Flashcard/components/modals/ConfirmDeleteModal";
 
 export interface FlashcardSet {
   _id?: string;
@@ -27,6 +30,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ name: "", description: "" });
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [editingSet, setEditingSet] = useState<FlashcardSet | null>(null);
   const [deleteSetId, setDeleteSetId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -46,7 +50,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
           : await api.get("/flashcard-set/free");
       setSets(res.data.data as FlashcardSet[]);
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error", { autoClose: 1500 });         
+      showToast(err.response?.data?.message || "Không thể tải dữ liệu!", "error", { autoClose: 1000 });         
     } finally {
       setLoading(false);
     }
@@ -57,12 +61,16 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
     try {
       await api.delete(`/flashcard-set/${deleteSetId}`);
       setSets(prev => prev.filter(s => s._id !== deleteSetId));
-      showToast("Xóa bộ flashcard thành công!", "success", { autoClose: 1500 });
+      showToast("Xóa bộ flashcard thành công!", "success", { autoClose: 1000 });
     } catch (err: any) {
-      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", { autoClose: 1500 });
+      showToast(err.response?.data?.message || "Không thể xóa bộ flashcard!", "error", { autoClose: 1000 });
     } finally {
       setDeleteSetId(null);
     }
+  };
+
+  const handleEdit = (set: FlashcardSet) => {
+    setEditingSet(set);
   };
 
   const handleAdd = async () => {
@@ -81,7 +89,7 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       setSets((prev) => [...prev, res.data.data]);
       setShowModal(false);
       setForm({ name: "", description: "" });
-      showToast("Thêm bộ từ vựng thành công!", "success", {autoClose: 1500});
+      showToast("Thêm bộ từ vựng thành công!", "success", { autoClose: 1000 });
       setError("");
     } catch (err: any) {
       setError(err.response?.data?.message || "Lỗi khi tạo bộ từ vựng!");
@@ -154,38 +162,12 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
             </div>
             )}
 
-            {/* Modal confirm delete */}
-            {deleteSetId && (
-              <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-fadeIn">
-                  <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">Xác nhận xóa</h2>
-                  <p className="text-gray-600 mb-6">
-                    Bạn có chắc muốn xóa bộ {sets.find(s => s._id === deleteSetId)?.name || ""} này?<br></br> Hành động này không thể hoàn tác.
-                  </p>
-                  <div className="flex justify-end gap-3">
-                    <button
-                      onClick={() => setDeleteSetId(null)}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
-                    >
-                      Hủy
-                    </button>
-                    <button
-                      onClick={confirmDelete}
-                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Flashcard Sets */}
             {sets.length > 0 ? (
               sets.map((set) => (
                 <div  key={set._id}
                   onClick={() => handleSetClick(set._id)}
-                  className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 h-56 flex flex-col justify-between cursor-pointer transform hover:scale-105 border border-gray-100 hover:border-blue-300 overflow-hidden">
+                  className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-2xl transition-all duration-300 h-56 flex flex-col justify-between cursor-pointer transform hover:scale-105 border border-gray-200 hover:border-blue-300 overflow-hidden">
                   {/* Gradient Background Effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   
@@ -195,14 +177,25 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
                         <Book className="text-white text-2xl" />
                       </div>
                       {type === "myList" && isLoggedIn && (
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteSetId(set._id!);
-                          }}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-lg hover:bg-red-50">
-                          <Trash className="text-red-500 text-lg" />
-                        </button>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEdit(set);
+                            }}
+                            className="p-2 rounded-lg hover:bg-blue-100" title="Chỉnh sửa">
+                            <Pencil size={18} className="text-blue-500" />
+                          </button>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteSetId(set._id!);
+                            }}
+                            className="p-2 rounded-lg hover:bg-red-100" title="Xóa">
+                            <Trash size={18} className="text-red-500" />
+                          </button>
+                        </div>
                       )}
                     </div>
                     
@@ -254,82 +247,43 @@ const FlashcardSetList: React.FC<FlashcardSetListProps> = ({
       </div>
 
       {/* Modal */}
-      {type === "myList" && showModal && isLoggedIn && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
-          onClick={closeModal}>
-          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all duration-300 scale-100"
-            onClick={(e) => e.stopPropagation()}>
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Tạo bộ từ vựng mới</h2>
-              <p className="text-gray-500 mt-2">Bắt đầu xây dựng bộ từ vựng của riêng bạn</p>
-            </div>
-            
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Tên bộ từ vựng: <span className="text-red-500">*</span>
-                </label>
-                <input
-                  name="name"
-                  placeholder="VD: Từ vựng TOEIC Part 1..."
-                  maxLength={25}
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                />
-                <span className="text-xs text-gray-500">
-                  {form.name.length}/25 ký tự
-                </span>
-                <p className="text-red-500 text-sm mt-2">
-                  {error.includes("Nâng cấp VIP") ? (
-                    <>
-                      Bạn đã đạt giới hạn bộ flashcard.{" "}
-                      <a href="/payment" className="text-blue-500">
-                        Nâng cấp VIP
-                      </a>{" "}
-                      để tạo thêm!
-                    </>
-                  ) : (
-                    error
-                  )}
-                </p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Mô tả (tùy chọn):
-                </label>
-                <textarea
-                  name="description"
-                  placeholder="Thêm mô tả về bộ flashcard của bạn..."
-                  maxLength={25}
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({ ...form, description: e.target.value })
-                  }
-                  className="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-                  rows={2}
-                />
-                <span className="text-xs text-gray-500">
-                  {form.description.length}/25 ký tự
-                </span>
-              </div>
-            </div>
-            <div className="flex gap-4 mt-8">
-              <button onClick={handleAdd}
-                className="flex-1 px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-200">
-                Tạo mới
-              </button>
-              <button onClick={closeModal}
-                className="flex-1 px-6 py-3 text-base font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
-                Hủy
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <AddFlashcardSetModal
+        open={showModal}
+        form={form}
+        error={error}
+        setForm={setForm}
+        onClose={closeModal}
+        onAdd={handleAdd}
+      />
 
-      {/* Modal đăng nhập */}
+      {/* Modal update flashcard set */}
+      <EditFlashcardSetModal
+        open={!!editingSet}
+        set={editingSet}
+        onClose={() => setEditingSet(null)}
+        onUpdated={(updatedSet) => {
+          setSets(prev =>
+            prev.map(item =>
+              item._id === updatedSet._id ? updatedSet : item
+            )
+          );
+
+          setEditingSet(null);
+        }}
+      />
+
+      {/* Modal confirm delete */}
+      <ConfirmDeleteModal
+        open={!!deleteSetId}
+        title="Xác nhận xóa"
+        message={`Bạn có chắc muốn xóa bộ ${
+          sets.find(s => s._id === deleteSetId)?.name || ""
+        } này? Hành động này không thể hoàn tác.`}
+        onCancel={() => setDeleteSetId(null)}
+        onConfirm={confirmDelete}
+      />
+
+      {/* Modal login */}
       <LoginModal 
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}

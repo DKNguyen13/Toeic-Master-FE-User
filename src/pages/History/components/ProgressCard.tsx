@@ -1,6 +1,5 @@
 import React from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
 
 interface ProgressCardProps {
   progress: number; // Giá trị tiến độ (0-100)

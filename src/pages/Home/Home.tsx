@@ -115,7 +115,7 @@ const Home : React.FC<HomeProps> = ({ setIsOpen })  => {
         </div>
       </div>
 
-      {/* Luyện tập Section */}
+      {/* Practice Section */}
       <section className="flex justify-center mt-12 flex-col items-center">
         <div>
           <h1 className="w-full text-3xl font-bold text-gray-900 justify-start text-start items-start mb-6">

@@ -63,8 +63,8 @@ const BannerSlider = () => {
 
                 <div className="space-y-2 pt-2">
                   {[ 
-                    { icon: TrendingUp, text: '10,000+ học viên đạt mục tiêu' },
-                    { icon: Award, text: 'Đề thi sát 99% với đề thật' },
+                    { icon: TrendingUp, text: 'Đồng hành cùng hàng ngàn học viên' },
+                    { icon: Award, text: 'Bám sát cấu trúc đề TOEIC hiện hành' },
                     { icon: Sparkles, text: 'AI chatbot hỗ trợ 24/7' }
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-center gap-3 group">

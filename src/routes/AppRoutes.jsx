@@ -7,7 +7,6 @@ import MainLayout from "../layouts/MainLayout";
 import Register from "../pages/Register/Register";
 import { Test } from "../pages/MockTest/Test";
 import ForgotPassword from "../pages/ForgotPassword/ForgotPassword";
-import Leaderboard from "../pages/Leaderboard/Leaderboard";
 import Profile from "../pages/Profile/Profile";
 import UpdateProfile from "../pages/Profile/UpdateProfile/UpdateProfile";
 import Payment from "../pages/Payment/Payment";
@@ -20,8 +19,8 @@ import DetailTestPage from "../pages/Detail/DetailTestPage";
 import PaymentFail from "../pages/Payment/PaymentFail";
 import PaymentSuccess from "../pages/Payment/PaymentSuccess";
 import ResultPage from "../pages/MockTest/result/ResultPage";
-import FlashcardPage from "../pages/FlashCard/pages/FlashcardPage";
-import FlashcardListPage from "../pages/FlashCard/pages/FlashcardListPage";
+import FlashcardPage from "../pages/Flashcard/pages/FlashcardPage";
+import FlashcardListPage from "../pages/FlashcardSet/Page/FlashcardListPage";
 import TestList from "../pages/MockTest/TestList";
 import HomePage from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
@@ -136,14 +135,6 @@ const routes = [
     element: (
       <MainLayout>
         <Test isView={true} />
-      </MainLayout>
-    ),
-  },
-  {
-    path: "/leaderboard",
-    element: (
-      <MainLayout>
-        <Leaderboard />
       </MainLayout>
     ),
   },

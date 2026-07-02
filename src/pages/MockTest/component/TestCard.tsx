@@ -30,7 +30,7 @@ const TestCard: React.FC<TestCardProps> = ({
   return (
     <div
       onClick={handleViewDetail}
-      className="group cursor-pointer relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 w-80
+      className="group cursor-pointer relative overflow-hidden rounded-2xl bg-gradient-to-br from-white to-gray-50 w-full max-w-[320px] mx-auto
                  border border-gray-200/60 shadow-lg hover:shadow-2xl hover:shadow-blue-500/10
                  transition-all duration-500 ease-out hover:-translate-y-2"
     >

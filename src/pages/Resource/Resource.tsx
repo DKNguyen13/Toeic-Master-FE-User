@@ -83,7 +83,7 @@ const ResourcePage: React.FC = () => {
   if (loading) return <LoadingSkeleton/>;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="w-full flex flex-col min-h-screen">
       {/* Header */}
       <div className="w-full shadow-lg py-10 px-8"
         style={{
@@ -110,7 +110,7 @@ const ResourcePage: React.FC = () => {
             <aside className="lg:w-80 flex-shrink-0">
               <div className="sticky top-6 space-y-6">
                 {/* Search Box */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
                   <label className="block text-md font-bold text-gray-700 mb-3">
                     Tìm kiếm
                   </label>
@@ -130,7 +130,7 @@ const ResourcePage: React.FC = () => {
                 </div>
 
                 {/* Filter Navigation */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
                   <label className="block text-md font-bold text-gray-700 mb-4">
                     Loại bài học
                   </label>

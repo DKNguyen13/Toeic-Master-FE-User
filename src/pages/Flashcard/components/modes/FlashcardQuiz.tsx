@@ -1,3 +1,4 @@
+import { CircleHelp } from "lucide-react";
 import React from "react";
 
 interface Flashcard {
@@ -29,8 +30,8 @@ const FlashcardQuiz: React.FC<QuizModeProps> = ({
   if (!canQuiz) {
     return (
       <div className="text-center py-16">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-4">
-          <span className="text-3xl">😕</span>
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-indigo-100 rounded-full mb-4">
+          <CircleHelp className="w-10 h-10 text-indigo-500" />
         </div>
         <p className="text-xl font-semibold text-gray-700 mb-2">
           Chưa đủ flashcards!
@@ -42,17 +43,31 @@ const FlashcardQuiz: React.FC<QuizModeProps> = ({
     );
   }
 
-  const correctAnswer =
-    quizDirection === "en2vi"
-      ? correctCard?.meaning
-      : correctCard?.word;
+  const correctAnswer = quizDirection === "en2vi" ? correctCard?.meaning : correctCard?.word;
 
   return (
     <div className="flex justify-center">
       <div className="w-full max-w-2xl">
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
-          
-          {/* Question */}
+        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-gray-800">Quiz Mode</h2>
+              <p className="text-gray-600 text-sm">
+                {quizDirection === "en2vi"
+                  ? "English → Vietnamese"
+                  : "Vietnamese → English"}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-2 rounded-full shadow-sm">
+              <span className="text-xl">🏆</span>
+              <span className="font-bold text-gray-800">
+                {score}
+              </span>
+            </div>
+          </div>
+
+          {/* QUESTION */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               {quizDirection === "en2vi"
@@ -62,7 +77,7 @@ const FlashcardQuiz: React.FC<QuizModeProps> = ({
             <p className="text-gray-600">Chọn đáp án đúng</p>
           </div>
 
-          {/* Options */}
+          {/* OPTIONS */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {quizOptions.map((opt, index) => (
               <button
@@ -89,25 +104,18 @@ const FlashcardQuiz: React.FC<QuizModeProps> = ({
             ))}
           </div>
 
-          {/* Next Button */}
+          {/* NEXT */}
           {selectedOption && (
             <div className="text-center">
-              <button onClick={onNext}
-                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-2xl font-semibold hover:scale-105 transition-all duration-200 shadow-lg">
-                Câu tiếp theo →
+              <button
+                onClick={onNext}
+                className="px-8 py-3 bg-blue-500 text-white rounded-2xl font-semibold hover:scale-105 transition-all duration-200 shadow-lg"
+              >
+                Tiếp theo →
               </button>
             </div>
           )}
 
-          {/* Score */}
-          <div className="mt-6 text-center">
-            <div className="inline-flex items-center bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-4 py-2">
-              <span className="text-2xl mr-2">🏆</span>
-              <span className="font-bold text-gray-800">
-                Điểm: {score}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

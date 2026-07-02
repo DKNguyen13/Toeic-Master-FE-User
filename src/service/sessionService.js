@@ -5,10 +5,9 @@ export const startSession = async (payload) => {
     return res.data.data;
 };
 
-export const getSession = async (sessionId) => {
-    const res = await api.get(`/session/${sessionId}`);
+export const getSession = async (sessionId, onlySession = false) => {
+    const res = await api.get(`/session/${sessionId}${onlySession ? '?onlySession=true' : ''}`);
     return res.data.data.result;
-    
 };
 
 export const submitBulkAnswers = async (sessionId, answers) => {
@@ -35,8 +34,8 @@ export const getUserStatistics = async () => {
     return res.data.data;
 };
 
-export const pauseSession = async (sessionId) => {
-    await api.put(`/session/${sessionId}/pause`);
+export const pauseSession = async (sessionId, remainingTime) => {
+    await api.post(`/session/${sessionId}/pause`, { remainingTime });
 };
 
 export const resumeSession = async (sessionId) => {

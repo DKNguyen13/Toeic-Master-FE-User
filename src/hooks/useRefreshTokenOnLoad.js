@@ -1,27 +1,36 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import api, { setAccessToken } from "../config/axios";
+import { useEffect, useRef } from "react";
+import api, { clearAuthData, setAccessToken } from "../config/axios";
 
 const useRefreshTokenOnLoad = () => {
-  const navigate = useNavigate();
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
     const refresh = async () => {
       try {
         const res = await api.post("/auth/refresh-token/user", {}, { withCredentials: true });
         const { newAccessToken } = res.data.data;
         setAccessToken(newAccessToken);
-      } catch (err) {
-        console.error("Refresh token invalid:", err);
-        localStorage.clear();
-        setAccessToken(null);
         window.dispatchEvent(new Event("userUpdated"));
-        navigate("/login");
+      } catch (err) {
+        const hadUserSession = !!(
+          localStorage.getItem("userId") ||
+          localStorage.getItem("fullname") ||
+          localStorage.getItem("accessToken")
+        );
+
+        if (hadUserSession) {
+          console.error("Refresh token invalid:", err);
+          clearAuthData();
+          window.dispatchEvent(new Event("userUpdated"));
+        }
       }
     };
 
     refresh();
-  }, [navigate]);
+  }, []);
 };
 
 export default useRefreshTokenOnLoad;

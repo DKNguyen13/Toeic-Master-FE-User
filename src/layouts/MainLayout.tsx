@@ -6,8 +6,11 @@ import { config } from "../config/env.config";
 import { useLocation } from "react-router-dom";
 import Chatbot from "../components/chatbot/Chatbot";
 import FloatingDictionary from "../components/common/ActionMenu/FloatingActionMenu";
+import useRefreshTokenOnLoad from "../hooks/useRefreshTokenOnLoad";
 
 const MainLayout = ({ children }) => {
+  useRefreshTokenOnLoad();
+
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 

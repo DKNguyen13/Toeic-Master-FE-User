@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
-import useRefreshTokenOnLoad from "../hooks/useRefreshTokenOnLoad";
 
 // Layout
 import MainLayout from "../layouts/MainLayout";
@@ -30,18 +29,12 @@ import Terms from "../pages/Info/Terms";
 import Privacy from "../pages/Info/Privacy";
 import Support from "../pages/Support/Support";
 
-const RefreshTokenLoader = () => {
-  useRefreshTokenOnLoad();
-  return null;
-};
-
 // Cấu hình routes
 const routes = [
   {
     path: "/", // Trang Home, cho mọi user
     element: (
       <>
-        <RefreshTokenLoader />
         <MainLayout>
           <HomePage />
         </MainLayout>

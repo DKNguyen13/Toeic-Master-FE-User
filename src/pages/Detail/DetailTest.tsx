@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Clock,
   BookOpen,
@@ -7,6 +8,7 @@ import {
   CheckCircle,
   Info,
   Pin,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Select } from "../../components/ui/select";
@@ -74,6 +76,8 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
   setShowLoginModal,
   testId,
 }) => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     if(sessionError) {
       showToast(sessionError, "warn");
@@ -114,6 +118,17 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
   return (
     <>
       <div className="max-w-6xl mx-auto p-6 space-y-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit -mb-2"
+        >
+          <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span>Quay lại</span>
+        </button>
+
         {/* Top Info Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Test Stats */}

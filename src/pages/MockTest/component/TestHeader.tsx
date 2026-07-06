@@ -30,14 +30,12 @@ const TestHeader: React.FC<TestHeaderProps> = ({
     <div className="w-full flex items-center justify-between mb-5">
       {/* Return button */}
       <div
-        className="
-          inline-flex items-center gap-2 text-base text-main
-          cursor-pointer transition-colors duration-200 
-          hover:text-blue-600
-        "
+        className="group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit cursor-pointer"
         onClick={onGoBack}
       >
-        <ArrowLeft className="w-4 h-4" />
+        <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+        </div>
         <span>{isView ? "Trở về" : "Thoát"}</span>
       </div>
 

@@ -281,9 +281,14 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
         {/* Header */}
         <div className="relative mb-8">
           {onBack && (
-            <button onClick={onBack}
-              className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
-              <ArrowLeft size={18} />Quay lại
+            <button
+              onClick={onBack}
+              className="absolute left-0 top-1/2 -translate-y-1/2 group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit"
+            >
+              <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+              </div>
+              <span>Quay lại</span>
             </button>
           )}
 

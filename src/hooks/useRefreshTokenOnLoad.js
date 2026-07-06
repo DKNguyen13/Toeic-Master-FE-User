@@ -15,6 +15,7 @@ const useRefreshTokenOnLoad = () => {
         console.error("Refresh token invalid:", err);
         localStorage.clear();
         setAccessToken(null);
+        window.dispatchEvent(new Event("userUpdated"));
         navigate("/login");
       }
     };

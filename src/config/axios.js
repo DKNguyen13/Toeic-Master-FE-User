@@ -40,6 +40,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Tránh vòng lặp vô tận nếu chính API refresh token trả về 401
+    if (originalRequest.url && originalRequest.url.includes("/auth/refresh-token/user")) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -56,7 +61,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await api.post("/auth/refresh-token/user");
+        const res = await axios.post(`${config.apiBaseUrl}/api/auth/refresh-token/user`, {}, { withCredentials: true });
         const newAccessToken = res.data.data?.newAccessToken;
         setAccessToken(newAccessToken);
         processQueue(null, newAccessToken);
@@ -68,6 +73,7 @@ api.interceptors.response.use(
         setAccessToken(null);
         localStorage.clear();
         sessionStorage.clear();
+        window.dispatchEvent(new Event("userUpdated"));
         return Promise.reject({ ...err, redirectToLogin: true });
       } finally {
         isRefreshing = false;

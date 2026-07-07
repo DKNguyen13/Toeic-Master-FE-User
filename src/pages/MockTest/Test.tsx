@@ -10,9 +10,15 @@ import { useBlockNavigation } from "./hooks/useBlockNavigation";
 
 interface TestProps {
   isView: boolean; // true: review detail result
+  maintenanceState?: {
+    active: boolean;
+    message?: string;
+    startAt?: string | null;
+    endAt?: string | null;
+  };
 }
 
-export const Test: React.FC<TestProps> = ({ isView }) => {
+export const Test: React.FC<TestProps> = ({ isView, maintenanceState }) => {
   //Chọn hook theo mode
   const hookData = isView ? useViewSession() : useTestSession();
   const {
@@ -45,6 +51,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const hasSubmittedRef = useRef(false);
+  const maintenanceInterruptedRef = useRef(false);
 
   const handleTestSubmit = (isAutoSubmit?: boolean) => {
     if (hasSubmittedRef.current) return;
@@ -78,15 +85,29 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
   useEffect(() => {
     if (isView) return;
 
+    if (maintenanceState?.active) {
+      maintenanceInterruptedRef.current = true;
+      handlePauseTestSession();
+      return;
+    }
+
+    if (maintenanceInterruptedRef.current) {
+      maintenanceInterruptedRef.current = false;
+      handleResumeTestSession();
+      return;
+    }
+
     // Khi người dùng vào trang làm bài (hoặc tiếp tục), lập tức resume session
     handleResumeTestSession();
 
     const handlePageShow = () => {
-      handleResumeTestSession();
+      if (!maintenanceState?.active) {
+        handleResumeTestSession();
+      }
     };
 
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
+      if (document.visibilityState === "visible" && !maintenanceState?.active) {
         handleResumeTestSession();
       }
     };
@@ -98,7 +119,7 @@ export const Test: React.FC<TestProps> = ({ isView }) => {
       window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [isView, handleResumeTestSession]);
+  }, [isView, maintenanceState?.active, handlePauseTestSession, handleResumeTestSession]);
 
   useEffect(() => {
     if (!shouldScrollRef.current) return;

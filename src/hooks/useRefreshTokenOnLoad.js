@@ -1,10 +1,11 @@
 import { useEffect, useRef } from "react";
 import api, { clearAuthData, setAccessToken } from "../config/axios";
 
-const useRefreshTokenOnLoad = () => {
+const useRefreshTokenOnLoad = (enabled = true) => {
   const hasRunRef = useRef(false);
 
   useEffect(() => {
+    if (!enabled) return;
     if (hasRunRef.current) return;
     hasRunRef.current = true;
 
@@ -30,7 +31,7 @@ const useRefreshTokenOnLoad = () => {
     };
 
     refresh();
-  }, []);
+  }, [enabled]);
 };
 
 export default useRefreshTokenOnLoad;

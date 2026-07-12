@@ -60,12 +60,12 @@ const Support: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
       
       {/* Main Content */}
-      <div className="flex-1 p-6 md:p-8 lg:p-12">
+      <div className="flex-1 overflow-x-hidden p-6 md:p-8 lg:p-12">
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}
           <div className="mb-8">

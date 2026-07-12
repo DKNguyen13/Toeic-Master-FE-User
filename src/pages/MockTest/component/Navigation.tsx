@@ -157,10 +157,10 @@ const NavigationComponent: React.FC<NavigationProps> = ({
     });
 
   return (
-    <div className="max-w-xs mx-auto p-4 bg-white h-full bottom-5 w-44">
+    <div className="w-full lg:max-w-xs lg:w-44 mx-auto p-2 lg:p-4 bg-white">
       <div className="space-y-4">
         {!isView && (
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col sm:flex-row lg:flex-col items-center sm:items-start lg:items-stretch gap-2 sm:gap-6 lg:gap-0">
             <TimerDisplay
               time={time ?? 0}
               isCountDown={isCountDown}
@@ -168,29 +168,27 @@ const NavigationComponent: React.FC<NavigationProps> = ({
               onSubmit={onSubmit}
               sessionId={sessionId}
             />
-          </div>
-        )}
 
-        {/* Chế độ fullscreen */}
-        {!isView && (
-          <div className="mb-4 flex justify-center">
-            <button
-              onClick={toggleFullScreen}
-              className="text-sm text-blue-500 hover:underline"
-            >
-              {isFullScreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
-            </button>
+            {/* Chế độ fullscreen */}
+            <div className="flex justify-center">
+              <button
+                onClick={toggleFullScreen}
+                className="text-sm text-blue-500 hover:underline whitespace-nowrap"
+              >
+                {isFullScreen ? "Thoát toàn màn hình" : "Toàn màn hình"}
+              </button>
+            </div>
           </div>
         )}
 
         {/* Danh sách câu hỏi */}
-        <div className="flex flex-wrap gap-2 justify-start mb-6">
+        <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
           {renderQuestionButtons()}
         </div>
 
         {/* Nút nộp bài */}
         {!isView && (
-          <div className="mt-4 text-center">
+          <div className="text-center">
             <button
               onClick={() => {
                 if (onSubmit) onSubmit(false);

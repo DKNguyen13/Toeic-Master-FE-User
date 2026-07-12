@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Clock,
   BookOpen,
@@ -7,6 +8,7 @@ import {
   CheckCircle,
   Info,
   Pin,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Select } from "../../components/ui/select";
@@ -74,6 +76,16 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
   setShowLoginModal,
   testId,
 }) => {
+  const navigate = useNavigate();
+
+  const [showDeviceWarning, setShowDeviceWarning] = useState(false);
+
+  useEffect(() => {
+      if (window.innerWidth < 1024) {
+        setShowDeviceWarning(true);
+      }
+    }, []);
+
   useEffect(() => {
     if(sessionError) {
       showToast(sessionError, "warn");
@@ -114,6 +126,17 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
   return (
     <>
       <div className="max-w-6xl mx-auto p-6 space-y-8">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit -mb-2"
+        >
+          <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+          </div>
+          <span>Quay lại</span>
+        </button>
+
         {/* Top Info Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Test Stats */}
@@ -182,7 +205,7 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
             aria-label="Test modes"
           >
             {tabs.map((tab) => {
-              const Icon = tab.icon;
+              const Icon = tab.icon
               return (
                 <button
                   key={tab.id}
@@ -200,7 +223,7 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
                   <Icon className="w-4 h-4" />
                   {tab.label}
                 </button>
-              );
+              )
             })}
           </div>
 
@@ -349,12 +372,50 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
             </div>
           </div>
         </div>
+        
+        {showDeviceWarning && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50 p-4">
+            <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl relative">
+              <div className="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-center text-gray-800 mb-2">
+                Trải nghiệm tốt nhất trên màn hình lớn
+              </h3>
+              <p className="text-gray-600 text-center mb-6 text-sm">
+                Bạn nên sử dụng chức năng này trên thiết bị có màn hình lớn
+                (PC/Laptop) để trải nghiệm chức năng luyện thi một cách tốt
+                nhất.
+              </p>
+              <button
+                onClick={() => setShowDeviceWarning(false)}
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
+                Tôi đã hiểu
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <LoginModal
-      isOpen={showLoginModal}
-      onClose={() => setShowLoginModal(false)}
-      onSuccess={() => window.location.reload()}/>
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => window.location.reload()}
+      />
       <ToastContainer
         position="top-right"
         autoClose={2000}
@@ -367,7 +428,7 @@ const DetailToeicTest: React.FC<ToeicTestProps> = ({
         pauseOnHover
       />
     </>
-  );
+  )
 };
 
 export default DetailToeicTest;

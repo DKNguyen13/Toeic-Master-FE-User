@@ -1,6 +1,9 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import api from "../config/axios";
+import LoadingSkeleton from "../components/common/LoadingSpinner/LoadingSkeleton";
+import MaintenancePage from "../pages/Maintenance/Maintenance";
 import ProtectedRoute from "./ProtectedRoute";
-import useRefreshTokenOnLoad from "../hooks/useRefreshTokenOnLoad";
 
 // Layout
 import MainLayout from "../layouts/MainLayout";
@@ -30,18 +33,57 @@ import Terms from "../pages/Info/Terms";
 import Privacy from "../pages/Info/Privacy";
 import Support from "../pages/Support/Support";
 
-const RefreshTokenLoader = () => {
-  useRefreshTokenOnLoad();
-  return null;
-};
-
 // Cấu hình routes
+function MaintenanceRoute() {
+  const [loading, setLoading] = useState(true);
+  const [maintenanceState, setMaintenanceState] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchMaintenance = async () => {
+      try {
+        const res = await api.get("/system/maintenance");
+        if (isMounted) setMaintenanceState(res.data.data);
+      } catch {
+        if (isMounted) setMaintenanceState({ active: false });
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchMaintenance();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (loading) return <LoadingSkeleton />;
+
+  if (!maintenanceState?.active) {
+    return <Navigate to="/" replace />;
+  }
+
+  return (
+    <MaintenancePage
+      message={maintenanceState.message}
+      startAt={maintenanceState.startAt}
+      endAt={maintenanceState.endAt}
+      onRetry={() => window.location.reload()}
+    />
+  );
+}
+
 const routes = [
+  {
+    path: "/maintenance",
+    element: <MaintenanceRoute />,
+  },
   {
     path: "/", // Trang Home, cho mọi user
     element: (
       <>
-        <RefreshTokenLoader />
         <MainLayout>
           <HomePage />
         </MainLayout>

@@ -7,7 +7,27 @@ const api = axios.create({
   withCredentials: true,
 });
 
-let accessToken = sessionStorage.getItem("accessToken") || null;
+const AUTH_STORAGE_KEYS = [
+  "accessToken",
+  "fullname",
+  "email",
+  "phone",
+  "avatarUrl",
+  "role",
+  "userId",
+  "dob",
+];
+
+const getStoredAccessToken = () => localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken") || null;
+
+const clearAuthStorage = () => {
+  AUTH_STORAGE_KEYS.forEach((key) => {
+    localStorage.removeItem(key);
+    sessionStorage.removeItem(key);
+  });
+};
+
+let accessToken = getStoredAccessToken();
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -22,10 +42,17 @@ const processQueue = (error, token = null) => {
 export const setAccessToken = (token) => {
   accessToken = token;
   if (token) {
-    sessionStorage.setItem("accessToken", token);
+    localStorage.setItem("accessToken", token);
+    sessionStorage.removeItem("accessToken");
   } else {
+    localStorage.removeItem("accessToken");
     sessionStorage.removeItem("accessToken");
   }
+};
+
+export const clearAuthData = () => {
+  accessToken = null;
+  clearAuthStorage();
 };
 
 api.interceptors.request.use((req) => {
@@ -39,6 +66,10 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    if (originalRequest.url && originalRequest.url.includes("/auth/refresh-token/user")) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -56,7 +87,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await api.post("/auth/refresh-token/user");
+        const res = await axios.post(`${config.apiBaseUrl}/api/auth/refresh-token/user`, {}, { withCredentials: true });
         const newAccessToken = res.data.data?.newAccessToken;
         setAccessToken(newAccessToken);
         processQueue(null, newAccessToken);
@@ -65,9 +96,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
-        setAccessToken(null);
-        localStorage.clear();
-        sessionStorage.clear();
+        clearAuthData();
+        window.dispatchEvent(new Event("userUpdated"));
         return Promise.reject({ ...err, redirectToLogin: true });
       } finally {
         isRefreshing = false;
@@ -80,4 +110,4 @@ api.interceptors.response.use(
 
 export default api;
 
-export const isLoggedIn = () => !!sessionStorage.getItem("accessToken");
+export const isLoggedIn = () => !!localStorage.getItem("accessToken");

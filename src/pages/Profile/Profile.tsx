@@ -104,12 +104,12 @@ const Profile: React.FC = () => {
   const vipConfig = user.vip.isActive ? getVipConfig(user.vip.type) : null;
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
       {/* Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col py-12 px-6 lg:px-12">
+      <div className="flex-1 overflow-x-hidden flex flex-col py-12 px-6 lg:px-12">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-md p-8 mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100 opacity-20 rounded-full -mr-24 -mt-24"></div>

@@ -1,7 +1,6 @@
 import DOMPurify from "dompurify";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { Eye, Flag, Heart } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Eye, Flag, Heart, ArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import api, { isLoggedIn } from "../../config/axios";
 import EmptyState from "../../components/EmptyState";
@@ -99,10 +98,20 @@ const LessonDetailPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-8 mb-8 bg-white p-6 rounded-xl shadow-xl">
+      <button
+        onClick={() => navigate(-1)}
+        className="group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit mb-6"
+      >
+        <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+        </div>
+        <span>Quay lại</span>
+      </button>
+
       <h1 className="text-3xl font-bold mb-10 text-center">{lesson.title}</h1>
 
       {!lesson.isLocked && (
-        <div className="flex items-center gap-6 text-gray-600 mb-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-gray-600 mb-6">
           {/* Views */}
           <div className="flex items-center gap-2">
             <Eye className="text-gray-400" />

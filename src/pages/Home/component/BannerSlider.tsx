@@ -42,7 +42,7 @@ const BannerSlider = () => {
               <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-300 rounded-full blur-3xl"></div>
             </div>
             
-            <div className="relative flex flex-col lg:flex-row items-center gap-8 h-[600px] px-6 lg:px-16 py-8">
+            <div className="relative flex flex-col lg:flex-row items-center gap-8 min-h-[520px] sm:min-h-[560px] lg:h-[600px] px-6 lg:px-16 py-10 lg:py-8">
               <div className="flex-1 text-white space-y-4 z-10">
                 <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-sm font-medium border border-white/20">
                   <Sparkles className="w-4 h-4 text-yellow-300" />
@@ -113,7 +113,7 @@ const BannerSlider = () => {
               <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-yellow-200 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
 
-            <div className="relative flex flex-col lg:flex-row items-center gap-8 h-[600px] px-6 lg:px-16 py-8">
+            <div className="relative flex flex-col lg:flex-row items-center gap-8 min-h-[520px] sm:min-h-[560px] lg:h-[600px] px-6 lg:px-16 py-10 lg:py-8">
               <div className="flex-1 text-white space-y-4 z-10">
                 <div className="inline-flex items-center gap-3 mb-2">
                   <div className="relative">
@@ -188,7 +188,7 @@ const BannerSlider = () => {
               <div className="absolute bottom-1/3 right-1/3 w-80 h-80 bg-green-300 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="relative flex flex-col lg:flex-row items-center gap-8 h-[600px] px-6 lg:px-16 py-8">
+            <div className="relative flex flex-col lg:flex-row items-center gap-8 min-h-[520px] sm:min-h-[560px] lg:h-[600px] px-6 lg:px-16 py-10 lg:py-8">
               <div className="flex-1 text-white space-y-4 z-10">
                 <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-sm font-medium border border-white/20">
                   <BookOpen className="w-4 h-4 text-green-300" />

@@ -257,22 +257,22 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white p-6 flex flex-col items-center">
       <div className="w-full max-w-6xl">
         {/* Header */}
-        <header className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
+        <header className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="p-4 bg-white rounded-lg shadow-md flex items-center gap-4">
               <button onClick={togglePlay}
                 aria-label="Play sentence"
-                className="p-3 rounded-md bg-gradient-to-tr from-blue-600 to-blue-500 text-white hover:scale-105 transition-transform shadow">
+                className="p-3 rounded-md bg-gradient-to-tr from-blue-600 to-blue-500 text-white hover:scale-105 transition-transform shadow flex-shrink-0">
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </button>
               <SpeedDropdown value={speechRate} onChange={setSpeechRate} />
               <div className="text-sm text-slate-600 leading-relaxed py-1">
                 <div className="font-semibold text-base mb-1">Luyện nghe - Điền từ</div>
-                <div className="text-sm">Nhấn play để nghe, sau đó điền từ vào chỗ trống</div>
+                <div className="text-sm hidden sm:block">Nhấn play để nghe, sau đó điền từ vào chỗ trống</div>
               </div>
             </div>
 
-            <div className="hidden sm:flex items-center gap-6 text-base text-slate-600">
+            <div className="flex items-center gap-4 sm:gap-6 text-sm sm:text-base text-slate-600 flex-wrap">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-slate-500" />
                 <span className="font-medium">{formatTime(seconds)}</span>
@@ -290,28 +290,28 @@ export default function ListeningFillBlankOptimized(): JSX.Element {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button onClick={() => setShowGuide(true)}
-              className="p-2 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors"
+              className="p-2 rounded-full bg-gray-400 text-white hover:bg-gray-500 transition-colors flex-shrink-0"
               title="Hướng dẫn sử dụng">
               <HelpCircle className="w-5 h-5" />
             </button>
 
             <button onClick={() => { window.speechSynthesis.cancel(); speak(current.sentence.replace(/___/g, 'blank')); }}
-              className="text-sm px-3 py-2 rounded-md border hover:bg-slate-200"
+              className="text-xs sm:text-sm px-2.5 sm:px-3 py-2 rounded-md border hover:bg-slate-200 whitespace-nowrap"
               title="Phát lại">
               Phát lại
             </button>
 
             <button onClick={() => { setQuestions((qs) => qs.map(q => ({ ...q, userAnswers: q.blanks.map(() => "") }))); }}
-              className="text-sm px-3 py-2 rounded-md border hover:bg-slate-200"
+              className="text-xs sm:text-sm px-2.5 sm:px-3 py-2 rounded-md border hover:bg-slate-200 whitespace-nowrap"
               title="Xóa câu đã điền">
-              <RotateCcw className="inline w-4 h-4 mr-2" />
+              <RotateCcw className="inline w-4 h-4 mr-1 sm:mr-2" />
               Làm mới
             </button>
 
             <button onClick={handleSubmit}
-              className="text-sm px-3 py-2 rounded-md bg-emerald-500 text-white hover:bg-emerald-600">
+              className="text-xs sm:text-sm px-2.5 sm:px-3 py-2 rounded-md bg-emerald-500 text-white hover:bg-emerald-600 whitespace-nowrap">
               Nộp bài
             </button>
           </div>

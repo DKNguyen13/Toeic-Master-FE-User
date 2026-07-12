@@ -279,17 +279,22 @@ const FlashcardList: React.FC<FlashcardListProps> = ({ setId, type: propType, on
     <div className="min-h-screen">
       <div className="p-6 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="relative mb-8">
+        <div className="relative mb-6 sm:mb-8 flex flex-col sm:block">
           {onBack && (
-            <button onClick={onBack}
-              className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white shadow-sm hover:bg-gray-50 hover:border-gray-300 transition-all duration-200">
-              <ArrowLeft size={18} />Quay lại
+            <button
+              onClick={onBack}
+              className="mb-4 sm:mb-0 sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit"
+            >
+              <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+              </div>
+              <span className="text-sm sm:text-base">Quay lại</span>
             </button>
           )}
 
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">📚 Flashcards</h1>
-            <p className="text-gray-600">Học từ vựng hiệu quả với flashcards</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">📚 Flashcards</h1>
+            <p className="text-sm sm:text-base text-gray-600">Học từ vựng hiệu quả với flashcards</p>
           </div>
         </div>
 

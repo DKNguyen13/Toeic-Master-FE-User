@@ -62,7 +62,7 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 mt-8 mb-6 pt-6 border-t border-gray-100 w-full">
+    <div className="flex flex-col items-center justify-center gap-4 mt-4 mb-4 pt-6 border-t border-gray-100 w-full">
       <nav className="flex items-center space-x-1.5 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100">
         <button
           className="flex items-center justify-center w-9 h-9 rounded-xl text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400 disabled:cursor-not-allowed"

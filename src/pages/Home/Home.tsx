@@ -178,33 +178,33 @@ const Home : React.FC<HomeProps> = ({ setIsOpen })  => {
             </div>
 
             {/* Right */}
-            <div className="relative h-96 lg:h-full flex items-center justify-center">
-              <div className="absolute w-80 h-96 bg-white rounded-3xl shadow-xl border border-gray-200 p-10 flex flex-col justify-between transform rotate-[-6deg] hover:rotate-[-3deg] transition-all duration-500 hover:z-10 hover:scale-[1.03]">
+            <div className="relative h-80 sm:h-96 lg:h-full flex items-center justify-center px-4">
+              <div className="absolute top-1/2 left-1/2 w-56 h-72 sm:w-80 sm:h-96 bg-white rounded-3xl shadow-xl border border-gray-200 p-6 sm:p-10 flex flex-col justify-between transform -translate-x-1/2 -translate-y-1/2 rotate-[-6deg] hover:rotate-[-3deg] transition-all duration-500 hover:z-10 hover:scale-[1.03]">
                 <div>
                   <span className="text-sm font-semibold text-blue-600">TOEIC Vocabulary</span>
-                  <h3 className="text-4xl font-bold text-gray-900 mt-3">accomplish</h3>
-                  <p className="text-xl text-gray-600 mt-2">/əˈkʌm.plɪʃ/</p>
+                  <h3 className="text-2xl sm:text-4xl font-bold text-gray-900 mt-3">accomplish</h3>
+                  <p className="text-base sm:text-xl text-gray-600 mt-2">/əˈkʌm.plɪʃ/</p>
                 </div>
-                <div className="text-2xl font-medium text-gray-800">
+                <div className="text-lg sm:text-2xl font-medium text-gray-800">
                   Hoàn thành, thực hiện thành công
                 </div>
               </div>
 
-              <div className="absolute w-80 h-96 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-3xl shadow-xl p-10 flex flex-col justify-center items-center text-center transform rotate-[6deg] hover:rotate-[9deg] transition-all duration-500 hover:z-10 hover:scale-[1.03]">
-                <h3 className="text-3xl font-bold mb-6">accomplish</h3>
-                <p className="text-lg leading-relaxed opacity-95">
+              <div className="absolute top-1/2 left-1/2 w-56 h-72 sm:w-80 sm:h-96 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-3xl shadow-xl p-6 sm:p-10 flex flex-col justify-center items-center text-center transform -translate-x-1/2 -translate-y-1/2 rotate-[6deg] hover:rotate-[9deg] transition-all duration-500 hover:z-10 hover:scale-[1.03]">
+                <h3 className="text-xl sm:text-3xl font-bold mb-6">accomplish</h3>
+                <p className="text-base sm:text-lg leading-relaxed opacity-95">
                   Hoàn thành, thực hiện thành công
                 </p>
-                <div className="mt-6 text-sm space-y-1 opacity-90">
+                <div className="mt-6 text-xs sm:text-sm space-y-1 opacity-90">
                   <p>• She accomplished her goal of 900 TOEIC</p>
                   <p>• The task was accomplished ahead of schedule</p>
                 </div>
               </div>
 
               {/* Mini card */}
-              <div className="absolute top-8 right-8 w-48 h-40 bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl flex flex-col items-center justify-center text-blue-700 transform rotate-12">
-                <span className="text-4xl font-bold">5000+</span>
-                <span className="text-sm font-medium">Từ vựng</span>
+              <div className="absolute top-2 right-2 sm:top-8 sm:right-8 w-32 h-28 sm:w-48 sm:h-40 bg-blue-50 border-2 border-dashed border-blue-300 rounded-2xl flex flex-col items-center justify-center text-blue-700 transform rotate-12 z-20">
+                <span className="text-2xl sm:text-4xl font-bold">5000+</span>
+                <span className="text-xs sm:text-sm font-medium">Từ vựng</span>
               </div>
             </div>
           </div>

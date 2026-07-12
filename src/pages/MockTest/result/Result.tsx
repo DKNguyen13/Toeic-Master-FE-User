@@ -11,7 +11,7 @@ import {
   type TooltipItem,
 } from "chart.js";
 import { useNavigate } from "react-router-dom";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, ArrowLeft } from "lucide-react";
 import api from "../../../config/axios";
 
 ChartJS.register(
@@ -155,20 +155,17 @@ const Result: React.FC<ResultProps> = ({
   };
 
   return (
-    <div className="max-w-4xl min-w-[700px] mx-auto p-6 bg-white rounded-lg shadow-2xl mt-8 mb-8 relative">
+    <div className="w-full max-w-4xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-2xl mt-4 sm:mt-8 mb-8 relative">
       <button
         onClick={handleGoBack}
-        className="
-          absolute top-4 left-4
-          px-3 py-1.5
-          bg-gray-100 hover:bg-gray-200
-          text-gray-700 font-medium
-          rounded-lg shadow-md
-          transition
-        ">
-        ← Lịch sử làm bài
+        className="absolute top-4 left-4 group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit"
+      >
+        <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+        </div>
+        <span>Lịch sử làm bài</span>
       </button>
-      <h2 className="text-center text-3xl font-bold text-gray-700 mb-6">
+      <h2 className="text-center text-2xl sm:text-3xl font-bold text-gray-700 mb-6 mt-8 sm:mt-0 px-2">
         {testTitle}
       </h2>
 
@@ -193,7 +190,7 @@ const Result: React.FC<ResultProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         {stats.map((item) => (
           <div key={item.label}
             className="flex justify-between items-center p-4 rounded-lg bg-gray-200 shadow-sm hover:shadow-md transition">
@@ -245,7 +242,7 @@ const Result: React.FC<ResultProps> = ({
 
       {/* Pie Chart */}
       <div className="flex justify-center mb-6">
-        <div className="w-2/5 text-center">
+        <div className="w-full max-w-xs sm:max-w-sm text-center">
           <h3 className="text-xl text-gray-700">Thống kê bài làm</h3>
           <div className="mt-4">
             <Pie data={data} options={options} />

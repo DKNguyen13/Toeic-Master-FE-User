@@ -79,10 +79,10 @@ const PurchaseHistory: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
       {/* Left Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
-      <div className="flex-1 py-10 px-6">
+      <div className="flex-1 overflow-x-hidden py-10 px-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             Lịch sử mua hàng
@@ -95,8 +95,8 @@ const PurchaseHistory: React.FC = () => {
               <p className="text-center text-gray-500 py-10">Chưa có đơn hàng nào.</p>
             ) : (
               <>
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                <div className="overflow-x-auto rounded-xl border border-gray-300 bg-white shadow-sm">
+                  <table className="min-w-full divide-y divide-gray-300 rounded-lg overflow-hidden">
                     <thead className="bg-gray-100">
                       <tr>
                         <th className="px-4 py-3 text-left text-gray-700 font-medium">Order ID</th>
@@ -107,7 +107,7 @@ const PurchaseHistory: React.FC = () => {
                         <th className="px-4 py-3 text-left text-gray-700 font-medium">Trạng thái</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-300">
                       {currentOrders.map((order) => (
                         <tr key={order._id} className="hover:bg-gray-50 transition">
                           <td className="px-4 py-3">{order.orderId}</td>

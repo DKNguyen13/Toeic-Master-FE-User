@@ -132,8 +132,8 @@ const HistoryPage: React.FC<HistoryProps> = ({ limit = 6, showPagination = true 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Main Layout */}
-      <div className="flex flex-1">
-        <div className="w-64 flex-shrink-0">
+      <div className="flex flex-col lg:flex-row flex-1">
+        <div className="w-full lg:w-64 lg:flex-shrink-0">
           <LeftSidebarUser customHeight="h-screen sticky top-0" />
         </div>
         <div className="flex-1 overflow-x-hidden p-6 lg:p-8">

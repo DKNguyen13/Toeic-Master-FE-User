@@ -104,7 +104,7 @@ const Profile: React.FC = () => {
   const vipConfig = user.vip.isActive ? getVipConfig(user.vip.type) : null;
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
       {/* Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
 

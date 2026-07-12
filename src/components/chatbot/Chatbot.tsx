@@ -284,7 +284,7 @@ const Chatbot: React.FC<ChatbotProps> = ({ isOpen, setIsOpen, socketUrl = `${con
 
       {/* Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-96 h-[550px] z-[9999] animate-scaleIn origin-bottom-right">
+        <div className="fixed inset-x-4 bottom-24 sm:inset-x-auto sm:right-6 w-auto sm:w-96 h-[70vh] max-h-[550px] z-[9999] animate-scaleIn origin-bottom-right">
           <div className="w-full h-full bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden backdrop-blur-xl">
             {/* Header */}
             <div className="relative bg-blue-600 text-white p-4 shadow-lg">

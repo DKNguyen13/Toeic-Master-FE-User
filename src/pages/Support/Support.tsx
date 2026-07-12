@@ -60,7 +60,7 @@ const Support: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
       

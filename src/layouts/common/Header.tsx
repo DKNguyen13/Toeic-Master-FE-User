@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import api, { setAccessToken } from "../../config/axios.js";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaBell, FaHome, FaFileAlt, FaSearch, FaCrown, FaClipboardList } from "react-icons/fa";
-import { ClipboardList, HelpCircle, History, LogOut, UserCircle } from "lucide-react";
+import { ClipboardList, HelpCircle, History, LogOut, Menu, UserCircle, X } from "lucide-react";
 import { useNotification } from "../../context/Notification/useNotification.js";
 
 interface Notification {
@@ -37,6 +37,7 @@ const Header: React.FC = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>("/img/avatar/default_avatar.jpg");
   const [openMenu, setOpenMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [localNotifications, setLocalNotifications] = useState<Notification[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,6 +67,10 @@ const Header: React.FC = () => {
       window.removeEventListener("userUpdated", handleUserUpdated);
     };
   }, []);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Sử dụng real-time notifications từ Socket
   useEffect(() => {
@@ -238,14 +243,14 @@ const Header: React.FC = () => {
   const filteredNavLinks = navLinks;
 
   return (
-    <header className="bg-white shadow-md px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-50">
+    <header className="relative bg-white shadow-md px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-50">
       {/* Logo */}
       <Link to="/" className="flex items-center">
         <span className="text-blue-600 font-extrabold text-xl tracking-wide">TOEIC MASTER</span>
       </Link>
 
-      {/* Navigation */}
-      <nav className="flex items-center space-x-6">
+      {/* Navigation - Desktop */}
+      <nav className="hidden md:flex items-center space-x-6">
         {filteredNavLinks.map((link) => (
           <Link key={link.to} to={link.to}
           onClick={() => {
@@ -254,7 +259,7 @@ const Header: React.FC = () => {
               localStorage.removeItem("flashcard_mode");
             }
           }}
-            className={`hidden sm:block relative transition-colors duration-200 ${
+            className={`relative transition-colors duration-200 ${
               location.pathname === link.to
                 ? link.premium ? "text-yellow-600 font-semibold" : "text-blue-600 font-semibold"
                 : link.premium ? "text-yellow-500 hover:text-yellow-600" : "text-gray-600 hover:text-blue-500"
@@ -267,16 +272,6 @@ const Header: React.FC = () => {
                 }`}
               ></span>
             )}
-          </Link>
-        ))}
-
-        {/* Mobile icons */}
-        {navLinks.map((link) => (
-          <Link key={link.to + "-mobile"} to={link.to}
-            className={`sm:hidden transition-colors duration-200 ${
-              location.pathname === link.to ?  "text-blue-600" : "text-gray-500 hover:text-blue-500"
-            }`}>
-            {link.icon}
           </Link>
         ))}
       </nav>
@@ -311,7 +306,7 @@ const Header: React.FC = () => {
 
             {/* Notifications Dropdown */}
             {openNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden z-50 max-h-96">
+              <div className="absolute right-0 mt-2 w-[85vw] max-w-80 sm:w-80 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden z-50 max-h-96">
                 {/* Header */}
                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-800">Thông báo</h3>
@@ -422,14 +417,14 @@ const Header: React.FC = () => {
                     (e.target as HTMLImageElement).src = "/img/avatar/default_avatar.jpg";
                   }}
                 />
-                <span className="font-medium text-gray-700 truncate" title={fullname}>
+                <span className="hidden sm:inline-block font-medium text-gray-700 truncate max-w-[120px] md:max-w-[160px]" title={fullname}>
                   {fullname}
                 </span>
               </button>
 
               {/* User Dropdown */}
               {openMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden z-50">
+                <div className="absolute right-0 mt-2 w-56 max-w-[75vw] bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden z-50">
                   {userMenu.map((item) => (
                     <Link
                       key={item.to}
@@ -457,7 +452,43 @@ const Header: React.FC = () => {
             </Link>
           )}
         </div>
+
+        {/* Hamburger - Mobile */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100 rounded-lg transition"
+          aria-label="Mở menu">
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
+
+      {/* Mobile dropdown menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 max-h-[calc(100vh-64px)] overflow-y-auto">
+          <nav className="flex flex-col p-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to + "-mobile"}
+                to={link.to}
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  if (link.to !== "/flashcard") {
+                    localStorage.removeItem("flashcard_tab");
+                    localStorage.removeItem("flashcard_mode");
+                  }
+                }}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                  location.pathname === link.to
+                    ? link.premium ? "bg-yellow-50 text-yellow-600 font-semibold" : "bg-blue-50 text-blue-600 font-semibold"
+                    : link.premium ? "text-yellow-500" : "text-gray-600"
+                }`}>
+                {link.icon}
+                <span>{link.label}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };

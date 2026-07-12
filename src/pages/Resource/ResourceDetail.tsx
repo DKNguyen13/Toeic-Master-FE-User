@@ -111,7 +111,7 @@ const LessonDetailPage: React.FC = () => {
       <h1 className="text-3xl font-bold mb-10 text-center">{lesson.title}</h1>
 
       {!lesson.isLocked && (
-        <div className="flex items-center gap-6 text-gray-600 mb-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-gray-600 mb-6">
           {/* Views */}
           <div className="flex items-center gap-2">
             <Eye className="text-gray-400" />

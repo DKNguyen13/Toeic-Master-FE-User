@@ -101,10 +101,10 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-3 sm:p-4">
       <div className="w-full max-w-lg">
         {/* Form Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-white/20 p-5 sm:p-8">
           {serverError && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
               <XCircle size={16} />
@@ -163,7 +163,7 @@ const Register: React.FC = () => {
             </div>
 
             {/* SĐT + Ngày sinh */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1.5 block">
                   Số điện thoại

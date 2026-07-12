@@ -162,11 +162,11 @@ export const Test: React.FC<TestProps> = ({ isView, maintenanceState }) => {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="flex flex-row justify-between flex-1 overflow-hidden">
+      <div className="flex flex-col lg:flex-row justify-between flex-1 overflow-hidden">
         {/* Left: Main content */}
         <div 
           ref={contentRef}
-          className="flex-1 flex flex-col justify-start items-center p-4 overflow-auto">
+          className="flex-1 flex flex-col justify-start items-center p-4 overflow-y-auto">
           <TestHeader
             session={session}
             onGoBack={handleGoBack}
@@ -199,7 +199,7 @@ export const Test: React.FC<TestProps> = ({ isView, maintenanceState }) => {
         </div>
 
         {/* Right: Navigation */}
-        <div className="p-4 bg-white h-full w-fit overflow-y-scroll">
+        <div className="w-full lg:w-fit p-4 bg-white border-t lg:border-t-0 lg:border-l border-gray-200 max-h-[45vh] lg:max-h-none lg:h-full overflow-y-auto">
           <Navigation
             sessionId={sessionId}
             isView={isView}

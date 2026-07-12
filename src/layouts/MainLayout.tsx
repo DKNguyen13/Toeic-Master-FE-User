@@ -1,9 +1,9 @@
 // MainLayout.tsx
 import Header from "./common/Header";
 import Footer from "./common/Footer";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { config } from "../config/env.config";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Chatbot from "../components/chatbot/Chatbot";
 import FloatingDictionary from "../components/common/ActionMenu/FloatingActionMenu";
 import useRefreshTokenOnLoad from "../hooks/useRefreshTokenOnLoad";
@@ -21,6 +21,11 @@ const MainLayout = ({ children }) => {
     endAt: null,
   });
   const location = useLocation();
+  const navigate = useNavigate();
+  const wasActiveRef = useRef(false);
+
+  const pathname = location.pathname;
+  const isDoingTest = pathname.startsWith("/session/") && !pathname.startsWith("/session/view");
 
   useEffect(() => {
     let isMounted = true;
@@ -55,13 +60,25 @@ const MainLayout = ({ children }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (maintenanceState.active) {
+      wasActiveRef.current = true;
+    }
+  }, [maintenanceState.active]);
+
+  useEffect(() => {
+    if (wasActiveRef.current && !maintenanceState.active && isDoingTest) {
+      navigate("/", { replace: true });
+    }
+  }, [maintenanceState.active, isDoingTest, navigate]);
+
   useRefreshTokenOnLoad(!maintenanceState.loading && !maintenanceState.active);
 
   if (maintenanceState.loading) {
     return <LoadingSkeleton />;
   }
 
-  if (maintenanceState.active) {
+  if (maintenanceState.active && !isDoingTest) {
     return (
       <MaintenancePage
         message={maintenanceState.message}
@@ -71,10 +88,6 @@ const MainLayout = ({ children }) => {
       />
     );
   }
-
-  const pathname = location.pathname;
-
-  const isDoingTest = pathname.startsWith("/session/") && !pathname.startsWith("/session/view");
 
   const isSessionPage = pathname.startsWith("/session");
 
@@ -96,15 +109,13 @@ const MainLayout = ({ children }) => {
             <div className="pointer-events-none select-none opacity-40">
               {clonedChildren}
             </div>
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm px-4">
-              <div className="w-full max-w-4xl">
-                <MaintenancePage
-                  message={maintenanceState.message}
-                  startAt={maintenanceState.startAt}
-                  endAt={maintenanceState.endAt}
-                  onRetry={() => window.location.reload()}
-                />
-              </div>
+            <div className="fixed inset-0 z-50">
+              <MaintenancePage
+                message={maintenanceState.message}
+                startAt={maintenanceState.startAt}
+                endAt={maintenanceState.endAt}
+                onRetry={() => window.location.reload()}
+              />
             </div>
           </div>
         ) : maintenanceState.active ? (

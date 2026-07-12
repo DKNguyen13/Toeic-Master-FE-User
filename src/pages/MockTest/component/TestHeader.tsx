@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface TestHeaderProps {
   session: any;
@@ -14,6 +15,7 @@ const TestHeader: React.FC<TestHeaderProps> = ({
   isView,
   currentPart
 }) => {
+  const navigate = useNavigate();
   const sessionType = session?.sessionType || "full-test";
   const LISTENING_PARTS = [1, 2, 3, 4];
   const hasListeningPart = session?.testConfig?.selectedParts?.some(
@@ -31,7 +33,14 @@ const TestHeader: React.FC<TestHeaderProps> = ({
       {/* Return button */}
       <div
         className="group flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-all font-medium w-fit cursor-pointer"
-        onClick={onGoBack}
+        onClick={() => {
+          if (!isView) {
+            const confirmLeave = window.confirm("Bạn có chắc muốn thoát không? Bài thi sẽ được tạm dừng.");
+            if (confirmLeave) navigate("/");
+          } else {
+            onGoBack();
+          }
+        }}
       >
         <div className="p-1.5 rounded-full bg-gray-100 group-hover:bg-blue-100 transition-colors">
           <ArrowLeft className="w-4 h-4" />

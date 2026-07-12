@@ -198,18 +198,18 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
   const progress = ((roundIndex + (isRoundDone ? 1 : 0)) / rounds.length) * 100
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-6 sm:space-y-8 max-w-5xl mx-auto">
 
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-3">Flashcard Matrix</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-3">Flashcard Matrix</h2>
           <p className="text-gray-500 text-sm">Ghép từ - nghĩa</p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Lượt</div>
+        <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+          <div className="text-left sm:text-right">
+            <div className="text-xs sm:text-sm text-gray-500">Lượt</div>
             <div className="text-sm font-semibold text-gray-700">{roundIndex + 1} / {rounds.length}</div>
           </div>
 
@@ -220,9 +220,9 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
               setIsRoundDone(false)
               setGameKey((k) => k + 1)
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all active:scale-95">
-            <RefreshCcw className="h-5 w-5" />
-            <span className="font-medium">Chơi lại</span>
+            className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all active:scale-95">
+            <RefreshCcw className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="font-medium text-sm sm:text-base">Chơi lại</span>
           </button>
         </div>
       </div>
@@ -233,13 +233,13 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
       </div>
 
       {/* BOARD */}
-      <div className="grid gap-4 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-gray-50 via-white to-gray-50 border border-gray-100 shadow-xl shadow-gray-200/50"
-        style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+      <div className={`grid gap-3 sm:gap-4 p-4 sm:p-6 md:p-8 rounded-3xl bg-gradient-to-br from-gray-50 via-white to-gray-50 border border-gray-100 shadow-xl shadow-gray-200/50 ${columns === 4 ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4' : ''}`}
+        style={columns === 4 ? undefined : { gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {cards.map((card) => {
           if (card.isMatched) {
             return (
               <div key={`${card.id}-${card.type}`}
-                className="min-h-[120px] rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 flex items-center justify-center shadow-inner"
+                className="min-h-[100px] sm:min-h-[120px] rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 flex items-center justify-center shadow-inner"
               />
             )
           }
@@ -250,7 +250,7 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
             <div key={`${card.id}-${card.type}`}
               onClick={() => handleClick(card)}
               className={`
-                group relative min-h-[120px] p-6 rounded-2xl
+                group relative min-h-[100px] sm:min-h-[120px] p-3 sm:p-6 rounded-2xl
                 flex items-center justify-center text-center
                 border-2 cursor-pointer select-none transition-all duration-300
                 bg-white shadow-sm hover:shadow-xl active:scale-[0.97]
@@ -261,15 +261,15 @@ const FlashcardMatrix: React.FC<Props> = ({ flashcards, columns = 4 }) => {
                 ${card.status === 'wrong' ? 'bg-red-50 border-red-400' : ''}
               `}>
 
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
                 <div className={`
-                  w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-sm
+                  w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold shadow-sm
                   ${card.type === 'word' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}
                 `}>
                   {card.type === 'word' ? 'W' : 'M'}
                 </div>
               </div>
-              <span className="text-lg md:text-lg font-medium leading-tight text-gray-700">{card.content}</span>
+              <span className="text-sm sm:text-lg font-medium leading-tight text-gray-700">{card.content}</span>
             </div>
           )
         })}

@@ -65,7 +65,7 @@ const Support: React.FC = () => {
       <LeftSidebarUser customHeight="h-auto w-64" />
       
       {/* Main Content */}
-      <div className="flex-1 p-6 md:p-8 lg:p-12">
+      <div className="flex-1 overflow-x-hidden p-6 md:p-8 lg:p-12">
         <div className="max-w-4xl mx-auto">
           {/* Header Section */}
           <div className="mb-8">

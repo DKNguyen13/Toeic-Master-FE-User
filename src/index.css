@@ -38,3 +38,33 @@
   text-align: center;
   color: #6b7280; /* Gray color */
 }
+
+/* Chặn nội dung HTML động (từ admin) tràn ngang trên mobile: ảnh/bảng/iframe cứng width */
+.article-content {
+  max-width: 100%;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.article-content img,
+.article-content video {
+  max-width: 100%;
+  height: auto;
+}
+
+.article-content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.article-content iframe {
+  max-width: 100%;
+}
+
+.article-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}

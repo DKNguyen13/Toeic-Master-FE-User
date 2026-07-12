@@ -82,7 +82,7 @@ const PurchaseHistory: React.FC = () => {
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
       {/* Left Sidebar */}
       <LeftSidebarUser customHeight="h-auto w-64" />
-      <div className="flex-1 py-10 px-6">
+      <div className="flex-1 overflow-x-hidden py-10 px-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             Lịch sử mua hàng
